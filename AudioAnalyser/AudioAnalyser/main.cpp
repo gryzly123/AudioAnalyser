@@ -7,6 +7,6 @@ void Main(array<System::String^>^ Argv)
 	App::EnableVisualStyles();
 	App::SetCompatibleTextRenderingDefault(false);
 
-	first_clr::MainWindow Form;
-	App::Run(%Form);
+	AudioAnalyser::MainWindow MainWindowInstance;
+	App::Run(%MainWindowInstance);
 }

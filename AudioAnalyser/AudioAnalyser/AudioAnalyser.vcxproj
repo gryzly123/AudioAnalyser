@@ -22,7 +22,7 @@
     <ProjectGuid>{89A138D9-A221-4854-8637-36F88D62FE74}</ProjectGuid>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>first_clr</RootNamespace>
+    <RootNamespace>AudioAnalyser</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>AudioAnalyser</ProjectName>
   </PropertyGroup>
@@ -150,11 +150,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioGrabber.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="ComplexNumbers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioGrabber.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="ComplexNumbers.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -162,6 +166,9 @@
   <ItemGroup>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.h</DependentUpon>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)MainWindow.resx</LogicalName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
