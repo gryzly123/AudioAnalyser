@@ -36,44 +36,44 @@ namespace AudioAnalyser {
 			}
 		}
 
+	private: System::Windows::Forms::ImageList^  Icons32;
 
+	private: System::Windows::Forms::GroupBox^  GroupInputStream;
+	private: System::Windows::Forms::GroupBox^  GroupInputFile;
+	private: System::Windows::Forms::GroupBox^  GroupOutputStream;
+	private: System::Windows::Forms::GroupBox^  GroupOutputFile;
 
-	private: System::Windows::Forms::ImageList^  imageList1;
-	private: System::Windows::Forms::Button^  button2;
+	private: System::Windows::Forms::ComboBox^  ComboInputStreamSource;
+	private: System::Windows::Forms::ComboBox^  ComboInputStreamSamplerate;
+	private: System::Windows::Forms::ComboBox^  ComboOutputStreamSamplerate;
+	private: System::Windows::Forms::ComboBox^  ComboOutputStreamSource;
+	private: System::Windows::Forms::ComboBox^  ComboOutputFileFormat;
 
+	private: System::Windows::Forms::Button^  ButtonNewFile;
+	private: System::Windows::Forms::Button^  ButtonOpenFile;
+	private: System::Windows::Forms::Button^  ButtonSaveFile;
+	private: System::Windows::Forms::Button^  ButtonInputStreamStart;
+	private: System::Windows::Forms::Button^  ButtonInputFileBrowse;
+	private: System::Windows::Forms::Button^  ButtonInputFileStart;
+	private: System::Windows::Forms::Button^  ButtonOutputStreamStart;
+	private: System::Windows::Forms::Button^  ButtonOutputFileBrowse;
+	private: System::Windows::Forms::Button^  ButtonOutputFileStart;
 
+	private: System::Windows::Forms::Label^  StaticLabelInputStreamSource;
+	private: System::Windows::Forms::Label^  StaticLabelInputStreamSamplerate;
+	private: System::Windows::Forms::Label^  StaticLabelInputFileSource;
+	private: System::Windows::Forms::Label^  StaticLabelInputFileTime;
 
-	private: RackControls::RackItem^  rackItem1;
-	private: System::Windows::Forms::ImageList^  imageList2;
+	private: System::Windows::Forms::Label^  StaticLabelOutputStreamSource;
+	private: System::Windows::Forms::Label^  StaticLabelOutputStreamSamplerate;
+	private: System::Windows::Forms::Label^  StaticLabelOutputFileSource;
+	private: System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
 
-	private: System::Windows::Forms::GroupBox^  groupBox1;
-	private: System::Windows::Forms::ComboBox^  comboBox2;
-	private: System::Windows::Forms::ComboBox^  comboBox1;
-	private: System::Windows::Forms::Label^  label2;
-	private: System::Windows::Forms::Button^  button4;
-	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::Button^  button1;
-	private: System::Windows::Forms::Button^  button3;
-	private: System::Windows::Forms::GroupBox^  groupBox2;
-	private: System::Windows::Forms::Label^  label3;
-	private: System::Windows::Forms::TrackBar^  trackBar1;
-	private: System::Windows::Forms::Button^  button9;
-	private: System::Windows::Forms::TextBox^  textBox1;
-	private: System::Windows::Forms::Button^  button8;
-	private: System::Windows::Forms::Label^  label4;
-	private: System::Windows::Forms::GroupBox^  groupBox3;
-	private: System::Windows::Forms::ComboBox^  comboBox5;
-	private: System::Windows::Forms::Button^  button10;
-	private: System::Windows::Forms::Label^  label5;
-	private: System::Windows::Forms::TextBox^  textBox2;
-	private: System::Windows::Forms::Button^  button11;
-	private: System::Windows::Forms::Label^  label6;
-	private: System::Windows::Forms::GroupBox^  groupBox4;
-	private: System::Windows::Forms::ComboBox^  comboBox3;
-	private: System::Windows::Forms::ComboBox^  comboBox4;
-	private: System::Windows::Forms::Label^  label7;
-	private: System::Windows::Forms::Button^  button12;
-	private: System::Windows::Forms::Label^  label8;
+	private: System::Windows::Forms::TrackBar^ SeekbarInputFile;
+
+	private: System::Windows::Forms::TextBox^  TextboxOutputFilePath;
+	private: System::Windows::Forms::TextBox^  TextboxInputFilePath;
+
 	private: RackControls::RackItem^  rackItem2;
 	private: RackControls::RackItem^  rackItem3;
 	private: RackControls::RackItem^  rackItem4;
@@ -81,8 +81,6 @@ namespace AudioAnalyser {
 	private: RackControls::RackItem^  rackItem6;
 	private: RackControls::RackItem^  rackItem7;
 	private: RackControls::RackItem^  rackItem8;
-
-
 
 	private: System::ComponentModel::IContainer^  components;
 
@@ -103,37 +101,36 @@ namespace AudioAnalyser {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainWindow::typeid));
-			this->imageList1 = (gcnew System::Windows::Forms::ImageList(this->components));
-			this->button2 = (gcnew System::Windows::Forms::Button());
-			this->imageList2 = (gcnew System::Windows::Forms::ImageList(this->components));
-			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
-			this->comboBox2 = (gcnew System::Windows::Forms::ComboBox());
-			this->comboBox1 = (gcnew System::Windows::Forms::ComboBox());
-			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->button4 = (gcnew System::Windows::Forms::Button());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->button1 = (gcnew System::Windows::Forms::Button());
-			this->button3 = (gcnew System::Windows::Forms::Button());
-			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
-			this->label3 = (gcnew System::Windows::Forms::Label());
-			this->trackBar1 = (gcnew System::Windows::Forms::TrackBar());
-			this->button9 = (gcnew System::Windows::Forms::Button());
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
-			this->button8 = (gcnew System::Windows::Forms::Button());
-			this->label4 = (gcnew System::Windows::Forms::Label());
-			this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
-			this->comboBox5 = (gcnew System::Windows::Forms::ComboBox());
-			this->button10 = (gcnew System::Windows::Forms::Button());
-			this->label5 = (gcnew System::Windows::Forms::Label());
-			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
-			this->button11 = (gcnew System::Windows::Forms::Button());
-			this->label6 = (gcnew System::Windows::Forms::Label());
-			this->groupBox4 = (gcnew System::Windows::Forms::GroupBox());
-			this->comboBox3 = (gcnew System::Windows::Forms::ComboBox());
-			this->comboBox4 = (gcnew System::Windows::Forms::ComboBox());
-			this->label7 = (gcnew System::Windows::Forms::Label());
-			this->button12 = (gcnew System::Windows::Forms::Button());
-			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->ButtonNewFile = (gcnew System::Windows::Forms::Button());
+			this->Icons32 = (gcnew System::Windows::Forms::ImageList(this->components));
+			this->GroupInputStream = (gcnew System::Windows::Forms::GroupBox());
+			this->ComboInputStreamSamplerate = (gcnew System::Windows::Forms::ComboBox());
+			this->ComboInputStreamSource = (gcnew System::Windows::Forms::ComboBox());
+			this->StaticLabelInputStreamSamplerate = (gcnew System::Windows::Forms::Label());
+			this->ButtonInputStreamStart = (gcnew System::Windows::Forms::Button());
+			this->StaticLabelInputStreamSource = (gcnew System::Windows::Forms::Label());
+			this->ButtonOpenFile = (gcnew System::Windows::Forms::Button());
+			this->ButtonSaveFile = (gcnew System::Windows::Forms::Button());
+			this->GroupInputFile = (gcnew System::Windows::Forms::GroupBox());
+			this->StaticLabelInputFileTime = (gcnew System::Windows::Forms::Label());
+			this->SeekbarInputFile = (gcnew System::Windows::Forms::TrackBar());
+			this->ButtonInputFileBrowse = (gcnew System::Windows::Forms::Button());
+			this->TextboxInputFilePath = (gcnew System::Windows::Forms::TextBox());
+			this->ButtonInputFileStart = (gcnew System::Windows::Forms::Button());
+			this->StaticLabelInputFileSource = (gcnew System::Windows::Forms::Label());
+			this->GroupOutputFile = (gcnew System::Windows::Forms::GroupBox());
+			this->ComboOutputFileFormat = (gcnew System::Windows::Forms::ComboBox());
+			this->ButtonOutputFileBrowse = (gcnew System::Windows::Forms::Button());
+			this->StaticLabelOutputFileFormat = (gcnew System::Windows::Forms::Label());
+			this->TextboxOutputFilePath = (gcnew System::Windows::Forms::TextBox());
+			this->ButtonOutputFileStart = (gcnew System::Windows::Forms::Button());
+			this->StaticLabelOutputFileSource = (gcnew System::Windows::Forms::Label());
+			this->GroupOutputStream = (gcnew System::Windows::Forms::GroupBox());
+			this->ComboOutputStreamSamplerate = (gcnew System::Windows::Forms::ComboBox());
+			this->ComboOutputStreamSource = (gcnew System::Windows::Forms::ComboBox());
+			this->StaticLabelOutputStreamSamplerate = (gcnew System::Windows::Forms::Label());
+			this->ButtonOutputStreamStart = (gcnew System::Windows::Forms::Button());
+			this->StaticLabelOutputStreamSource = (gcnew System::Windows::Forms::Label());
 			this->rackItem8 = (gcnew RackControls::RackItem());
 			this->rackItem7 = (gcnew RackControls::RackItem());
 			this->rackItem6 = (gcnew RackControls::RackItem());
@@ -141,362 +138,344 @@ namespace AudioAnalyser {
 			this->rackItem4 = (gcnew RackControls::RackItem());
 			this->rackItem3 = (gcnew RackControls::RackItem());
 			this->rackItem2 = (gcnew RackControls::RackItem());
-			this->groupBox1->SuspendLayout();
-			this->groupBox2->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
-			this->groupBox3->SuspendLayout();
-			this->groupBox4->SuspendLayout();
+			this->GroupInputStream->SuspendLayout();
+			this->GroupInputFile->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->BeginInit();
+			this->GroupOutputFile->SuspendLayout();
+			this->GroupOutputStream->SuspendLayout();
 			this->SuspendLayout();
 			// 
-			// imageList1
+			// ButtonNewFile
 			// 
-			this->imageList1->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"imageList1.ImageStream")));
-			this->imageList1->TransparentColor = System::Drawing::Color::Transparent;
-			this->imageList1->Images->SetKeyName(0, L"appbar.arrow.corner.up.right.png");
-			this->imageList1->Images->SetKeyName(1, L"appbar.arrow.down.png");
-			this->imageList1->Images->SetKeyName(2, L"appbar.arrow.up.png");
-			this->imageList1->Images->SetKeyName(3, L"appbar.cell.down.png");
-			this->imageList1->Images->SetKeyName(4, L"appbar.cog.png");
-			this->imageList1->Images->SetKeyName(5, L"appbar.control.pause.png");
-			this->imageList1->Images->SetKeyName(6, L"appbar.control.play.live.png");
-			this->imageList1->Images->SetKeyName(7, L"appbar.control.play.png");
-			this->imageList1->Images->SetKeyName(8, L"appbar.control.stop.png");
-			this->imageList1->Images->SetKeyName(9, L"appbar.draw.pixel.fill.grid.png");
-			this->imageList1->Images->SetKeyName(10, L"appbar.folder.open.png");
-			this->imageList1->Images->SetKeyName(11, L"appbar.page.new.png");
-			this->imageList1->Images->SetKeyName(12, L"appbar.save.png");
-			this->imageList1->Images->SetKeyName(13, L"appbar.sound.3.png");
-			this->imageList1->Images->SetKeyName(14, L"appbar.sound.mute.png");
-			// 
-			// button2
-			// 
-			this->button2->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->ButtonNewFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonNewFile->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->button2->ImageIndex = 0;
-			this->button2->ImageList = this->imageList2;
-			this->button2->Location = System::Drawing::Point(12, 12);
-			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(40, 40);
-			this->button2->TabIndex = 3;
-			this->button2->UseVisualStyleBackColor = true;
+			this->ButtonNewFile->ImageIndex = 0;
+			this->ButtonNewFile->ImageList = this->Icons32;
+			this->ButtonNewFile->Location = System::Drawing::Point(12, 12);
+			this->ButtonNewFile->Name = L"ButtonNewFile";
+			this->ButtonNewFile->Size = System::Drawing::Size(40, 40);
+			this->ButtonNewFile->TabIndex = 3;
+			this->ButtonNewFile->UseVisualStyleBackColor = true;
 			// 
-			// imageList2
+			// Icons32
 			// 
-			this->imageList2->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"imageList2.ImageStream")));
-			this->imageList2->TransparentColor = System::Drawing::Color::Transparent;
-			this->imageList2->Images->SetKeyName(0, L"Icons-01.png");
-			this->imageList2->Images->SetKeyName(1, L"Icons-03.png");
-			this->imageList2->Images->SetKeyName(2, L"Icons-05.png");
-			this->imageList2->Images->SetKeyName(3, L"Icons-04.png");
-			this->imageList2->Images->SetKeyName(4, L"Icons-07.png");
-			this->imageList2->Images->SetKeyName(5, L"Icons-08.png");
-			this->imageList2->Images->SetKeyName(6, L"Icons-15.png");
-			this->imageList2->Images->SetKeyName(7, L"Icons-16.png");
-			this->imageList2->Images->SetKeyName(8, L"Icons-17.png");
+			this->Icons32->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"Icons32.ImageStream")));
+			this->Icons32->TransparentColor = System::Drawing::Color::Transparent;
+			this->Icons32->Images->SetKeyName(0, L"Icons-01.png");
+			this->Icons32->Images->SetKeyName(1, L"Icons-03.png");
+			this->Icons32->Images->SetKeyName(2, L"Icons-05.png");
+			this->Icons32->Images->SetKeyName(3, L"Icons-04.png");
+			this->Icons32->Images->SetKeyName(4, L"Icons-07.png");
+			this->Icons32->Images->SetKeyName(5, L"Icons-08.png");
+			this->Icons32->Images->SetKeyName(6, L"Icons-15.png");
+			this->Icons32->Images->SetKeyName(7, L"Icons-16.png");
+			this->Icons32->Images->SetKeyName(8, L"Icons-17.png");
 			// 
-			// groupBox1
+			// GroupInputStream
 			// 
-			this->groupBox1->Controls->Add(this->comboBox2);
-			this->groupBox1->Controls->Add(this->comboBox1);
-			this->groupBox1->Controls->Add(this->label2);
-			this->groupBox1->Controls->Add(this->button4);
-			this->groupBox1->Controls->Add(this->label1);
-			this->groupBox1->Location = System::Drawing::Point(12, 58);
-			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(317, 86);
-			this->groupBox1->TabIndex = 8;
-			this->groupBox1->TabStop = false;
-			this->groupBox1->Text = L"Input (stream)";
+			this->GroupInputStream->Controls->Add(this->ComboInputStreamSamplerate);
+			this->GroupInputStream->Controls->Add(this->ComboInputStreamSource);
+			this->GroupInputStream->Controls->Add(this->StaticLabelInputStreamSamplerate);
+			this->GroupInputStream->Controls->Add(this->ButtonInputStreamStart);
+			this->GroupInputStream->Controls->Add(this->StaticLabelInputStreamSource);
+			this->GroupInputStream->Location = System::Drawing::Point(12, 58);
+			this->GroupInputStream->Name = L"GroupInputStream";
+			this->GroupInputStream->Size = System::Drawing::Size(317, 86);
+			this->GroupInputStream->TabIndex = 8;
+			this->GroupInputStream->TabStop = false;
+			this->GroupInputStream->Text = L"Input (stream)";
 			// 
-			// comboBox2
+			// ComboInputStreamSamplerate
 			// 
-			this->comboBox2->FormattingEnabled = true;
-			this->comboBox2->Location = System::Drawing::Point(92, 48);
-			this->comboBox2->Name = L"comboBox2";
-			this->comboBox2->Size = System::Drawing::Size(165, 21);
-			this->comboBox2->TabIndex = 3;
+			this->ComboInputStreamSamplerate->FormattingEnabled = true;
+			this->ComboInputStreamSamplerate->Location = System::Drawing::Point(92, 48);
+			this->ComboInputStreamSamplerate->Name = L"ComboInputStreamSamplerate";
+			this->ComboInputStreamSamplerate->Size = System::Drawing::Size(165, 21);
+			this->ComboInputStreamSamplerate->TabIndex = 3;
 			// 
-			// comboBox1
+			// ComboInputStreamSource
 			// 
-			this->comboBox1->FormattingEnabled = true;
-			this->comboBox1->Location = System::Drawing::Point(92, 23);
-			this->comboBox1->Name = L"comboBox1";
-			this->comboBox1->Size = System::Drawing::Size(165, 21);
-			this->comboBox1->TabIndex = 2;
+			this->ComboInputStreamSource->FormattingEnabled = true;
+			this->ComboInputStreamSource->Location = System::Drawing::Point(92, 23);
+			this->ComboInputStreamSource->Name = L"ComboInputStreamSource";
+			this->ComboInputStreamSource->Size = System::Drawing::Size(165, 21);
+			this->ComboInputStreamSource->TabIndex = 2;
 			// 
-			// label2
+			// StaticLabelInputStreamSamplerate
 			// 
-			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(6, 51);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(63, 13);
-			this->label2->TabIndex = 1;
-			this->label2->Text = L"Sample rate";
+			this->StaticLabelInputStreamSamplerate->AutoSize = true;
+			this->StaticLabelInputStreamSamplerate->Location = System::Drawing::Point(6, 51);
+			this->StaticLabelInputStreamSamplerate->Name = L"StaticLabelInputStreamSamplerate";
+			this->StaticLabelInputStreamSamplerate->Size = System::Drawing::Size(63, 13);
+			this->StaticLabelInputStreamSamplerate->TabIndex = 1;
+			this->StaticLabelInputStreamSamplerate->Text = L"Sample rate";
 			// 
-			// button4
+			// ButtonInputStreamStart
 			// 
-			this->button4->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->ButtonInputStreamStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputStreamStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonInputStreamStart->ImageIndex = 3;
+			this->ButtonInputStreamStart->ImageList = this->Icons32;
+			this->ButtonInputStreamStart->Location = System::Drawing::Point(263, 23);
+			this->ButtonInputStreamStart->Name = L"ButtonInputStreamStart";
+			this->ButtonInputStreamStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonInputStreamStart->TabIndex = 11;
+			this->ButtonInputStreamStart->UseVisualStyleBackColor = true;
+			// 
+			// StaticLabelInputStreamSource
+			// 
+			this->StaticLabelInputStreamSource->AutoSize = true;
+			this->StaticLabelInputStreamSource->Location = System::Drawing::Point(6, 26);
+			this->StaticLabelInputStreamSource->Name = L"StaticLabelInputStreamSource";
+			this->StaticLabelInputStreamSource->Size = System::Drawing::Size(75, 13);
+			this->StaticLabelInputStreamSource->TabIndex = 0;
+			this->StaticLabelInputStreamSource->Text = L"Stream source";
+			// 
+			// ButtonOpenFile
+			// 
+			this->ButtonOpenFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOpenFile->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->button4->ImageIndex = 3;
-			this->button4->ImageList = this->imageList2;
-			this->button4->Location = System::Drawing::Point(263, 23);
-			this->button4->Name = L"button4";
-			this->button4->Size = System::Drawing::Size(48, 46);
-			this->button4->TabIndex = 11;
-			this->button4->UseVisualStyleBackColor = true;
+			this->ButtonOpenFile->ImageIndex = 1;
+			this->ButtonOpenFile->ImageList = this->Icons32;
+			this->ButtonOpenFile->Location = System::Drawing::Point(58, 12);
+			this->ButtonOpenFile->Name = L"ButtonOpenFile";
+			this->ButtonOpenFile->Size = System::Drawing::Size(40, 40);
+			this->ButtonOpenFile->TabIndex = 9;
+			this->ButtonOpenFile->UseVisualStyleBackColor = true;
 			// 
-			// label1
+			// ButtonSaveFile
 			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(6, 26);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(75, 13);
-			this->label1->TabIndex = 0;
-			this->label1->Text = L"Stream source";
-			// 
-			// button1
-			// 
-			this->button1->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->ButtonSaveFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonSaveFile->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->button1->ImageIndex = 1;
-			this->button1->ImageList = this->imageList2;
-			this->button1->Location = System::Drawing::Point(58, 12);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(40, 40);
-			this->button1->TabIndex = 9;
-			this->button1->UseVisualStyleBackColor = true;
+			this->ButtonSaveFile->ImageIndex = 2;
+			this->ButtonSaveFile->ImageList = this->Icons32;
+			this->ButtonSaveFile->Location = System::Drawing::Point(104, 12);
+			this->ButtonSaveFile->Name = L"ButtonSaveFile";
+			this->ButtonSaveFile->Size = System::Drawing::Size(40, 40);
+			this->ButtonSaveFile->TabIndex = 10;
+			this->ButtonSaveFile->UseVisualStyleBackColor = true;
 			// 
-			// button3
+			// GroupInputFile
 			// 
-			this->button3->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->GroupInputFile->Controls->Add(this->StaticLabelInputFileTime);
+			this->GroupInputFile->Controls->Add(this->SeekbarInputFile);
+			this->GroupInputFile->Controls->Add(this->ButtonInputFileBrowse);
+			this->GroupInputFile->Controls->Add(this->TextboxInputFilePath);
+			this->GroupInputFile->Controls->Add(this->ButtonInputFileStart);
+			this->GroupInputFile->Controls->Add(this->StaticLabelInputFileSource);
+			this->GroupInputFile->Location = System::Drawing::Point(12, 150);
+			this->GroupInputFile->Name = L"GroupInputFile";
+			this->GroupInputFile->Size = System::Drawing::Size(317, 100);
+			this->GroupInputFile->TabIndex = 12;
+			this->GroupInputFile->TabStop = false;
+			this->GroupInputFile->Text = L"Input (file)";
+			// 
+			// StaticLabelInputFileTime
+			// 
+			this->StaticLabelInputFileTime->Location = System::Drawing::Point(263, 72);
+			this->StaticLabelInputFileTime->Name = L"StaticLabelInputFileTime";
+			this->StaticLabelInputFileTime->Size = System::Drawing::Size(48, 22);
+			this->StaticLabelInputFileTime->TabIndex = 12;
+			this->StaticLabelInputFileTime->Text = L"00:00";
+			this->StaticLabelInputFileTime->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			// 
+			// SeekbarInputFile
+			// 
+			this->SeekbarInputFile->Location = System::Drawing::Point(9, 49);
+			this->SeekbarInputFile->Name = L"SeekbarInputFile";
+			this->SeekbarInputFile->Size = System::Drawing::Size(248, 45);
+			this->SeekbarInputFile->TabIndex = 15;
+			// 
+			// ButtonInputFileBrowse
+			// 
+			this->ButtonInputFileBrowse->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputFileBrowse->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->button3->ImageIndex = 2;
-			this->button3->ImageList = this->imageList2;
-			this->button3->Location = System::Drawing::Point(104, 12);
-			this->button3->Name = L"button3";
-			this->button3->Size = System::Drawing::Size(40, 40);
-			this->button3->TabIndex = 10;
-			this->button3->UseVisualStyleBackColor = true;
+			this->ButtonInputFileBrowse->ImageIndex = 6;
+			this->ButtonInputFileBrowse->Location = System::Drawing::Point(227, 23);
+			this->ButtonInputFileBrowse->Margin = System::Windows::Forms::Padding(0);
+			this->ButtonInputFileBrowse->Name = L"ButtonInputFileBrowse";
+			this->ButtonInputFileBrowse->Size = System::Drawing::Size(30, 20);
+			this->ButtonInputFileBrowse->TabIndex = 16;
+			this->ButtonInputFileBrowse->Text = L"...";
+			this->ButtonInputFileBrowse->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->ButtonInputFileBrowse->UseVisualStyleBackColor = true;
 			// 
-			// groupBox2
+			// TextboxInputFilePath
 			// 
-			this->groupBox2->Controls->Add(this->label3);
-			this->groupBox2->Controls->Add(this->trackBar1);
-			this->groupBox2->Controls->Add(this->button9);
-			this->groupBox2->Controls->Add(this->textBox1);
-			this->groupBox2->Controls->Add(this->button8);
-			this->groupBox2->Controls->Add(this->label4);
-			this->groupBox2->Location = System::Drawing::Point(12, 150);
-			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(317, 100);
-			this->groupBox2->TabIndex = 12;
-			this->groupBox2->TabStop = false;
-			this->groupBox2->Text = L"Input (file)";
+			this->TextboxInputFilePath->CausesValidation = false;
+			this->TextboxInputFilePath->Location = System::Drawing::Point(92, 23);
+			this->TextboxInputFilePath->Name = L"TextboxInputFilePath";
+			this->TextboxInputFilePath->Size = System::Drawing::Size(132, 20);
+			this->TextboxInputFilePath->TabIndex = 16;
 			// 
-			// label3
+			// ButtonInputFileStart
 			// 
-			this->label3->Location = System::Drawing::Point(263, 72);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(48, 22);
-			this->label3->TabIndex = 12;
-			this->label3->Text = L"00:00";
-			this->label3->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->ButtonInputFileStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputFileStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonInputFileStart->ImageIndex = 4;
+			this->ButtonInputFileStart->ImageList = this->Icons32;
+			this->ButtonInputFileStart->Location = System::Drawing::Point(263, 23);
+			this->ButtonInputFileStart->Name = L"ButtonInputFileStart";
+			this->ButtonInputFileStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonInputFileStart->TabIndex = 11;
+			this->ButtonInputFileStart->UseVisualStyleBackColor = true;
 			// 
-			// trackBar1
+			// StaticLabelInputFileSource
 			// 
-			this->trackBar1->Location = System::Drawing::Point(9, 49);
-			this->trackBar1->Name = L"trackBar1";
-			this->trackBar1->Size = System::Drawing::Size(248, 45);
-			this->trackBar1->TabIndex = 15;
+			this->StaticLabelInputFileSource->AutoSize = true;
+			this->StaticLabelInputFileSource->Location = System::Drawing::Point(6, 26);
+			this->StaticLabelInputFileSource->Name = L"StaticLabelInputFileSource";
+			this->StaticLabelInputFileSource->Size = System::Drawing::Size(58, 13);
+			this->StaticLabelInputFileSource->TabIndex = 0;
+			this->StaticLabelInputFileSource->Text = L"File source";
 			// 
-			// button9
+			// GroupOutputFile
 			// 
-			this->button9->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			this->GroupOutputFile->Controls->Add(this->ComboOutputFileFormat);
+			this->GroupOutputFile->Controls->Add(this->ButtonOutputFileBrowse);
+			this->GroupOutputFile->Controls->Add(this->StaticLabelOutputFileFormat);
+			this->GroupOutputFile->Controls->Add(this->TextboxOutputFilePath);
+			this->GroupOutputFile->Controls->Add(this->ButtonOutputFileStart);
+			this->GroupOutputFile->Controls->Add(this->StaticLabelOutputFileSource);
+			this->GroupOutputFile->Location = System::Drawing::Point(12, 348);
+			this->GroupOutputFile->Name = L"GroupOutputFile";
+			this->GroupOutputFile->Size = System::Drawing::Size(317, 85);
+			this->GroupOutputFile->TabIndex = 14;
+			this->GroupOutputFile->TabStop = false;
+			this->GroupOutputFile->Text = L"Output (file)";
+			// 
+			// ComboOutputFileFormat
+			// 
+			this->ComboOutputFileFormat->FormattingEnabled = true;
+			this->ComboOutputFileFormat->Location = System::Drawing::Point(92, 48);
+			this->ComboOutputFileFormat->Name = L"ComboOutputFileFormat";
+			this->ComboOutputFileFormat->Size = System::Drawing::Size(165, 21);
+			this->ComboOutputFileFormat->TabIndex = 13;
+			// 
+			// ButtonOutputFileBrowse
+			// 
+			this->ButtonOutputFileBrowse->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOutputFileBrowse->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->button9->ImageIndex = 6;
-			this->button9->Location = System::Drawing::Point(227, 23);
-			this->button9->Margin = System::Windows::Forms::Padding(0);
-			this->button9->Name = L"button9";
-			this->button9->Size = System::Drawing::Size(30, 20);
-			this->button9->TabIndex = 16;
-			this->button9->Text = L"...";
-			this->button9->TextAlign = System::Drawing::ContentAlignment::TopCenter;
-			this->button9->UseVisualStyleBackColor = true;
+			this->ButtonOutputFileBrowse->ImageIndex = 6;
+			this->ButtonOutputFileBrowse->Location = System::Drawing::Point(227, 23);
+			this->ButtonOutputFileBrowse->Margin = System::Windows::Forms::Padding(0);
+			this->ButtonOutputFileBrowse->Name = L"ButtonOutputFileBrowse";
+			this->ButtonOutputFileBrowse->Size = System::Drawing::Size(30, 20);
+			this->ButtonOutputFileBrowse->TabIndex = 16;
+			this->ButtonOutputFileBrowse->Text = L"...";
+			this->ButtonOutputFileBrowse->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->ButtonOutputFileBrowse->UseVisualStyleBackColor = true;
 			// 
-			// textBox1
+			// StaticLabelOutputFileFormat
 			// 
-			this->textBox1->Location = System::Drawing::Point(92, 23);
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(132, 20);
-			this->textBox1->TabIndex = 16;
+			this->StaticLabelOutputFileFormat->AutoSize = true;
+			this->StaticLabelOutputFileFormat->Location = System::Drawing::Point(6, 51);
+			this->StaticLabelOutputFileFormat->Name = L"StaticLabelOutputFileFormat";
+			this->StaticLabelOutputFileFormat->Size = System::Drawing::Size(55, 13);
+			this->StaticLabelOutputFileFormat->TabIndex = 12;
+			this->StaticLabelOutputFileFormat->Text = L"File format";
 			// 
-			// button8
+			// TextboxOutputFilePath
 			// 
-			this->button8->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
-			this->button8->ImageIndex = 4;
-			this->button8->ImageList = this->imageList2;
-			this->button8->Location = System::Drawing::Point(263, 23);
-			this->button8->Name = L"button8";
-			this->button8->Size = System::Drawing::Size(48, 46);
-			this->button8->TabIndex = 11;
-			this->button8->UseVisualStyleBackColor = true;
+			this->TextboxOutputFilePath->Location = System::Drawing::Point(92, 23);
+			this->TextboxOutputFilePath->Name = L"TextboxOutputFilePath";
+			this->TextboxOutputFilePath->Size = System::Drawing::Size(132, 20);
+			this->TextboxOutputFilePath->TabIndex = 16;
 			// 
-			// label4
+			// ButtonOutputFileStart
 			// 
-			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(6, 26);
-			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(75, 13);
-			this->label4->TabIndex = 0;
-			this->label4->Text = L"Stream source";
+			this->ButtonOutputFileStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOutputFileStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonOutputFileStart->ImageIndex = 6;
+			this->ButtonOutputFileStart->ImageList = this->Icons32;
+			this->ButtonOutputFileStart->Location = System::Drawing::Point(263, 23);
+			this->ButtonOutputFileStart->Name = L"ButtonOutputFileStart";
+			this->ButtonOutputFileStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonOutputFileStart->TabIndex = 11;
+			this->ButtonOutputFileStart->UseVisualStyleBackColor = true;
 			// 
-			// groupBox3
+			// StaticLabelOutputFileSource
 			// 
-			this->groupBox3->Controls->Add(this->comboBox5);
-			this->groupBox3->Controls->Add(this->button10);
-			this->groupBox3->Controls->Add(this->label5);
-			this->groupBox3->Controls->Add(this->textBox2);
-			this->groupBox3->Controls->Add(this->button11);
-			this->groupBox3->Controls->Add(this->label6);
-			this->groupBox3->Location = System::Drawing::Point(12, 348);
-			this->groupBox3->Name = L"groupBox3";
-			this->groupBox3->Size = System::Drawing::Size(317, 85);
-			this->groupBox3->TabIndex = 14;
-			this->groupBox3->TabStop = false;
-			this->groupBox3->Text = L"Output (file)";
+			this->StaticLabelOutputFileSource->AutoSize = true;
+			this->StaticLabelOutputFileSource->Location = System::Drawing::Point(6, 26);
+			this->StaticLabelOutputFileSource->Name = L"StaticLabelOutputFileSource";
+			this->StaticLabelOutputFileSource->Size = System::Drawing::Size(54, 13);
+			this->StaticLabelOutputFileSource->TabIndex = 0;
+			this->StaticLabelOutputFileSource->Text = L"Target file";
 			// 
-			// comboBox5
+			// GroupOutputStream
 			// 
-			this->comboBox5->FormattingEnabled = true;
-			this->comboBox5->Location = System::Drawing::Point(92, 48);
-			this->comboBox5->Name = L"comboBox5";
-			this->comboBox5->Size = System::Drawing::Size(165, 21);
-			this->comboBox5->TabIndex = 13;
+			this->GroupOutputStream->Controls->Add(this->ComboOutputStreamSamplerate);
+			this->GroupOutputStream->Controls->Add(this->ComboOutputStreamSource);
+			this->GroupOutputStream->Controls->Add(this->StaticLabelOutputStreamSamplerate);
+			this->GroupOutputStream->Controls->Add(this->ButtonOutputStreamStart);
+			this->GroupOutputStream->Controls->Add(this->StaticLabelOutputStreamSource);
+			this->GroupOutputStream->Location = System::Drawing::Point(12, 256);
+			this->GroupOutputStream->Name = L"GroupOutputStream";
+			this->GroupOutputStream->Size = System::Drawing::Size(317, 86);
+			this->GroupOutputStream->TabIndex = 13;
+			this->GroupOutputStream->TabStop = false;
+			this->GroupOutputStream->Text = L"Output (stream)";
 			// 
-			// button10
+			// ComboOutputStreamSamplerate
 			// 
-			this->button10->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button10->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
-			this->button10->ImageIndex = 6;
-			this->button10->Location = System::Drawing::Point(227, 23);
-			this->button10->Margin = System::Windows::Forms::Padding(0);
-			this->button10->Name = L"button10";
-			this->button10->Size = System::Drawing::Size(30, 20);
-			this->button10->TabIndex = 16;
-			this->button10->Text = L"...";
-			this->button10->TextAlign = System::Drawing::ContentAlignment::TopCenter;
-			this->button10->UseVisualStyleBackColor = true;
+			this->ComboOutputStreamSamplerate->FormattingEnabled = true;
+			this->ComboOutputStreamSamplerate->Location = System::Drawing::Point(92, 48);
+			this->ComboOutputStreamSamplerate->Name = L"ComboOutputStreamSamplerate";
+			this->ComboOutputStreamSamplerate->Size = System::Drawing::Size(165, 21);
+			this->ComboOutputStreamSamplerate->TabIndex = 3;
 			// 
-			// label5
+			// ComboOutputStreamSource
 			// 
-			this->label5->AutoSize = true;
-			this->label5->Location = System::Drawing::Point(6, 51);
-			this->label5->Name = L"label5";
-			this->label5->Size = System::Drawing::Size(63, 13);
-			this->label5->TabIndex = 12;
-			this->label5->Text = L"Sample rate";
+			this->ComboOutputStreamSource->FormattingEnabled = true;
+			this->ComboOutputStreamSource->Location = System::Drawing::Point(92, 23);
+			this->ComboOutputStreamSource->Name = L"ComboOutputStreamSource";
+			this->ComboOutputStreamSource->Size = System::Drawing::Size(165, 21);
+			this->ComboOutputStreamSource->TabIndex = 2;
 			// 
-			// textBox2
+			// StaticLabelOutputStreamSamplerate
 			// 
-			this->textBox2->Location = System::Drawing::Point(92, 23);
-			this->textBox2->Name = L"textBox2";
-			this->textBox2->Size = System::Drawing::Size(132, 20);
-			this->textBox2->TabIndex = 16;
+			this->StaticLabelOutputStreamSamplerate->AutoSize = true;
+			this->StaticLabelOutputStreamSamplerate->Location = System::Drawing::Point(6, 51);
+			this->StaticLabelOutputStreamSamplerate->Name = L"StaticLabelOutputStreamSamplerate";
+			this->StaticLabelOutputStreamSamplerate->Size = System::Drawing::Size(63, 13);
+			this->StaticLabelOutputStreamSamplerate->TabIndex = 1;
+			this->StaticLabelOutputStreamSamplerate->Text = L"Sample rate";
 			// 
-			// button11
+			// ButtonOutputStreamStart
 			// 
-			this->button11->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button11->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
-			this->button11->ImageIndex = 6;
-			this->button11->ImageList = this->imageList2;
-			this->button11->Location = System::Drawing::Point(263, 23);
-			this->button11->Name = L"button11";
-			this->button11->Size = System::Drawing::Size(48, 46);
-			this->button11->TabIndex = 11;
-			this->button11->UseVisualStyleBackColor = true;
+			this->ButtonOutputStreamStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOutputStreamStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonOutputStreamStart->ImageIndex = 8;
+			this->ButtonOutputStreamStart->ImageList = this->Icons32;
+			this->ButtonOutputStreamStart->Location = System::Drawing::Point(263, 23);
+			this->ButtonOutputStreamStart->Name = L"ButtonOutputStreamStart";
+			this->ButtonOutputStreamStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonOutputStreamStart->TabIndex = 11;
+			this->ButtonOutputStreamStart->UseVisualStyleBackColor = true;
 			// 
-			// label6
+			// StaticLabelOutputStreamSource
 			// 
-			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(6, 26);
-			this->label6->Name = L"label6";
-			this->label6->Size = System::Drawing::Size(75, 13);
-			this->label6->TabIndex = 0;
-			this->label6->Text = L"Stream source";
-			// 
-			// groupBox4
-			// 
-			this->groupBox4->Controls->Add(this->comboBox3);
-			this->groupBox4->Controls->Add(this->comboBox4);
-			this->groupBox4->Controls->Add(this->label7);
-			this->groupBox4->Controls->Add(this->button12);
-			this->groupBox4->Controls->Add(this->label8);
-			this->groupBox4->Location = System::Drawing::Point(12, 256);
-			this->groupBox4->Name = L"groupBox4";
-			this->groupBox4->Size = System::Drawing::Size(317, 86);
-			this->groupBox4->TabIndex = 13;
-			this->groupBox4->TabStop = false;
-			this->groupBox4->Text = L"Output (stream)";
-			// 
-			// comboBox3
-			// 
-			this->comboBox3->FormattingEnabled = true;
-			this->comboBox3->Location = System::Drawing::Point(92, 48);
-			this->comboBox3->Name = L"comboBox3";
-			this->comboBox3->Size = System::Drawing::Size(165, 21);
-			this->comboBox3->TabIndex = 3;
-			// 
-			// comboBox4
-			// 
-			this->comboBox4->FormattingEnabled = true;
-			this->comboBox4->Location = System::Drawing::Point(92, 23);
-			this->comboBox4->Name = L"comboBox4";
-			this->comboBox4->Size = System::Drawing::Size(165, 21);
-			this->comboBox4->TabIndex = 2;
-			// 
-			// label7
-			// 
-			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(6, 51);
-			this->label7->Name = L"label7";
-			this->label7->Size = System::Drawing::Size(63, 13);
-			this->label7->TabIndex = 1;
-			this->label7->Text = L"Sample rate";
-			// 
-			// button12
-			// 
-			this->button12->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
-			this->button12->ImageIndex = 8;
-			this->button12->ImageList = this->imageList2;
-			this->button12->Location = System::Drawing::Point(263, 23);
-			this->button12->Name = L"button12";
-			this->button12->Size = System::Drawing::Size(48, 46);
-			this->button12->TabIndex = 11;
-			this->button12->UseVisualStyleBackColor = true;
-			// 
-			// label8
-			// 
-			this->label8->AutoSize = true;
-			this->label8->Location = System::Drawing::Point(6, 26);
-			this->label8->Name = L"label8";
-			this->label8->Size = System::Drawing::Size(73, 13);
-			this->label8->TabIndex = 0;
-			this->label8->Text = L"Target source";
+			this->StaticLabelOutputStreamSource->AutoSize = true;
+			this->StaticLabelOutputStreamSource->Location = System::Drawing::Point(6, 26);
+			this->StaticLabelOutputStreamSource->Name = L"StaticLabelOutputStreamSource";
+			this->StaticLabelOutputStreamSource->Size = System::Drawing::Size(73, 13);
+			this->StaticLabelOutputStreamSource->TabIndex = 0;
+			this->StaticLabelOutputStreamSource->Text = L"Target source";
 			// 
 			// rackItem8
 			// 
 			this->rackItem8->Location = System::Drawing::Point(352, 372);
+			this->rackItem8->MixVolume = 0;
 			this->rackItem8->Name = L"rackItem8";
 			this->rackItem8->RackItemId = 0;
 			this->rackItem8->Size = System::Drawing::Size(407, 61);
@@ -505,6 +484,7 @@ namespace AudioAnalyser {
 			// rackItem7
 			// 
 			this->rackItem7->Location = System::Drawing::Point(352, 311);
+			this->rackItem7->MixVolume = 0;
 			this->rackItem7->Name = L"rackItem7";
 			this->rackItem7->RackItemId = 0;
 			this->rackItem7->Size = System::Drawing::Size(407, 61);
@@ -513,6 +493,7 @@ namespace AudioAnalyser {
 			// rackItem6
 			// 
 			this->rackItem6->Location = System::Drawing::Point(352, 250);
+			this->rackItem6->MixVolume = 0;
 			this->rackItem6->Name = L"rackItem6";
 			this->rackItem6->RackItemId = 0;
 			this->rackItem6->Size = System::Drawing::Size(407, 61);
@@ -521,6 +502,7 @@ namespace AudioAnalyser {
 			// rackItem5
 			// 
 			this->rackItem5->Location = System::Drawing::Point(352, 189);
+			this->rackItem5->MixVolume = 0;
 			this->rackItem5->Name = L"rackItem5";
 			this->rackItem5->RackItemId = 0;
 			this->rackItem5->Size = System::Drawing::Size(407, 61);
@@ -529,6 +511,7 @@ namespace AudioAnalyser {
 			// rackItem4
 			// 
 			this->rackItem4->Location = System::Drawing::Point(352, 128);
+			this->rackItem4->MixVolume = 0;
 			this->rackItem4->Name = L"rackItem4";
 			this->rackItem4->RackItemId = 0;
 			this->rackItem4->Size = System::Drawing::Size(407, 61);
@@ -537,6 +520,7 @@ namespace AudioAnalyser {
 			// rackItem3
 			// 
 			this->rackItem3->Location = System::Drawing::Point(352, 67);
+			this->rackItem3->MixVolume = 0;
 			this->rackItem3->Name = L"rackItem3";
 			this->rackItem3->RackItemId = 0;
 			this->rackItem3->Size = System::Drawing::Size(407, 61);
@@ -545,6 +529,7 @@ namespace AudioAnalyser {
 			// rackItem2
 			// 
 			this->rackItem2->Location = System::Drawing::Point(352, 6);
+			this->rackItem2->MixVolume = 0;
 			this->rackItem2->Name = L"rackItem2";
 			this->rackItem2->RackItemId = 0;
 			this->rackItem2->Size = System::Drawing::Size(407, 61);
@@ -562,24 +547,24 @@ namespace AudioAnalyser {
 			this->Controls->Add(this->rackItem4);
 			this->Controls->Add(this->rackItem3);
 			this->Controls->Add(this->rackItem2);
-			this->Controls->Add(this->groupBox3);
-			this->Controls->Add(this->groupBox2);
-			this->Controls->Add(this->groupBox4);
-			this->Controls->Add(this->button3);
-			this->Controls->Add(this->button1);
-			this->Controls->Add(this->groupBox1);
-			this->Controls->Add(this->button2);
+			this->Controls->Add(this->GroupOutputFile);
+			this->Controls->Add(this->GroupInputFile);
+			this->Controls->Add(this->GroupOutputStream);
+			this->Controls->Add(this->ButtonSaveFile);
+			this->Controls->Add(this->ButtonOpenFile);
+			this->Controls->Add(this->GroupInputStream);
+			this->Controls->Add(this->ButtonNewFile);
 			this->Name = L"MainWindow";
-			this->Text = L"32;32";
-			this->groupBox1->ResumeLayout(false);
-			this->groupBox1->PerformLayout();
-			this->groupBox2->ResumeLayout(false);
-			this->groupBox2->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->EndInit();
-			this->groupBox3->ResumeLayout(false);
-			this->groupBox3->PerformLayout();
-			this->groupBox4->ResumeLayout(false);
-			this->groupBox4->PerformLayout();
+			this->Text = L"Audio Analyser";
+			this->GroupInputStream->ResumeLayout(false);
+			this->GroupInputStream->PerformLayout();
+			this->GroupInputFile->ResumeLayout(false);
+			this->GroupInputFile->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->EndInit();
+			this->GroupOutputFile->ResumeLayout(false);
+			this->GroupOutputFile->PerformLayout();
+			this->GroupOutputStream->ResumeLayout(false);
+			this->GroupOutputStream->PerformLayout();
 			this->ResumeLayout(false);
 
 		}

@@ -96,7 +96,7 @@
       <CompileAsManaged>true</CompileAsManaged>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-system-d.lib;sfml-main-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Debug\sfml-graphics-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-window-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-audio-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-system-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-main-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\sfml\lib\Debug\*;$(ProjectDir)..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
