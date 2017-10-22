@@ -59,27 +59,52 @@ namespace RackControls {
 
 
 	private: System::Windows::Forms::Button^  ButtonFlipUp;
+	private: System::Windows::Forms::ImageList^  Images41by16;
+	private: System::Windows::Forms::ImageList^  Images16by16;
 
-	private: System::Windows::Forms::ImageList^  imageList2;
-	private: System::Windows::Forms::ImageList^  imageList1;
+
+
 	private: System::Windows::Forms::ContextMenuStrip^  PluginList;
-	private: System::Windows::Forms::ToolStripTextBox^  TextboxGen;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem1;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem2;
-	private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator1;
-	private: System::Windows::Forms::ToolStripTextBox^  toolStripTextBox1;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem3;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem4;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem9;
-	private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator2;
-	private: System::Windows::Forms::ToolStripTextBox^  toolStripTextBox2;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem5;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem6;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem7;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem8;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem10;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem11;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem12;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxGenerators;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugSineOscillator;
+
+
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugNoise;
+	private: System::Windows::Forms::ToolStripSeparator^  Separator1;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxAnalysers;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugOscilloscope;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugSpectrum;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugSpectrogram;
+	private: System::Windows::Forms::ToolStripSeparator^  Separator2;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugGain;
+
+
+
+
+
+
+
+
+
+
+
+
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoSeparation;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugDecimation;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugDelay;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugBitcrush;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugLPF;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugHPF;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugNullPlugin;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugSawOscillator;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugSquareOscillator;
+
+
+
+
+
+
 	private: System::ComponentModel::IContainer^  components;
 
 	public: event OnVolumeMixChanged	  ^ VolumeMixChanged;
@@ -110,33 +135,36 @@ namespace RackControls {
 			this->GroupboxPlugin = (gcnew System::Windows::Forms::GroupBox());
 			this->CurrentPluginName = (gcnew System::Windows::Forms::Label());
 			this->ButtonSolo = (gcnew System::Windows::Forms::Button());
-			this->imageList2 = (gcnew System::Windows::Forms::ImageList(this->components));
+			this->Images41by16 = (gcnew System::Windows::Forms::ImageList(this->components));
 			this->ButtonBypass = (gcnew System::Windows::Forms::Button());
 			this->ButtonVis = (gcnew System::Windows::Forms::Button());
 			this->ButtonConfig = (gcnew System::Windows::Forms::Button());
 			this->ButtonFlipDown = (gcnew System::Windows::Forms::Button());
-			this->imageList1 = (gcnew System::Windows::Forms::ImageList(this->components));
+			this->Images16by16 = (gcnew System::Windows::Forms::ImageList(this->components));
 			this->ButtonSwap = (gcnew System::Windows::Forms::Button());
 			this->ButtonFlipUp = (gcnew System::Windows::Forms::Button());
 			this->TrackbarMixdown = (gcnew System::Windows::Forms::TrackBar());
 			this->PluginList = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
-			this->TextboxGen = (gcnew System::Windows::Forms::ToolStripTextBox());
-			this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem2 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
-			this->toolStripTextBox1 = (gcnew System::Windows::Forms::ToolStripTextBox());
-			this->toolStripMenuItem3 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem4 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem9 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
-			this->toolStripTextBox2 = (gcnew System::Windows::Forms::ToolStripTextBox());
-			this->toolStripMenuItem6 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem5 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem7 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem8 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem10 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem11 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem12 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugNullPlugin = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->TextboxGenerators = (gcnew System::Windows::Forms::ToolStripTextBox());
+			this->PlugSineOscillator = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugNoise = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->Separator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->TextboxAnalysers = (gcnew System::Windows::Forms::ToolStripTextBox());
+			this->PlugOscilloscope = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugSpectrum = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugSpectrogram = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->Separator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->TextboxEffects = (gcnew System::Windows::Forms::ToolStripTextBox());
+			this->PlugGain = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugBitcrush = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugDecimation = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugStereoSeparation = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugDelay = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugLPF = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugHPF = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugSawOscillator = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugSquareOscillator = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->GroupboxPlugin->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TrackbarMixdown))->BeginInit();
 			this->PluginList->SuspendLayout();
@@ -177,7 +205,7 @@ namespace RackControls {
 			this->ButtonSolo->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonSolo->ImageIndex = 3;
-			this->ButtonSolo->ImageList = this->imageList2;
+			this->ButtonSolo->ImageList = this->Images41by16;
 			this->ButtonSolo->Location = System::Drawing::Point(116, 33);
 			this->ButtonSolo->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonSolo->Name = L"ButtonSolo";
@@ -185,14 +213,14 @@ namespace RackControls {
 			this->ButtonSolo->TabIndex = 12;
 			this->ButtonSolo->UseVisualStyleBackColor = true;
 			// 
-			// imageList2
+			// Images41by16
 			// 
-			this->imageList2->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"imageList2.ImageStream")));
-			this->imageList2->TransparentColor = System::Drawing::Color::Transparent;
-			this->imageList2->Images->SetKeyName(0, L"Config.png");
-			this->imageList2->Images->SetKeyName(1, L"Vis.png");
-			this->imageList2->Images->SetKeyName(2, L"Mute.png");
-			this->imageList2->Images->SetKeyName(3, L"Solo.png");
+			this->Images41by16->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"Images41by16.ImageStream")));
+			this->Images41by16->TransparentColor = System::Drawing::Color::Transparent;
+			this->Images41by16->Images->SetKeyName(0, L"Config.png");
+			this->Images41by16->Images->SetKeyName(1, L"Vis.png");
+			this->Images41by16->Images->SetKeyName(2, L"Mute.png");
+			this->Images41by16->Images->SetKeyName(3, L"Solo.png");
 			// 
 			// ButtonBypass
 			// 
@@ -200,7 +228,7 @@ namespace RackControls {
 			this->ButtonBypass->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonBypass->ImageIndex = 2;
-			this->ButtonBypass->ImageList = this->imageList2;
+			this->ButtonBypass->ImageList = this->Images41by16;
 			this->ButtonBypass->Location = System::Drawing::Point(64, 33);
 			this->ButtonBypass->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonBypass->Name = L"ButtonBypass";
@@ -214,7 +242,7 @@ namespace RackControls {
 			this->ButtonVis->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonVis->ImageIndex = 1;
-			this->ButtonVis->ImageList = this->imageList2;
+			this->ButtonVis->ImageList = this->Images41by16;
 			this->ButtonVis->Location = System::Drawing::Point(116, 13);
 			this->ButtonVis->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonVis->Name = L"ButtonVis";
@@ -228,7 +256,7 @@ namespace RackControls {
 			this->ButtonConfig->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonConfig->ImageKey = L"Config.png";
-			this->ButtonConfig->ImageList = this->imageList2;
+			this->ButtonConfig->ImageList = this->Images41by16;
 			this->ButtonConfig->Location = System::Drawing::Point(64, 13);
 			this->ButtonConfig->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonConfig->Name = L"ButtonConfig";
@@ -242,7 +270,7 @@ namespace RackControls {
 			this->ButtonFlipDown->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonFlipDown->ImageIndex = 1;
-			this->ButtonFlipDown->ImageList = this->imageList1;
+			this->ButtonFlipDown->ImageList = this->Images16by16;
 			this->ButtonFlipDown->Location = System::Drawing::Point(6, 33);
 			this->ButtonFlipDown->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonFlipDown->Name = L"ButtonFlipDown";
@@ -250,13 +278,13 @@ namespace RackControls {
 			this->ButtonFlipDown->TabIndex = 8;
 			this->ButtonFlipDown->UseVisualStyleBackColor = true;
 			// 
-			// imageList1
+			// Images16by16
 			// 
-			this->imageList1->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"imageList1.ImageStream")));
-			this->imageList1->TransparentColor = System::Drawing::Color::Transparent;
-			this->imageList1->Images->SetKeyName(0, L"Up.png");
-			this->imageList1->Images->SetKeyName(1, L"Down.png");
-			this->imageList1->Images->SetKeyName(2, L"Item.png");
+			this->Images16by16->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"Images16by16.ImageStream")));
+			this->Images16by16->TransparentColor = System::Drawing::Color::Transparent;
+			this->Images16by16->Images->SetKeyName(0, L"Up.png");
+			this->Images16by16->Images->SetKeyName(1, L"Down.png");
+			this->Images16by16->Images->SetKeyName(2, L"Item.png");
 			// 
 			// ButtonSwap
 			// 
@@ -264,7 +292,7 @@ namespace RackControls {
 			this->ButtonSwap->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonSwap->ImageIndex = 2;
-			this->ButtonSwap->ImageList = this->imageList1;
+			this->ButtonSwap->ImageList = this->Images16by16;
 			this->ButtonSwap->Location = System::Drawing::Point(36, 13);
 			this->ButtonSwap->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonSwap->Name = L"ButtonSwap";
@@ -279,7 +307,7 @@ namespace RackControls {
 			this->ButtonFlipUp->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
 			this->ButtonFlipUp->ImageIndex = 0;
-			this->ButtonFlipUp->ImageList = this->imageList1;
+			this->ButtonFlipUp->ImageList = this->Images16by16;
 			this->ButtonFlipUp->Location = System::Drawing::Point(6, 13);
 			this->ButtonFlipUp->Margin = System::Windows::Forms::Padding(2);
 			this->ButtonFlipUp->Name = L"ButtonFlipUp";
@@ -304,131 +332,149 @@ namespace RackControls {
 			// 
 			this->PluginList->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->PluginList->ImageScalingSize = System::Drawing::Size(0, 16);
-			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(17) {
-				this->TextboxGen, this->toolStripMenuItem1,
-					this->toolStripMenuItem2, this->toolStripSeparator1, this->toolStripTextBox1, this->toolStripMenuItem3, this->toolStripMenuItem4,
-					this->toolStripMenuItem9, this->toolStripSeparator2, this->toolStripTextBox2, this->toolStripMenuItem6, this->toolStripMenuItem5,
-					this->toolStripMenuItem7, this->toolStripMenuItem8, this->toolStripMenuItem10, this->toolStripMenuItem11, this->toolStripMenuItem12
+			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(20) {
+				this->PlugNullPlugin, this->TextboxGenerators,
+					this->PlugSineOscillator, this->PlugSawOscillator, this->PlugSquareOscillator, this->PlugNoise, this->Separator1, this->TextboxAnalysers,
+					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->Separator2, this->TextboxEffects, this->PlugGain, this->PlugBitcrush,
+					this->PlugDecimation, this->PlugStereoSeparation, this->PlugDelay, this->PlugLPF, this->PlugHPF
 			});
 			this->PluginList->LayoutStyle = System::Windows::Forms::ToolStripLayoutStyle::HorizontalStackWithOverflow;
 			this->PluginList->Name = L"PluginList";
-			this->PluginList->Size = System::Drawing::Size(167, 347);
+			this->PluginList->Size = System::Drawing::Size(167, 413);
 			// 
-			// TextboxGen
+			// PlugNullPlugin
 			// 
-			this->TextboxGen->BackColor = System::Drawing::Color::White;
-			this->TextboxGen->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->TextboxGen->Enabled = false;
-			this->TextboxGen->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
-			this->TextboxGen->Name = L"TextboxGen";
-			this->TextboxGen->Size = System::Drawing::Size(100, 13);
-			this->TextboxGen->Text = L"Noise generators";
+			this->PlugNullPlugin->Name = L"PlugNullPlugin";
+			this->PlugNullPlugin->Size = System::Drawing::Size(166, 22);
+			this->PlugNullPlugin->Text = L"None";
 			// 
-			// toolStripMenuItem1
+			// TextboxGenerators
 			// 
-			this->toolStripMenuItem1->Name = L"toolStripMenuItem1";
-			this->toolStripMenuItem1->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem1->Text = L"Oscillator";
+			this->TextboxGenerators->BackColor = System::Drawing::Color::White;
+			this->TextboxGenerators->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxGenerators->Enabled = false;
+			this->TextboxGenerators->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxGenerators->Name = L"TextboxGenerators";
+			this->TextboxGenerators->Size = System::Drawing::Size(100, 13);
+			this->TextboxGenerators->Text = L"Generators";
 			// 
-			// toolStripMenuItem2
+			// PlugSineOscillator
 			// 
-			this->toolStripMenuItem2->Name = L"toolStripMenuItem2";
-			this->toolStripMenuItem2->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem2->Text = L"Noise";
+			this->PlugSineOscillator->Name = L"PlugSineOscillator";
+			this->PlugSineOscillator->Size = System::Drawing::Size(166, 22);
+			this->PlugSineOscillator->Text = L"Sine wave";
 			// 
-			// toolStripSeparator1
+			// PlugNoise
 			// 
-			this->toolStripSeparator1->Name = L"toolStripSeparator1";
-			this->toolStripSeparator1->Size = System::Drawing::Size(163, 6);
+			this->PlugNoise->Name = L"PlugNoise";
+			this->PlugNoise->Size = System::Drawing::Size(166, 22);
+			this->PlugNoise->Text = L"White noise";
 			// 
-			// toolStripTextBox1
+			// Separator1
 			// 
-			this->toolStripTextBox1->BackColor = System::Drawing::Color::White;
-			this->toolStripTextBox1->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->toolStripTextBox1->Enabled = false;
-			this->toolStripTextBox1->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
-			this->toolStripTextBox1->Name = L"toolStripTextBox1";
-			this->toolStripTextBox1->Size = System::Drawing::Size(100, 13);
-			this->toolStripTextBox1->Text = L"Analysers";
+			this->Separator1->Name = L"Separator1";
+			this->Separator1->Size = System::Drawing::Size(163, 6);
 			// 
-			// toolStripMenuItem3
+			// TextboxAnalysers
 			// 
-			this->toolStripMenuItem3->Name = L"toolStripMenuItem3";
-			this->toolStripMenuItem3->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem3->Text = L"Oscilloscope";
+			this->TextboxAnalysers->BackColor = System::Drawing::Color::White;
+			this->TextboxAnalysers->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxAnalysers->Enabled = false;
+			this->TextboxAnalysers->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxAnalysers->Name = L"TextboxAnalysers";
+			this->TextboxAnalysers->Size = System::Drawing::Size(100, 13);
+			this->TextboxAnalysers->Text = L"Analysers";
 			// 
-			// toolStripMenuItem4
+			// PlugOscilloscope
 			// 
-			this->toolStripMenuItem4->Name = L"toolStripMenuItem4";
-			this->toolStripMenuItem4->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem4->Text = L"Spectrum";
+			this->PlugOscilloscope->Name = L"PlugOscilloscope";
+			this->PlugOscilloscope->Size = System::Drawing::Size(166, 22);
+			this->PlugOscilloscope->Text = L"Oscilloscope";
 			// 
-			// toolStripMenuItem9
+			// PlugSpectrum
 			// 
-			this->toolStripMenuItem9->Name = L"toolStripMenuItem9";
-			this->toolStripMenuItem9->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem9->Text = L"Spectrogram";
+			this->PlugSpectrum->Name = L"PlugSpectrum";
+			this->PlugSpectrum->Size = System::Drawing::Size(166, 22);
+			this->PlugSpectrum->Text = L"Spectrum";
 			// 
-			// toolStripSeparator2
+			// PlugSpectrogram
 			// 
-			this->toolStripSeparator2->Name = L"toolStripSeparator2";
-			this->toolStripSeparator2->Size = System::Drawing::Size(163, 6);
+			this->PlugSpectrogram->Name = L"PlugSpectrogram";
+			this->PlugSpectrogram->Size = System::Drawing::Size(166, 22);
+			this->PlugSpectrogram->Text = L"Spectrogram";
 			// 
-			// toolStripTextBox2
+			// Separator2
 			// 
-			this->toolStripTextBox2->BackColor = System::Drawing::Color::White;
-			this->toolStripTextBox2->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->toolStripTextBox2->Enabled = false;
-			this->toolStripTextBox2->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
-			this->toolStripTextBox2->Name = L"toolStripTextBox2";
-			this->toolStripTextBox2->Size = System::Drawing::Size(100, 13);
-			this->toolStripTextBox2->Text = L"Effects";
+			this->Separator2->Name = L"Separator2";
+			this->Separator2->Size = System::Drawing::Size(163, 6);
 			// 
-			// toolStripMenuItem6
+			// TextboxEffects
 			// 
-			this->toolStripMenuItem6->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
-			this->toolStripMenuItem6->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
-			this->toolStripMenuItem6->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
-			this->toolStripMenuItem6->Name = L"toolStripMenuItem6";
-			this->toolStripMenuItem6->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem6->Text = L"Stereo Separation";
-			this->toolStripMenuItem6->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
+			this->TextboxEffects->BackColor = System::Drawing::Color::White;
+			this->TextboxEffects->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxEffects->Enabled = false;
+			this->TextboxEffects->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxEffects->Name = L"TextboxEffects";
+			this->TextboxEffects->Size = System::Drawing::Size(100, 13);
+			this->TextboxEffects->Text = L"Effects";
 			// 
-			// toolStripMenuItem5
+			// PlugGain
 			// 
-			this->toolStripMenuItem5->Name = L"toolStripMenuItem5";
-			this->toolStripMenuItem5->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem5->Text = L"Gain";
+			this->PlugGain->Name = L"PlugGain";
+			this->PlugGain->Size = System::Drawing::Size(166, 22);
+			this->PlugGain->Text = L"Gain";
 			// 
-			// toolStripMenuItem7
+			// PlugBitcrush
 			// 
-			this->toolStripMenuItem7->Name = L"toolStripMenuItem7";
-			this->toolStripMenuItem7->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem7->Text = L"Decimation";
+			this->PlugBitcrush->Name = L"PlugBitcrush";
+			this->PlugBitcrush->Size = System::Drawing::Size(166, 22);
+			this->PlugBitcrush->Text = L"Bitcrush";
 			// 
-			// toolStripMenuItem8
+			// PlugDecimation
 			// 
-			this->toolStripMenuItem8->Name = L"toolStripMenuItem8";
-			this->toolStripMenuItem8->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem8->Text = L"Delay";
+			this->PlugDecimation->Name = L"PlugDecimation";
+			this->PlugDecimation->Size = System::Drawing::Size(166, 22);
+			this->PlugDecimation->Text = L"Decimation";
 			// 
-			// toolStripMenuItem10
+			// PlugStereoSeparation
 			// 
-			this->toolStripMenuItem10->Name = L"toolStripMenuItem10";
-			this->toolStripMenuItem10->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem10->Text = L"Bitcrush";
+			this->PlugStereoSeparation->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PlugStereoSeparation->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->PlugStereoSeparation->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
+			this->PlugStereoSeparation->Name = L"PlugStereoSeparation";
+			this->PlugStereoSeparation->Size = System::Drawing::Size(166, 22);
+			this->PlugStereoSeparation->Text = L"Stereo Separation";
+			this->PlugStereoSeparation->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
 			// 
-			// toolStripMenuItem11
+			// PlugDelay
 			// 
-			this->toolStripMenuItem11->Name = L"toolStripMenuItem11";
-			this->toolStripMenuItem11->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem11->Text = L"Low Pass Filter";
+			this->PlugDelay->Name = L"PlugDelay";
+			this->PlugDelay->Size = System::Drawing::Size(166, 22);
+			this->PlugDelay->Text = L"Delay";
 			// 
-			// toolStripMenuItem12
+			// PlugLPF
 			// 
-			this->toolStripMenuItem12->Name = L"toolStripMenuItem12";
-			this->toolStripMenuItem12->Size = System::Drawing::Size(166, 22);
-			this->toolStripMenuItem12->Text = L"High Pass Filter";
+			this->PlugLPF->Name = L"PlugLPF";
+			this->PlugLPF->Size = System::Drawing::Size(166, 22);
+			this->PlugLPF->Text = L"Low Pass Filter";
+			// 
+			// PlugHPF
+			// 
+			this->PlugHPF->Name = L"PlugHPF";
+			this->PlugHPF->Size = System::Drawing::Size(166, 22);
+			this->PlugHPF->Text = L"High Pass Filter";
+			// 
+			// PlugSawOscillator
+			// 
+			this->PlugSawOscillator->Name = L"PlugSawOscillator";
+			this->PlugSawOscillator->Size = System::Drawing::Size(166, 22);
+			this->PlugSawOscillator->Text = L"Saw wave";
+			// 
+			// PlugSquareOscillator
+			// 
+			this->PlugSquareOscillator->Name = L"PlugSquareOscillator";
+			this->PlugSquareOscillator->Size = System::Drawing::Size(166, 22);
+			this->PlugSquareOscillator->Text = L"Square wave";
 			// 
 			// RackItem
 			// 

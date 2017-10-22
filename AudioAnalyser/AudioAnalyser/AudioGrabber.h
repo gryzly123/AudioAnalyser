@@ -5,7 +5,6 @@ class AudioGrabber : public sf::SoundRecorder
 {
 public:
 	bool WasInitialized = false;
-
 	static AudioGrabber* GetAudioGrabber(bool ForceReinitialization = false);
 
 

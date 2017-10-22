@@ -75,14 +75,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);G:\Dev\Temp\first_clr\sfml\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;G:\Dev\Temp\first_clr\sfml\lib</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)..\..\PortAudio\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)..\..\PortAudio\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -96,10 +96,10 @@
       <CompileAsManaged>true</CompileAsManaged>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Debug\sfml-graphics-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-window-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-audio-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-system-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-main-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Debug\sfml-graphics-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-window-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-audio-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-system-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-main-d.lib;$(ProjectDir)..\..\PortAudio\lib\Debug\portaudio_static_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\sfml\lib\Debug\*;$(ProjectDir)..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\PortAudio\lib\Debug\;$(ProjectDir)..\..\sfml\lib\Debug\*;$(ProjectDir)..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,10 +123,10 @@
       <CompileAsManaged>true</CompileAsManaged>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Release\sfml-graphics.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-window.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-audio.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-system.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Release\sfml-graphics.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-window.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-audio.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-system.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-main.lib;$(ProjectDir)..\..\PortAudio\lib\Release\portaudio_static_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\sfml\lib\Release\*;$(ProjectDir)\..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\sfml\lib\Release\*;$(ProjectDir)..\..\PortAudio\lib\Release\;$(ProjectDir)\..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,25 +150,35 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioGrabber.cpp" />
-    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="AudioProcessor.cpp" />
     <ClCompile Include="ComplexNumbers.cpp" />
+    <ClCompile Include="ConfigWindow.cpp" />
+    <ClCompile Include="IoManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioGrabber.h" />
-    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="AudioProcessor.h" />
     <ClInclude Include="ComplexNumbers.h" />
+    <ClInclude Include="ConfigWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="DspPlugin.h" />
+    <ClInclude Include="IoManager.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ConfigWindow.resx">
+      <DependentUpon>ConfigWindow.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)MainWindow.resx</LogicalName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
