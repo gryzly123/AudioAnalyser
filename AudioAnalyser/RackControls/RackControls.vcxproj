@@ -134,15 +134,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DynamicControlObject.h">
+      <FileType>CppControl</FileType>
+    </ClInclude>
     <ClInclude Include="RackControls.h" />
     <ClInclude Include="RackItem.h">
       <FileType>CppControl</FileType>
     </ClInclude>
+    <ClInclude Include="RackItemContents.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="DynamicControlObject.cpp" />
     <ClCompile Include="RackControls.cpp" />
     <ClCompile Include="RackItem.cpp" />
     <ClCompile Include="Stdafx.cpp">
@@ -162,6 +167,9 @@
     <Image Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DynamicControlObject.resx">
+      <DependentUpon>DynamicControlObject.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RackItem.resx">
       <DependentUpon>RackItem.h</DependentUpon>
     </EmbeddedResource>

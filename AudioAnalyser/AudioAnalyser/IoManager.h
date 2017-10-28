@@ -71,7 +71,9 @@ private:
 			if (HostInfo->type != paMME) continue;	//pomijamy interfejsy audio inne ni¿ MME
 
 			AudioDevice NewDevice;
-			NewDevice.DeviceName = Utilities::WideFromCharArray(DeviceInfo->name);
+			NewDevice.DeviceName = Utilities::WideFromMultibyteCharArray(DeviceInfo->name);
+
+			if (NewDevice.DeviceName.size() > 30) NewDevice.DeviceName += L"...";
 			NewDevice.ChannelCount = (DeviceInfo->maxOutputChannels) ? DeviceInfo->maxOutputChannels : DeviceInfo->maxInputChannels;
 			NewDevice.PaId = i;
 
@@ -79,14 +81,25 @@ private:
 			if (DeviceInfo->maxOutputChannels)
 			{
 				AudioDevicesOutput.push_back(NewDevice);
-				if (i == DefaultOutput) DefaultAudioOutput = AudioDevicesOutput.size() - 1;
+				if (i == DefaultOutput)
+				{
+					DefaultAudioOutput = AudioDevicesOutput.size() - 1;
+					Utilities::ShowMessageboxDebugonly(Utilities::WideFromMultibyteCharArray(DeviceInfo->name), L"Default output");
+				}
 			}
 			else
 			{
 				AudioDevicesInput.push_back(NewDevice);
-				if (i == DefaultInput) DefaultAudioInput = AudioDevicesInput.size() - 1;
+				if (i == DefaultInput)
+				{
+					DefaultAudioInput = AudioDevicesInput.size() - 1;
+					Utilities::ShowMessageboxDebugonly(Utilities::WideFromMultibyteCharArray(DeviceInfo->name), L"Default input");
+				}
 			}
 		}
+
+		SelectedAudioInput = DefaultAudioInput;
+		SelectedAudioOutput = DefaultAudioOutput;
 
 		//sprawdzamy, czy na pewno mamy jakiekolwiek urz¹dzenia
 		if (!AudioDevicesInput. size()) NoInputDevices = true;
@@ -127,7 +140,7 @@ private:
 			NoInputDevices  ? nullptr : &InputParameters,
 			NoOutputDevices ? nullptr : &OutputParameters,
 			InSampleRate,
-			InSamplesInBlock,
+			InSamplesInBlock * 2,
 			true,
 			&PaSoundCallback,
 			NULL);
@@ -171,16 +184,18 @@ public:
 
 	void SetNewConfig(int NewInput, int NewOutput, int NewBlocksize)
 	{
-		
-
 		if (NewInput     >= 0) SelectedAudioInput = NewInput;
 		if (NewOutput    >= 0) SelectedAudioOutput = NewOutput;
 		if (NewBlocksize >= 0) InSamplesInBlock = (int)pow(2, NewBlocksize + 6);
+		Utilities::ShowMessageboxDebugonly(std::to_wstring(InSamplesInBlock));
 
 		StopPortAudio();
 		StartPortAudio();
 	}
 
-
+	void StartProcessing()
+	{
+		StartPortAudio();
+	}
 };
 

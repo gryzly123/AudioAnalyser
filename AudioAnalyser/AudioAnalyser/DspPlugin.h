@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "Utilities.h"
 
 enum DspPluginParameterType
 {
@@ -9,7 +10,7 @@ enum DspPluginParameterType
 	PT_Enum
 };
 
-struct DspPluginParameter
+public struct DspPluginParameter
 {
 	const DspPluginParameterType Type;
 	const std::wstring Name;
@@ -87,8 +88,8 @@ private:
 	float SineInc = 0;
 
 	Param SineAmp = Param(PT_Float, L"Sine volume", 0.0f, 1.0f, 0.6f);
-	Param SineFrequency = Param(PT_Float, L"Sine volume", 20.0f, 22500.0f, 100.0f);
-	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f, nullptr);
+	Param SineFrequency = Param(PT_Float, L"Sine frequency", 20.0f, 22500.0f, 100.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
 
 public:
 	SineWaveGenerator() : DspPlugin(L"Sine wave")
@@ -106,9 +107,44 @@ public:
 		{
 			SineStatus += SineInc;
 			if (SineStatus > 1) SineStatus -= 1;
-			float Value = SineAmp.Val * sin(SineStatus * 4 * 3.141591);
-			BufferL[i] += Value;
-			BufferR[i] += (InvertPhase.Val > 0.0f) ? -1.0f * Value : Value;
+			float Value = SineAmp.Val * sin(SineStatus * 2 * 3.141591);
+			BufferL[i] = Value;
+			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * Value : Value;
 		}
 	}
 };
+
+class RetriggerSimple : public DspPlugin
+{
+private:
+	Param Modulo = Param(PT_Enum, L"Retrigger modulo", 0, 6, 3);
+
+public:
+	RetriggerSimple() : DspPlugin(L"Retrigger (simple)")
+	{
+		std::wstring* ModuloEnum = new std::wstring[6];
+		ModuloEnum[0] = L"256";
+		ModuloEnum[1] = L"512";
+		ModuloEnum[2] = L"1024";
+		ModuloEnum[3] = L"2048";
+		ModuloEnum[4] = L"4096";
+		ModuloEnum[5] = L"8196";
+		Modulo.EnumNames = ModuloEnum;
+
+		ParameterRefsForUi.push_back(&Modulo);
+	}
+
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int ModuloVal = std::pow(2, (Modulo.Val + 9));
+
+		for (int i = 0; i < Length; i++)
+		{
+			BufferL[i] = BufferL[i % ModuloVal];
+			BufferR[i] = BufferR[i % ModuloVal];
+		}
+	}
+};
+
+#undef Val

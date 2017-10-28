@@ -153,6 +153,7 @@
     <ClCompile Include="AudioProcessor.cpp" />
     <ClCompile Include="ComplexNumbers.cpp" />
     <ClCompile Include="ConfigWindow.cpp" />
+    <ClCompile Include="DynamicPluginConfigWindow.cpp" />
     <ClCompile Include="IoManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
@@ -166,6 +167,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="DspPlugin.h" />
+    <ClInclude Include="DynamicPluginConfigWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="IoManager.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
@@ -175,6 +179,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ConfigWindow.resx">
       <DependentUpon>ConfigWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicPluginConfigWindow.resx">
+      <DependentUpon>DynamicPluginConfigWindow.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.h</DependentUpon>
