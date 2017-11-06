@@ -1,7 +1,6 @@
 #pragma once
+#include "PCH.h"
 #include "DspPlugin.h"
-#include "portaudio.h"
-#define GUI_RACKITEMS_COUNT 7
 
 enum PluginSwapDirection
 {
@@ -24,9 +23,20 @@ public:
 	static AudioProcessor* GetInstance();
 	void ChangePlugin(int AtIndex, const std::wstring NewPluginName);
 	void SwapPlugins(int AtIndex, PluginSwapDirection Direction);
-	void ChangePluginVolumeMix(int AtIndex, float Value);
+	void SetPluginVolumeMix(int AtIndex, float Value);
+	float GetPluginVolumeMix(int AtIndex);
 	std::vector<DspPluginParameter*> GetPluginParameters(int AtIndex);
-	void UpdatePluginParameter(int PluginIndex, int AtIndex, float NewValue);
+	void UpdatePluginParameterByIndex(int PluginIndex, int AtIndex, float NewValue);
+	void UpdatePluginParameterByName(int PluginIndex, std::wstring AtName, float NewValue);
 	std::wstring GetPluginName(int AtIndex);
+	
+	bool IsPluginBypassed(int AtIndex);
+	void SetPluginBypassed(int AtIndex);
+	void SetPluginBypassed(int AtIndex, bool NewBypassed);
+	void SetPluginSolo(int AtIndex);
+	void GetPluginWindowCapabilities(int AtIndex, bool& HasConfig, bool& HasVis);
+
+	void ResetPlugins();
+
 	int ProcessAudio(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
 };

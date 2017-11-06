@@ -10,6 +10,7 @@ namespace AudioAnalyser {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
+	public delegate System::Void WindowShutdown(Int32);
 
 	/// <summary>
 	/// Summary for DynamicPluginConfigWindow
@@ -17,12 +18,13 @@ namespace AudioAnalyser {
 	public ref class DynamicPluginConfigWindow : public System::Windows::Forms::Form
 	{
 	public:
+
+		event WindowShutdown^ OnWindowShutdown;
+		bool IsOpened = false;
+
 		DynamicPluginConfigWindow(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
@@ -36,12 +38,8 @@ namespace AudioAnalyser {
 				delete components;
 			}
 		}
-	private: RackControls::DynamicControlObject^  DynamicControlObject0;
+	private: RackControls::DynamicControlObject^  DynamicControlObject;
 	private: System::Collections::Generic::List<RackControls::DynamicControlObject^>^ ControlObjects = gcnew System::Collections::Generic::List<RackControls::DynamicControlObject^>();
-	protected:
-
-	protected:
-
 	private:
 		/// <summary>
 		/// Required designer variable.
@@ -56,28 +54,31 @@ namespace AudioAnalyser {
 		void InitializeComponent(void)
 		{
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(DynamicPluginConfigWindow::typeid));
-			this->DynamicControlObject0 = (gcnew RackControls::DynamicControlObject());
+			this->DynamicControlObject = (gcnew RackControls::DynamicControlObject());
 			this->SuspendLayout();
 			// 
-			// DynamicControlObject0
+			// DynamicControlObject
 			// 
-			this->DynamicControlObject0->Location = System::Drawing::Point(8, 10);
-			this->DynamicControlObject0->Name = L"DynamicControlObject0";
-			this->DynamicControlObject0->ParameterIndex = 0;
-			this->DynamicControlObject0->Size = System::Drawing::Size(350, 50);
-			this->DynamicControlObject0->TabIndex = 0;
-			this->DynamicControlObject0->Visible = false;
-			this->DynamicControlObject0->UpdateParameter += gcnew RackControls::UpdateParameter(this, &DynamicPluginConfigWindow::DynamicControlObject0_UpdateParameter);
+			this->DynamicControlObject->Location = System::Drawing::Point(8, 10);
+			this->DynamicControlObject->Name = L"DynamicControlObject";
+			this->DynamicControlObject->ParameterIndex = 0;
+			this->DynamicControlObject->Size = System::Drawing::Size(350, 40);
+			this->DynamicControlObject->TabIndex = 0;
+			this->DynamicControlObject->Visible = false;
+			this->DynamicControlObject->UpdateParameter += gcnew RackControls::UpdateParameter(this, &DynamicPluginConfigWindow::DynamicControlObject_UpdateParameter);
 			// 
 			// DynamicPluginConfigWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(365, 65);
-			this->Controls->Add(this->DynamicControlObject0);
+			this->Controls->Add(this->DynamicControlObject);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+			this->MaximizeBox = false;
 			this->Name = L"DynamicPluginConfigWindow";
 			this->Text = L"DynamicPluginConfigWindow";
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginConfigWindow::DynamicPluginConfigWindow_FormClosed);
 			this->ResumeLayout(false);
 
 		}
@@ -89,24 +90,9 @@ namespace AudioAnalyser {
 		{
 			this->SuspendLayout();
 			this->PluginIndex = PluginIndex;
+			System::Int32 ParametersCount = Parameters.size();
 
-			for (int i = 0; i < Parameters.size(); ++i)
-			{
-				RackControls::DynamicControlObject ^ TempObj = (gcnew RackControls::DynamicControlObject());
-				TempObj->FeedWithParameterData(Parameters[i], i);
-			
-				TempObj->Location = System::Drawing::Point(8, 10 + (i * 55));
-				TempObj->Name = L"DynamicControlObject" + i.ToString();
-				TempObj->Size = System::Drawing::Size(350, 50);
-				TempObj->TabIndex = 0;
-				TempObj->Visible = true;
-				TempObj->UpdateParameter += gcnew RackControls::UpdateParameter(this, &DynamicPluginConfigWindow::DynamicControlObject0_UpdateParameter);
-				this->Controls->Add(TempObj);
-
-				this->ControlObjects->Add(TempObj);
-			}
-
-			this->ClientSize = System::Drawing::Size(365, (Parameters.size() * 55) - 10);
+			this->ClientSize = System::Drawing::Size(365, (ParametersCount * 40) + 6);
 			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
 			WindowName += L" at Slot #";
 			WindowName += (PluginIndex + 1).ToString();
@@ -114,16 +100,32 @@ namespace AudioAnalyser {
 			this->Name = WindowName;
 			this->Text = WindowName;
 
+			for (int i = 0; i < ParametersCount; ++i)
+			{
+				RackControls::DynamicControlObject ^ TempObj = (gcnew RackControls::DynamicControlObject());
+				TempObj->FeedWithParameterData(Parameters[i], i);
+				TempObj->Location = System::Drawing::Point(8, 10 + (i * 40));
+				TempObj->Name = L"DynamicControlObject" + i.ToString();
+				TempObj->Size = System::Drawing::Size(350, 40);
+				TempObj->TabIndex = 0;
+				TempObj->Visible = true;
+				TempObj->UpdateParameter += gcnew RackControls::UpdateParameter(this, &DynamicPluginConfigWindow::DynamicControlObject_UpdateParameter);
+				this->Controls->Add(TempObj);
+				this->ControlObjects->Add(TempObj);
+			}
 
 			this->ResumeLayout(false);
 		}
 	
 	private:
 	
-		System::Void DynamicControlObject0_UpdateParameter(System::Int32 AtIndex, System::Single NewValue)
+		System::Void DynamicControlObject_UpdateParameter(System::Int32 AtIndex, System::Single NewValue)
 		{
-			AudioProcessor::GetInstance()->UpdatePluginParameter(PluginIndex, AtIndex, NewValue);
+			AudioProcessor::GetInstance()->UpdatePluginParameterByIndex(PluginIndex, AtIndex, NewValue);
 		}
-
+		System::Void DynamicPluginConfigWindow_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e)
+		{
+			OnWindowShutdown(PluginIndex);
+		}
 	};
 }

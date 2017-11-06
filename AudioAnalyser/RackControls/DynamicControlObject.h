@@ -1,5 +1,7 @@
 #pragma once
-#include "../AudioAnalyser//DspPlugin.h"
+#define FROM_RACK_CONTROLS
+#include "../AudioAnalyser/DspPlugin.h"
+#undef FROM_RACK_CONTROLS
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -17,43 +19,43 @@ namespace RackControls {
 
 	public delegate System::Void UpdateParameter(Int32, Single);
 
-
 	public ref class DynamicControlObject : public System::Windows::Forms::UserControl
 	{
-	public:
-		property Int32 ParameterIndex;
-		Int32 EnumMinimum;
-		float StepSize = 10;
+		public:
+			property Int32 ParameterIndex;
+			Int32 EnumMinimum;
+		private: System::Windows::Forms::TextBox^  TextboxFloatVal;
+		public:
+			float StepSize = 10;
 
-		DynamicControlObject(void)
-		{
-			InitializeComponent();
-		}
-
-	protected:
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		~DynamicControlObject()
-		{
-			if (components)
+			DynamicControlObject(void)
 			{
-				delete components;
+				InitializeComponent();
 			}
-		}
-	private: System::Windows::Forms::TrackBar^  TrackbarFloatVal;
-	protected:
-	private: System::Windows::Forms::Label^  LabelFloatVal;
-	private: System::Windows::Forms::ComboBox^  ListEnumValue;
-	private: System::Windows::Forms::Label^  LabelParamName;
-	private: System::Windows::Forms::CheckBox^  CheckBoolVal;
-	public:  event UpdateParameter^ UpdateParameter;
 
-	private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		System::ComponentModel::Container ^components;
+		protected:
+			/// <summary>
+			/// Clean up any resources being used.
+			/// </summary>
+			~DynamicControlObject()
+			{
+				if (components)
+				{
+					delete components;
+				}
+			}
+		private: System::Windows::Forms::TrackBar^  TrackbarFloatVal;
+		private: System::Windows::Forms::Label^  LabelFloatVal;
+		private: System::Windows::Forms::ComboBox^  ListEnumValue;
+		private: System::Windows::Forms::Label^  LabelParamName;
+		private: System::Windows::Forms::CheckBox^  CheckBoolVal;
+		public:  event UpdateParameter^ UpdateParameter;
+
+		private:
+			/// <summary>
+			/// Required designer variable.
+			/// </summary>
+			System::ComponentModel::Container ^components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -67,6 +69,7 @@ namespace RackControls {
 			this->ListEnumValue = (gcnew System::Windows::Forms::ComboBox());
 			this->LabelParamName = (gcnew System::Windows::Forms::Label());
 			this->CheckBoolVal = (gcnew System::Windows::Forms::CheckBox());
+			this->TextboxFloatVal = (gcnew System::Windows::Forms::TextBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TrackbarFloatVal))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -86,6 +89,7 @@ namespace RackControls {
 			this->LabelFloatVal->TabIndex = 1;
 			this->LabelFloatVal->Text = L"0.0";
 			this->LabelFloatVal->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->LabelFloatVal->DoubleClick += gcnew System::EventHandler(this, &DynamicControlObject::LabelFloatVal_DoubleClick);
 			// 
 			// ListEnumValue
 			// 
@@ -115,10 +119,22 @@ namespace RackControls {
 			this->CheckBoolVal->UseVisualStyleBackColor = true;
 			this->CheckBoolVal->CheckedChanged += gcnew System::EventHandler(this, &DynamicControlObject::CheckBoolVal_CheckedChanged);
 			// 
+			// TextboxFloatVal
+			// 
+			this->TextboxFloatVal->Location = System::Drawing::Point(283, 1);
+			this->TextboxFloatVal->Name = L"TextboxFloatVal";
+			this->TextboxFloatVal->Size = System::Drawing::Size(64, 20);
+			this->TextboxFloatVal->TabIndex = 5;
+			this->TextboxFloatVal->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+			this->TextboxFloatVal->Visible = false;
+			this->TextboxFloatVal->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &DynamicControlObject::TextboxFloatVal_KeyDown);
+			this->TextboxFloatVal->Leave += gcnew System::EventHandler(this, &DynamicControlObject::TextboxFloatVal_Leave);
+			// 
 			// DynamicControlObject
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->Controls->Add(this->TextboxFloatVal);
 			this->Controls->Add(this->CheckBoolVal);
 			this->Controls->Add(this->LabelParamName);
 			this->Controls->Add(this->ListEnumValue);
@@ -133,12 +149,13 @@ namespace RackControls {
 		}
 #pragma endregion
 
-	public:
-		System::Void FeedWithParameterData(const DspPluginParameter* Parameter, System::Int32 ParameterIndex)
+		public:
+			//Inicjalizacja
+			System::Void FeedWithParameterData(const DspPluginParameter* Parameter, System::Int32 ParameterIndex)
 		{
 			this->ParameterIndex = ParameterIndex;
 			this->LabelParamName->Text = gcnew System::String(Parameter->Name.c_str());
-
+			StepSize = 1 / Parameter->FloatValueStep;
 
 			switch (Parameter->Type)
 			{
@@ -148,7 +165,7 @@ namespace RackControls {
 					this->LabelFloatVal->Visible = false;
 					this->TrackbarFloatVal->Visible = false;
 					this->CheckBoolVal->Visible = true;
-					this->CheckBoolVal->Checked = Parameter->CurrentValue;
+					this->CheckBoolVal->Checked = Parameter->CurrentValue > 0 ? true : false;
 
 
 				break;
@@ -164,6 +181,8 @@ namespace RackControls {
 						this->ListEnumValue->Items->Add(gcnew System::String(Parameter->EnumNames[i].c_str()));
 					}
 
+					this->ListEnumValue->SelectedIndex = (int)Parameter->CurrentValue;
+
 				break;
 				case DspPluginParameterType::PT_Float:
 
@@ -172,9 +191,9 @@ namespace RackControls {
 					this->TrackbarFloatVal->Visible = true;
 					this->CheckBoolVal->Visible = false;
 
-					this->TrackbarFloatVal->Minimum = Parameter->MinimumValue * StepSize;
-					this->TrackbarFloatVal->Maximum = Parameter->MaximumValue * StepSize;
-					this->TrackbarFloatVal->Value   = Parameter->CurrentValue * StepSize;
+					this->TrackbarFloatVal->Minimum = (int)(Parameter->MinimumValue * StepSize);
+					this->TrackbarFloatVal->Maximum = (int)(Parameter->MaximumValue * StepSize);
+					this->TrackbarFloatVal->Value   = (int)(Parameter->CurrentValue * StepSize);
 
 					UpdateFloatLabel();
 
@@ -182,26 +201,63 @@ namespace RackControls {
 			}
 		}
 
-		System::Void UpdateFloatLabel()
+			//Interfejs DynamicControlObject
+			System::Void UpdateFloatLabel()
 		{
 			LabelFloatVal->Text = (this->TrackbarFloatVal->Value / StepSize).ToString();
 		}
-	
-		System::Void ListEnumValue_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e)
+			System::Void LabelFloatVal_DoubleClick(System::Object^  sender, System::EventArgs^  e)
 		{
-			UpdateParameter(ParameterIndex, ListEnumValue->SelectedIndex);
+			TextboxFloatVal->Text = LabelFloatVal->Text;
+			TextboxFloatVal->SelectionStart = 0;
+			TextboxFloatVal->SelectionLength = TextboxFloatVal->Text->Length;
+			TextboxFloatVal->Visible = true;
+			TextboxFloatVal->Focus();
 		}
-
-		System::Void CheckBoolVal_CheckedChanged(System::Object^  sender, System::EventArgs^  e)
+			System::Void TextboxFloatVal_Leave(System::Object^  sender, System::EventArgs^  e)
+		{
+			SaveTextboxData();
+		}
+			System::Void TextboxFloatVal_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^  e)
+		{
+			if (e->KeyCode == Keys::Enter)
+			{
+				TrackbarFloatVal->Focus();
+				SaveTextboxData();
+			}
+		}
+		
+			//Update dla enumeratorów, booleanów i floatów (sliderem i textboxem)
+			System::Void ListEnumValue_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e)
+		{
+			UpdateParameter(ParameterIndex, (float)ListEnumValue->SelectedIndex);
+		}
+			System::Void CheckBoolVal_CheckedChanged(System::Object^  sender, System::EventArgs^  e)
 		{
 			UpdateParameter(ParameterIndex, CheckBoolVal->Checked);
 		}
-
-		System::Void TrackbarFloatVal_Scroll(System::Object^  sender, System::EventArgs^  e)
+			System::Void TrackbarFloatVal_Scroll(System::Object^  sender, System::EventArgs^  e)
 		{
 			Single Value = (Single)TrackbarFloatVal->Value / StepSize;
 			UpdateParameter(ParameterIndex, Value);
 			UpdateFloatLabel();
 		}
-};
+			System::Void SaveTextboxData()
+		{
+			Single NewNumber = 0;
+			if (Single::TryParse(TextboxFloatVal->Text, NewNumber))
+			{
+				Single NewNumberStepped = NewNumber * StepSize;
+				if (NewNumberStepped < (float)TrackbarFloatVal->Minimum) NewNumberStepped = (float)TrackbarFloatVal->Minimum;
+				if (NewNumberStepped > (float)TrackbarFloatVal->Maximum) NewNumberStepped = (float)TrackbarFloatVal->Maximum;
+
+				TrackbarFloatVal->Value = (int)NewNumberStepped;
+				NewNumber = NewNumberStepped / StepSize;
+				UpdateParameter(ParameterIndex, NewNumber);
+				UpdateFloatLabel();
+			}
+
+			TextboxFloatVal->Visible = false;
+		}
+	};
 }

@@ -16,6 +16,7 @@ namespace RackControls
 	public delegate System::Void OnVisWindowRequested(Int32);
 	public delegate System::Void OnBypassRequested(Int32);
 	public delegate System::Void OnSoloRequested(Int32);
+	public delegate System::Void OnSwapRequested(Int32, Boolean IsDownwards);
 
 	/// <summary>
 	/// Kontrolka WinForms do obs³ugi slotów DSP.
@@ -26,6 +27,7 @@ namespace RackControls
 
 		property System::Int32 RackItemId;
 		property System::Int32 MixVolume;
+		property System::Boolean LastRackItem;
 
 		RackItem(void)
 		{
@@ -37,10 +39,8 @@ namespace RackControls
 		{
 			if (components) delete components;
 		}
+
 	private: System::Windows::Forms::GroupBox^  GroupboxPlugin;
-	protected:
-
-
 	private: System::Windows::Forms::TrackBar^  TrackbarMixdown;
 	private: System::Windows::Forms::Label^  CurrentPluginName;
 	private: System::Windows::Forms::Button^  ButtonSolo;
@@ -62,18 +62,33 @@ namespace RackControls
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugSpectrum;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugSpectrogram;
 	private: System::Windows::Forms::ToolStripSeparator^  Separator2;
-	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects1;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugGain;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoSeparation;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugDecimation;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugDelay;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugBitcrush;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugLPF;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugHPF;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugLpfAvg;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugHpf;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugNullPlugin;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugSawOscillator;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugSquareOscillator;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugRetriggerSimple;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugLpfSinc;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugBpf;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoToMs;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects2;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects3;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects4;
+	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects5;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugRetrigger;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugReverserSimple;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugReverser;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugParameters;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugClip;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugPhaseInverter;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugPanner;
+
 	private: System::ComponentModel::IContainer^  components;
 	public: event OnVolumeMixChanged	  ^ VolumeMixChanged;
 	public: event OnNewPluginRequested	  ^ NewPluginRequested;
@@ -81,9 +96,7 @@ namespace RackControls
 	public: event OnVisWindowRequested	  ^ VisWindowRequested;
 	public: event OnBypassRequested		  ^ BypassRequested;
 	public: event OnSoloRequested		  ^ SoloRequested;
-
-
-	protected:
+	public: event OnSwapRequested		  ^ SwapRequested;
 
 	private:
 		/// <summary>
@@ -124,16 +137,30 @@ namespace RackControls
 			this->PlugOscilloscope = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugSpectrum = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugSpectrogram = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugParameters = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->Separator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
-			this->TextboxEffects = (gcnew System::Windows::Forms::ToolStripTextBox());
+			this->TextboxEffects1 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugGain = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugClip = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugPhaseInverter = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->TextboxEffects2 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugBitcrush = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugDecimation = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->TextboxEffects3 = (gcnew System::Windows::Forms::ToolStripTextBox());
+			this->PlugPanner = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugStereoSeparation = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugStereoToMs = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->TextboxEffects4 = (gcnew System::Windows::Forms::ToolStripTextBox());
+			this->PlugLpfAvg = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugLpfSinc = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugHpf = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugBpf = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->TextboxEffects5 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugDelay = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->PlugLPF = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->PlugHPF = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugRetriggerSimple = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugRetrigger = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugReverserSimple = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugReverser = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->GroupboxPlugin->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TrackbarMixdown))->BeginInit();
 			this->PluginList->SuspendLayout();
@@ -181,6 +208,7 @@ namespace RackControls
 			this->ButtonSolo->Size = System::Drawing::Size(50, 18);
 			this->ButtonSolo->TabIndex = 12;
 			this->ButtonSolo->UseVisualStyleBackColor = true;
+			this->ButtonSolo->Click += gcnew System::EventHandler(this, &RackItem::ButtonSolo_Click);
 			// 
 			// Images41by16
 			// 
@@ -193,6 +221,7 @@ namespace RackControls
 			// 
 			// ButtonBypass
 			// 
+			this->ButtonBypass->BackColor = System::Drawing::SystemColors::Control;
 			this->ButtonBypass->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
 			this->ButtonBypass->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
@@ -203,7 +232,8 @@ namespace RackControls
 			this->ButtonBypass->Name = L"ButtonBypass";
 			this->ButtonBypass->Size = System::Drawing::Size(50, 18);
 			this->ButtonBypass->TabIndex = 11;
-			this->ButtonBypass->UseVisualStyleBackColor = true;
+			this->ButtonBypass->UseVisualStyleBackColor = false;
+			this->ButtonBypass->Click += gcnew System::EventHandler(this, &RackItem::ButtonBypass_Click);
 			// 
 			// ButtonVis
 			// 
@@ -219,6 +249,7 @@ namespace RackControls
 			this->ButtonVis->Size = System::Drawing::Size(50, 18);
 			this->ButtonVis->TabIndex = 10;
 			this->ButtonVis->UseVisualStyleBackColor = true;
+			this->ButtonVis->Click += gcnew System::EventHandler(this, &RackItem::ButtonVis_Click);
 			// 
 			// ButtonConfig
 			// 
@@ -248,6 +279,7 @@ namespace RackControls
 			this->ButtonFlipDown->Size = System::Drawing::Size(28, 18);
 			this->ButtonFlipDown->TabIndex = 8;
 			this->ButtonFlipDown->UseVisualStyleBackColor = true;
+			this->ButtonFlipDown->Click += gcnew System::EventHandler(this, &RackItem::ButtonFlipDown_Click);
 			// 
 			// Images16by16
 			// 
@@ -285,6 +317,7 @@ namespace RackControls
 			this->ButtonFlipUp->Size = System::Drawing::Size(28, 18);
 			this->ButtonFlipUp->TabIndex = 6;
 			this->ButtonFlipUp->UseVisualStyleBackColor = true;
+			this->ButtonFlipUp->Click += gcnew System::EventHandler(this, &RackItem::ButtonFlipUp_Click);
 			// 
 			// TrackbarMixdown
 			// 
@@ -304,21 +337,25 @@ namespace RackControls
 			// 
 			this->PluginList->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->PluginList->ImageScalingSize = System::Drawing::Size(0, 16);
-			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(21) {
+			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(35) {
 				this->PlugNullPlugin, this->TextboxGenerators,
 					this->PlugSineOscillator, this->PlugSawOscillator, this->PlugSquareOscillator, this->PlugNoise, this->Separator1, this->TextboxAnalysers,
-					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->Separator2, this->TextboxEffects, this->PlugGain, this->PlugBitcrush,
-					this->PlugDecimation, this->PlugStereoSeparation, this->PlugDelay, this->PlugLPF, this->PlugHPF, this->PlugRetriggerSimple
+					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->PlugParameters, this->Separator2, this->TextboxEffects1,
+					this->PlugGain, this->PlugClip, this->PlugPhaseInverter, this->TextboxEffects2, this->PlugBitcrush, this->PlugDecimation, this->TextboxEffects3,
+					this->PlugPanner, this->PlugStereoSeparation, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc,
+					this->PlugHpf, this->PlugBpf, this->TextboxEffects5, this->PlugDelay, this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple,
+					this->PlugReverser
 			});
 			this->PluginList->LayoutStyle = System::Windows::Forms::ToolStripLayoutStyle::HorizontalStackWithOverflow;
 			this->PluginList->Name = L"PluginList";
-			this->PluginList->Size = System::Drawing::Size(170, 413);
+			this->PluginList->Size = System::Drawing::Size(189, 715);
 			// 
 			// PlugNullPlugin
 			// 
 			this->PlugNullPlugin->Name = L"PlugNullPlugin";
-			this->PlugNullPlugin->Size = System::Drawing::Size(169, 22);
+			this->PlugNullPlugin->Size = System::Drawing::Size(188, 22);
 			this->PlugNullPlugin->Text = L"None";
+			this->PlugNullPlugin->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// TextboxGenerators
 			// 
@@ -333,32 +370,35 @@ namespace RackControls
 			// PlugSineOscillator
 			// 
 			this->PlugSineOscillator->Name = L"PlugSineOscillator";
-			this->PlugSineOscillator->Size = System::Drawing::Size(169, 22);
-			this->PlugSineOscillator->Text = L"Sine wave";
+			this->PlugSineOscillator->Size = System::Drawing::Size(188, 22);
+			this->PlugSineOscillator->Text = L"Sine Wave";
 			this->PlugSineOscillator->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSawOscillator
 			// 
 			this->PlugSawOscillator->Name = L"PlugSawOscillator";
-			this->PlugSawOscillator->Size = System::Drawing::Size(169, 22);
-			this->PlugSawOscillator->Text = L"Saw wave";
+			this->PlugSawOscillator->Size = System::Drawing::Size(188, 22);
+			this->PlugSawOscillator->Text = L"Saw Wave";
+			this->PlugSawOscillator->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSquareOscillator
 			// 
 			this->PlugSquareOscillator->Name = L"PlugSquareOscillator";
-			this->PlugSquareOscillator->Size = System::Drawing::Size(169, 22);
-			this->PlugSquareOscillator->Text = L"Square wave";
+			this->PlugSquareOscillator->Size = System::Drawing::Size(188, 22);
+			this->PlugSquareOscillator->Text = L"Square Wave";
+			this->PlugSquareOscillator->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugNoise
 			// 
 			this->PlugNoise->Name = L"PlugNoise";
-			this->PlugNoise->Size = System::Drawing::Size(169, 22);
+			this->PlugNoise->Size = System::Drawing::Size(188, 22);
 			this->PlugNoise->Text = L"White noise";
+			this->PlugNoise->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// Separator1
 			// 
 			this->Separator1->Name = L"Separator1";
-			this->Separator1->Size = System::Drawing::Size(166, 6);
+			this->Separator1->Size = System::Drawing::Size(185, 6);
 			// 
 			// TextboxAnalysers
 			// 
@@ -373,53 +413,111 @@ namespace RackControls
 			// PlugOscilloscope
 			// 
 			this->PlugOscilloscope->Name = L"PlugOscilloscope";
-			this->PlugOscilloscope->Size = System::Drawing::Size(169, 22);
+			this->PlugOscilloscope->Size = System::Drawing::Size(188, 22);
 			this->PlugOscilloscope->Text = L"Oscilloscope";
+			this->PlugOscilloscope->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSpectrum
 			// 
 			this->PlugSpectrum->Name = L"PlugSpectrum";
-			this->PlugSpectrum->Size = System::Drawing::Size(169, 22);
+			this->PlugSpectrum->Size = System::Drawing::Size(188, 22);
 			this->PlugSpectrum->Text = L"Spectrum";
+			this->PlugSpectrum->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSpectrogram
 			// 
 			this->PlugSpectrogram->Name = L"PlugSpectrogram";
-			this->PlugSpectrogram->Size = System::Drawing::Size(169, 22);
+			this->PlugSpectrogram->Size = System::Drawing::Size(188, 22);
 			this->PlugSpectrogram->Text = L"Spectrogram";
+			this->PlugSpectrogram->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugParameters
+			// 
+			this->PlugParameters->Name = L"PlugParameters";
+			this->PlugParameters->Size = System::Drawing::Size(188, 22);
+			this->PlugParameters->Text = L"Signal Parameters";
+			this->PlugParameters->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// Separator2
 			// 
 			this->Separator2->Name = L"Separator2";
-			this->Separator2->Size = System::Drawing::Size(166, 6);
+			this->Separator2->Size = System::Drawing::Size(185, 6);
 			// 
-			// TextboxEffects
+			// TextboxEffects1
 			// 
-			this->TextboxEffects->BackColor = System::Drawing::Color::White;
-			this->TextboxEffects->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->TextboxEffects->Enabled = false;
-			this->TextboxEffects->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
-			this->TextboxEffects->Name = L"TextboxEffects";
-			this->TextboxEffects->Size = System::Drawing::Size(100, 13);
-			this->TextboxEffects->Text = L"Effects";
+			this->TextboxEffects1->BackColor = System::Drawing::Color::White;
+			this->TextboxEffects1->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxEffects1->Enabled = false;
+			this->TextboxEffects1->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxEffects1->Name = L"TextboxEffects1";
+			this->TextboxEffects1->Size = System::Drawing::Size(100, 13);
+			this->TextboxEffects1->Text = L"Volume processors";
 			// 
 			// PlugGain
 			// 
 			this->PlugGain->Name = L"PlugGain";
-			this->PlugGain->Size = System::Drawing::Size(169, 22);
+			this->PlugGain->Size = System::Drawing::Size(188, 22);
 			this->PlugGain->Text = L"Gain";
+			this->PlugGain->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugClip
+			// 
+			this->PlugClip->Name = L"PlugClip";
+			this->PlugClip->Size = System::Drawing::Size(188, 22);
+			this->PlugClip->Text = L"Clip";
+			this->PlugClip->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugPhaseInverter
+			// 
+			this->PlugPhaseInverter->Name = L"PlugPhaseInverter";
+			this->PlugPhaseInverter->Size = System::Drawing::Size(188, 22);
+			this->PlugPhaseInverter->Text = L"Phase Inverter";
+			this->PlugPhaseInverter->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// TextboxEffects2
+			// 
+			this->TextboxEffects2->BackColor = System::Drawing::Color::White;
+			this->TextboxEffects2->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxEffects2->Enabled = false;
+			this->TextboxEffects2->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxEffects2->Name = L"TextboxEffects2";
+			this->TextboxEffects2->Size = System::Drawing::Size(100, 13);
+			this->TextboxEffects2->Text = L"Downsamplers";
 			// 
 			// PlugBitcrush
 			// 
 			this->PlugBitcrush->Name = L"PlugBitcrush";
-			this->PlugBitcrush->Size = System::Drawing::Size(169, 22);
-			this->PlugBitcrush->Text = L"Bitcrush";
+			this->PlugBitcrush->Size = System::Drawing::Size(188, 22);
+			this->PlugBitcrush->Text = L"Bitcrusher";
+			this->PlugBitcrush->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugDecimation
 			// 
 			this->PlugDecimation->Name = L"PlugDecimation";
-			this->PlugDecimation->Size = System::Drawing::Size(169, 22);
-			this->PlugDecimation->Text = L"Decimation";
+			this->PlugDecimation->Size = System::Drawing::Size(188, 22);
+			this->PlugDecimation->Text = L"Decimator";
+			this->PlugDecimation->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// TextboxEffects3
+			// 
+			this->TextboxEffects3->BackColor = System::Drawing::Color::White;
+			this->TextboxEffects3->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxEffects3->Enabled = false;
+			this->TextboxEffects3->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxEffects3->Name = L"TextboxEffects3";
+			this->TextboxEffects3->Size = System::Drawing::Size(100, 13);
+			this->TextboxEffects3->Text = L"Stereo processors";
+			// 
+			// PlugPanner
+			// 
+			this->PlugPanner->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PlugPanner->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->PlugPanner->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
+			this->PlugPanner->Name = L"PlugPanner";
+			this->PlugPanner->Size = System::Drawing::Size(188, 22);
+			this->PlugPanner->Text = L"Panner";
+			this->PlugPanner->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
+			this->PlugPanner->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugStereoSeparation
 			// 
@@ -427,34 +525,100 @@ namespace RackControls
 			this->PlugStereoSeparation->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->PlugStereoSeparation->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
 			this->PlugStereoSeparation->Name = L"PlugStereoSeparation";
-			this->PlugStereoSeparation->Size = System::Drawing::Size(169, 22);
-			this->PlugStereoSeparation->Text = L"Stereo Separation";
+			this->PlugStereoSeparation->Size = System::Drawing::Size(188, 22);
+			this->PlugStereoSeparation->Text = L"Stereo Separator";
 			this->PlugStereoSeparation->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
+			this->PlugStereoSeparation->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugStereoToMs
+			// 
+			this->PlugStereoToMs->Name = L"PlugStereoToMs";
+			this->PlugStereoToMs->Size = System::Drawing::Size(188, 22);
+			this->PlugStereoToMs->Text = L"Stereo to Mid-Side";
+			this->PlugStereoToMs->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// TextboxEffects4
+			// 
+			this->TextboxEffects4->BackColor = System::Drawing::Color::White;
+			this->TextboxEffects4->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxEffects4->Enabled = false;
+			this->TextboxEffects4->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxEffects4->Name = L"TextboxEffects4";
+			this->TextboxEffects4->Size = System::Drawing::Size(100, 13);
+			this->TextboxEffects4->Text = L"Filters";
+			// 
+			// PlugLpfAvg
+			// 
+			this->PlugLpfAvg->Name = L"PlugLpfAvg";
+			this->PlugLpfAvg->Size = System::Drawing::Size(188, 22);
+			this->PlugLpfAvg->Text = L"Low Pass Filter (avg)";
+			this->PlugLpfAvg->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugLpfSinc
+			// 
+			this->PlugLpfSinc->Name = L"PlugLpfSinc";
+			this->PlugLpfSinc->Size = System::Drawing::Size(188, 22);
+			this->PlugLpfSinc->Text = L"Low Pass Filter (sinc)";
+			this->PlugLpfSinc->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugHpf
+			// 
+			this->PlugHpf->Name = L"PlugHpf";
+			this->PlugHpf->Size = System::Drawing::Size(188, 22);
+			this->PlugHpf->Text = L"High Pass Filter (sinc)";
+			this->PlugHpf->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugBpf
+			// 
+			this->PlugBpf->Name = L"PlugBpf";
+			this->PlugBpf->Size = System::Drawing::Size(188, 22);
+			this->PlugBpf->Text = L"Band Pass Filter (sinc)";
+			this->PlugBpf->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// TextboxEffects5
+			// 
+			this->TextboxEffects5->BackColor = System::Drawing::Color::White;
+			this->TextboxEffects5->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->TextboxEffects5->Enabled = false;
+			this->TextboxEffects5->Font = (gcnew System::Drawing::Font(L"Segoe UI", 7, System::Drawing::FontStyle::Bold));
+			this->TextboxEffects5->Name = L"TextboxEffects5";
+			this->TextboxEffects5->Size = System::Drawing::Size(100, 13);
+			this->TextboxEffects5->Text = L"Time manipulators";
 			// 
 			// PlugDelay
 			// 
 			this->PlugDelay->Name = L"PlugDelay";
-			this->PlugDelay->Size = System::Drawing::Size(169, 22);
+			this->PlugDelay->Size = System::Drawing::Size(188, 22);
 			this->PlugDelay->Text = L"Delay";
-			// 
-			// PlugLPF
-			// 
-			this->PlugLPF->Name = L"PlugLPF";
-			this->PlugLPF->Size = System::Drawing::Size(169, 22);
-			this->PlugLPF->Text = L"Low Pass Filter";
-			// 
-			// PlugHPF
-			// 
-			this->PlugHPF->Name = L"PlugHPF";
-			this->PlugHPF->Size = System::Drawing::Size(169, 22);
-			this->PlugHPF->Text = L"High Pass Filter";
+			this->PlugDelay->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugRetriggerSimple
 			// 
 			this->PlugRetriggerSimple->Name = L"PlugRetriggerSimple";
-			this->PlugRetriggerSimple->Size = System::Drawing::Size(169, 22);
+			this->PlugRetriggerSimple->Size = System::Drawing::Size(188, 22);
 			this->PlugRetriggerSimple->Text = L"Retrigger (Simple)";
 			this->PlugRetriggerSimple->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugRetrigger
+			// 
+			this->PlugRetrigger->Name = L"PlugRetrigger";
+			this->PlugRetrigger->Size = System::Drawing::Size(188, 22);
+			this->PlugRetrigger->Text = L"Retrigger";
+			this->PlugRetrigger->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugReverserSimple
+			// 
+			this->PlugReverserSimple->Name = L"PlugReverserSimple";
+			this->PlugReverserSimple->Size = System::Drawing::Size(188, 22);
+			this->PlugReverserSimple->Text = L"Reverser (Simple)";
+			this->PlugReverserSimple->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			// 
+			// PlugReverser
+			// 
+			this->PlugReverser->Name = L"PlugReverser";
+			this->PlugReverser->Size = System::Drawing::Size(188, 22);
+			this->PlugReverser->Text = L"Reverser";
+			this->PlugReverser->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// RackItem
 			// 
@@ -473,42 +637,73 @@ namespace RackControls
 		}
 #pragma endregion
 
-public:
-	RackItemContents Content;
+	public:
+		RackItemContents^ Content = gcnew RackItemContents();
+	
+		//Aktualizacja zawartoœci RackItemu przez MainWindow
+		System::Void UpdateForm()
+		{
+			CurrentPluginName->Text = gcnew System::String(Content->CurrentPluginName);
+			ButtonConfig->Enabled = Content->HasConfigWindow;
+			ButtonVis->Enabled = Content->HasVisWindow;
+			ButtonSolo->Enabled = !Content->IsNullPlugin;
+			ButtonBypass->Enabled = !Content->IsNullPlugin;
+			ButtonBypass->BackColor = (Content->IsBypassed && !Content->IsNullPlugin) ? System::Drawing::Color::Pink : System::Drawing::SystemColors::Control;
 
-	System::Void UpdateForm()
-	{
-		this->ButtonConfig->Enabled = Content.HasConfigWindow;
-		this->ButtonVis->Enabled = Content.HasVisWindow;
-	}
 
-private:
+			if (RackItemId == 0) ButtonFlipUp->Enabled = false;
+			if (LastRackItem)  ButtonFlipDown->Enabled = false;
+		}
+		System::Void SetContents(RackItemContents^ NewContents) { Content = NewContents; }
+		System::Void UpdateVolumeMixStatus(System::Single NewVolumeMix)
+		{
+			TrackbarMixdown->Value = NewVolumeMix * 100.0f;
+		}
 
-	System::Void ButtonSwap_Click(System::Object^  sender, System::EventArgs^  e)
-	{
-		Button^ ButtonRef = (cli::safe_cast<System::Windows::Forms::Button^>(sender));
-		System::Drawing::Point ButtonLocation = ButtonRef->Location;
-		
-		PluginList->Show();
-		PluginList->Location = MousePosition;
-	}
-
-	System::Void ButtonConfig_Click(System::Object^  sender, System::EventArgs^  e)
-	{
-		this->ConfigWindowRequested(RackItemId);
-	}
-
-	System::Void SetNewPlugin(System::Object^  sender, System::EventArgs^  e)
-	{
-		System::Windows::Forms::ToolStripMenuItem^  SelectedToolstrip = (System::Windows::Forms::ToolStripMenuItem^)sender;
-		System::String^ PluginName = SelectedToolstrip->Text;
-
-		NewPluginRequested(RackItemId, PluginName);
-	}
-
-	System::Void TrackbarMixdown_Scroll(System::Object^  sender, System::EventArgs^  e)
-	{
-		VolumeMixChanged(RackItemId, (float)TrackbarMixdown->Value / 100.0f);
-	}
-};
+	private:
+	
+		//Interfejs RackItem
+		System::Void ButtonSwap_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			Button^ ButtonRef = (cli::safe_cast<System::Windows::Forms::Button^>(sender));
+			System::Drawing::Point ButtonLocation = ButtonRef->Location;
+			
+			PluginList->Show();
+			PluginList->Location = MousePosition;
+		}
+		System::Void ButtonConfig_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			this->ConfigWindowRequested(RackItemId);
+		}
+		System::Void TrackbarMixdown_Scroll(System::Object^  sender, System::EventArgs^  e)
+		{
+			VolumeMixChanged(RackItemId, (float)TrackbarMixdown->Value / 100.0f);
+		}
+		System::Void ButtonFlipUp_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			SwapRequested(RackItemId, false);
+		}
+		System::Void ButtonFlipDown_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			SwapRequested(RackItemId, true);
+		}
+		System::Void ButtonVis_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			VisWindowRequested(RackItemId);
+		}
+		System::Void ButtonBypass_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			BypassRequested(RackItemId);
+		}
+		System::Void ButtonSolo_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			SoloRequested(RackItemId);
+		}
+		System::Void SetNewPlugin(System::Object^  sender, System::EventArgs^  e)
+		{
+			System::Windows::Forms::ToolStripMenuItem^  SelectedToolstrip = (System::Windows::Forms::ToolStripMenuItem^)sender;
+			System::String^ PluginName = SelectedToolstrip->Text;
+			NewPluginRequested(RackItemId, PluginName);
+		}
+	};
 }

@@ -1,9 +1,9 @@
 #pragma once
+#include "PCH.h"
 #include "IoManager.h"
-#include "msclr/marshal.h"
 
-namespace AudioAnalyser {
-
+namespace AudioAnalyser
+{
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -20,9 +20,7 @@ namespace AudioAnalyser {
 		ConfigWindow(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
+			CustomInitCode();
 		}
 
 	protected:
@@ -40,19 +38,12 @@ namespace AudioAnalyser {
 	protected:
 
 	private: System::Windows::Forms::ComboBox^  ComboOutputStreamSource;
-
-
 	private: System::Windows::Forms::Label^  StaticLabelOutputStreamSource;
 	private: System::Windows::Forms::GroupBox^  GroupStreamConfig;
-
-
 	private: System::Windows::Forms::ComboBox^  ComboInputStreamSource;
-
-
 	private: System::Windows::Forms::Label^  StaticLabelInputStreamSource;
 	private: System::Windows::Forms::GroupBox^  GroupProcessing;
 	private: System::Windows::Forms::ComboBox^  ComboInputStreamBlocksize;
-
 	private: System::Windows::Forms::Label^  StaticLabelBlocksize;
 	private: System::Windows::Forms::Button^  ButtonOk;
 	private: System::Windows::Forms::Button^  ButtonCancel;
@@ -250,8 +241,6 @@ namespace AudioAnalyser {
 			this->GroupOutputFile->ResumeLayout(false);
 			this->GroupOutputFile->PerformLayout();
 			this->ResumeLayout(false);
-
-			CustomInitCode();
 		}
 #pragma endregion
 private:
@@ -290,6 +279,7 @@ private:
 			this->ComboOutputStreamSource->SelectedIndex = CurrentOut;
 		}
 
+		//Interfejs ConfigWindow
 		System::Void ButtonOk_Click(System::Object^  sender, System::EventArgs^  e)
 		{
 			IoManager::GetInstance()->SetNewConfig(

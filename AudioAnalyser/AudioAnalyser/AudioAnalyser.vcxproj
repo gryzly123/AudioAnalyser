@@ -94,6 +94,8 @@
       <PreprocessorDefinitions>WIN32;SFML_STATIC;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)\..\..\sfml\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>true</CompileAsManaged>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Debug\sfml-graphics-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-window-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-audio-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-system-d.lib;$(ProjectDir)\..\..\sfml\lib\Debug\sfml-main-d.lib;$(ProjectDir)..\..\PortAudio\lib\Debug\portaudio_static_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -149,18 +151,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioGrabber.cpp" />
     <ClCompile Include="AudioProcessor.cpp" />
     <ClCompile Include="ComplexNumbers.cpp" />
     <ClCompile Include="ConfigWindow.cpp" />
     <ClCompile Include="DynamicPluginConfigWindow.cpp" />
     <ClCompile Include="IoManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="PCH.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioGrabber.h" />
     <ClInclude Include="AudioProcessor.h" />
     <ClInclude Include="ComplexNumbers.h" />
     <ClInclude Include="ConfigWindow.h">
@@ -170,11 +170,15 @@
     <ClInclude Include="DynamicPluginConfigWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="FileSerializer.h" />
     <ClInclude Include="IoManager.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="PCH.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="VisWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConfigWindow.resx">

@@ -1,9 +1,5 @@
 #pragma once
-
-#include <string>
-#include <vector>
-#include "portaudio.h"
-#include "Utilities.h"
+#include "PCH.h"
 #include "AudioProcessor.h"
 
 struct AudioDevice
@@ -25,7 +21,8 @@ private:
 	static IoManager* Instance;
 
 	//config
-	int InSampleRate = 44100;
+	const int InSampleRate = 44100;
+	const int InBitDepth = 16;
 	int InSamplesInBlock = 256;
 
 	//portaudio
@@ -84,7 +81,6 @@ private:
 				if (i == DefaultOutput)
 				{
 					DefaultAudioOutput = AudioDevicesOutput.size() - 1;
-					Utilities::ShowMessageboxDebugonly(Utilities::WideFromMultibyteCharArray(DeviceInfo->name), L"Default output");
 				}
 			}
 			else
@@ -93,7 +89,6 @@ private:
 				if (i == DefaultInput)
 				{
 					DefaultAudioInput = AudioDevicesInput.size() - 1;
-					Utilities::ShowMessageboxDebugonly(Utilities::WideFromMultibyteCharArray(DeviceInfo->name), L"Default input");
 				}
 			}
 		}
@@ -187,15 +182,14 @@ public:
 		if (NewInput     >= 0) SelectedAudioInput = NewInput;
 		if (NewOutput    >= 0) SelectedAudioOutput = NewOutput;
 		if (NewBlocksize >= 0) InSamplesInBlock = (int)pow(2, NewBlocksize + 6);
-		Utilities::ShowMessageboxDebugonly(std::to_wstring(InSamplesInBlock));
 
 		StopPortAudio();
 		StartPortAudio();
 	}
 
-	void StartProcessing()
-	{
-		StartPortAudio();
-	}
+	void StartProcessing() { StartPortAudio(); }
+	void StopProcessing() { StopPortAudio(); }
+
+	bool IsProcessing() { return PaStarted; }
 };
 

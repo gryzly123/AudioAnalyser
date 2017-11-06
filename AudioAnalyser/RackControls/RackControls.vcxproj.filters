@@ -52,9 +52,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="app.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
@@ -66,6 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="RackItem.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicControlObject.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

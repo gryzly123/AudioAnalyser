@@ -1,7 +1,5 @@
-#include "Utilities.h"
-#include <Windows.h>
+#include "PCH.h"
 #include <msclr\marshal.h>
-#include <msclr\marshal_cppstd.h>
 
 std::wstring Utilities::WideFromString(const std::string In)
 {

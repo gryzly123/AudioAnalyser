@@ -3,7 +3,7 @@
 #include "DynamicPluginConfigWindow.h"
 #include "IoManager.h"
 #include "Utilities.h"
-
+#include "FileSerializer.h"
 
 namespace AudioAnalyser
 {
@@ -13,7 +13,6 @@ namespace AudioAnalyser
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
-
 	/// <summary>
 	/// Summary for MainWindow
 	/// </summary>
@@ -23,9 +22,14 @@ namespace AudioAnalyser
 		MainWindow(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
+
+			PluginConfigWindows = gcnew System::Collections::Generic::List<DynamicPluginConfigWindow^>();
+			for (int i = 0; i < GUI_RACKITEMS_COUNT; i++)
+			{
+				UpdateRackItemContents(i);
+				PluginConfigWindows->Add(gcnew DynamicPluginConfigWindow());
+				PluginConfigWindows[i]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
+			}
 		}
 
 	protected:
@@ -40,19 +44,13 @@ namespace AudioAnalyser
 			}
 		}
 
+	private: System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
 	private: System::Windows::Forms::ImageList^  Icons32;
-
-
+	
 	private: System::Windows::Forms::GroupBox^  GroupInputFile;
-
 	private: System::Windows::Forms::GroupBox^  GroupOutputFile;
-
-
-
-
-
 	private: System::Windows::Forms::ComboBox^  ComboOutputFileFormat;
-
+	
 	private: System::Windows::Forms::Button^  ButtonNewFile;
 	private: System::Windows::Forms::Button^  ButtonOpenFile;
 	private: System::Windows::Forms::Button^  ButtonSaveFile;
@@ -62,21 +60,17 @@ namespace AudioAnalyser
 	private: System::Windows::Forms::Button^  ButtonOutputStreamStart;
 	private: System::Windows::Forms::Button^  ButtonOutputFileBrowse;
 	private: System::Windows::Forms::Button^  ButtonOutputFileStart;
-
-
-
+	private: System::Windows::Forms::Button^  ButtonStartProcessing;
+	
 	private: System::Windows::Forms::Label^  StaticLabelInputFileSource;
 	private: System::Windows::Forms::Label^  StaticLabelInputFileTime;
-
-
-
 	private: System::Windows::Forms::Label^  StaticLabelOutputFileSource;
 	private: System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
-
+	
 	private: System::Windows::Forms::TrackBar^ SeekbarInputFile;
-
 	private: System::Windows::Forms::TextBox^  TextboxOutputFilePath;
 	private: System::Windows::Forms::TextBox^  TextboxInputFilePath;
+	
 	private: RackControls::RackItem^  RackItem0;
 	private: RackControls::RackItem^  RackItem1;
 	private: RackControls::RackItem^  RackItem2;
@@ -85,25 +79,17 @@ namespace AudioAnalyser
 	private: RackControls::RackItem^  RackItem5;
 	private: RackControls::RackItem^  RackItem6;
 
-
-
-
-
-
-
-
 	private: System::Windows::Forms::GroupBox^  groupBox1;
 	private: System::Windows::Forms::GroupBox^  groupBox2;
 	private: System::Windows::Forms::Button^  ButtonOpenConfig;
 
 	private: System::Windows::Forms::Button^  button2;
-	private: System::Windows::Forms::Button^  ButtonStartProcessing;
-
+	private: System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
+	private: System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
+	private: System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
+	private: System::Windows::Forms::SaveFileDialog^  SaveDialogFile;
 
 	private: System::ComponentModel::IContainer^  components;
-
-	protected:
-
 	private:
 		/// <summary>
 		/// Required designer variable.
@@ -139,6 +125,11 @@ namespace AudioAnalyser
 			this->ButtonOutputFileStart = (gcnew System::Windows::Forms::Button());
 			this->StaticLabelOutputFileSource = (gcnew System::Windows::Forms::Label());
 			this->ButtonOutputStreamStart = (gcnew System::Windows::Forms::Button());
+			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->ButtonOpenConfig = (gcnew System::Windows::Forms::Button());
+			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->ButtonStartProcessing = (gcnew System::Windows::Forms::Button());
 			this->RackItem6 = (gcnew RackControls::RackItem());
 			this->RackItem5 = (gcnew RackControls::RackItem());
 			this->RackItem4 = (gcnew RackControls::RackItem());
@@ -146,11 +137,10 @@ namespace AudioAnalyser
 			this->RackItem2 = (gcnew RackControls::RackItem());
 			this->RackItem1 = (gcnew RackControls::RackItem());
 			this->RackItem0 = (gcnew RackControls::RackItem());
-			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
-			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
-			this->ButtonOpenConfig = (gcnew System::Windows::Forms::Button());
-			this->button2 = (gcnew System::Windows::Forms::Button());
-			this->ButtonStartProcessing = (gcnew System::Windows::Forms::Button());
+			this->OpenDialogRack = (gcnew System::Windows::Forms::OpenFileDialog());
+			this->OpenDialogFile = (gcnew System::Windows::Forms::OpenFileDialog());
+			this->SaveDialogRack = (gcnew System::Windows::Forms::SaveFileDialog());
+			this->SaveDialogFile = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->GroupInputFile->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->BeginInit();
 			this->GroupOutputFile->SuspendLayout();
@@ -170,6 +160,7 @@ namespace AudioAnalyser
 			this->ButtonNewFile->Size = System::Drawing::Size(40, 40);
 			this->ButtonNewFile->TabIndex = 3;
 			this->ButtonNewFile->UseVisualStyleBackColor = true;
+			this->ButtonNewFile->Click += gcnew System::EventHandler(this, &MainWindow::ButtonNewFile_Click);
 			// 
 			// Icons32
 			// 
@@ -199,6 +190,7 @@ namespace AudioAnalyser
 			this->ButtonInputStreamStart->Size = System::Drawing::Size(48, 46);
 			this->ButtonInputStreamStart->TabIndex = 11;
 			this->ButtonInputStreamStart->UseVisualStyleBackColor = true;
+			this->ButtonInputStreamStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputStreamStart_Click);
 			// 
 			// ButtonOpenFile
 			// 
@@ -212,6 +204,7 @@ namespace AudioAnalyser
 			this->ButtonOpenFile->Size = System::Drawing::Size(40, 40);
 			this->ButtonOpenFile->TabIndex = 9;
 			this->ButtonOpenFile->UseVisualStyleBackColor = true;
+			this->ButtonOpenFile->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOpenFile_Click);
 			// 
 			// ButtonSaveFile
 			// 
@@ -225,6 +218,7 @@ namespace AudioAnalyser
 			this->ButtonSaveFile->Size = System::Drawing::Size(40, 40);
 			this->ButtonSaveFile->TabIndex = 10;
 			this->ButtonSaveFile->UseVisualStyleBackColor = true;
+			this->ButtonSaveFile->Click += gcnew System::EventHandler(this, &MainWindow::ButtonSaveFile_Click);
 			// 
 			// GroupInputFile
 			// 
@@ -369,6 +363,7 @@ namespace AudioAnalyser
 			this->ButtonOutputFileStart->Size = System::Drawing::Size(48, 46);
 			this->ButtonOutputFileStart->TabIndex = 11;
 			this->ButtonOutputFileStart->UseVisualStyleBackColor = true;
+			this->ButtonOutputFileStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputFileStart_Click);
 			// 
 			// StaticLabelOutputFileSource
 			// 
@@ -391,111 +386,7 @@ namespace AudioAnalyser
 			this->ButtonOutputStreamStart->Size = System::Drawing::Size(48, 46);
 			this->ButtonOutputStreamStart->TabIndex = 11;
 			this->ButtonOutputStreamStart->UseVisualStyleBackColor = true;
-			// 
-			// RackItem6
-			// 
-			this->RackItem6->Location = System::Drawing::Point(18, 536);
-			this->RackItem6->MixVolume = 100;
-			this->RackItem6->Name = L"RackItem6";
-			this->RackItem6->RackItemId = 6;
-			this->RackItem6->Size = System::Drawing::Size(407, 61);
-			this->RackItem6->TabIndex = 21;
-			this->RackItem6->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem6->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem6->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem6->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem6->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem6->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
-			// 
-			// RackItem5
-			// 
-			this->RackItem5->Location = System::Drawing::Point(18, 475);
-			this->RackItem5->MixVolume = 100;
-			this->RackItem5->Name = L"RackItem5";
-			this->RackItem5->RackItemId = 5;
-			this->RackItem5->Size = System::Drawing::Size(407, 61);
-			this->RackItem5->TabIndex = 20;
-			this->RackItem5->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem5->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem5->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem5->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem5->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem5->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
-			// 
-			// RackItem4
-			// 
-			this->RackItem4->Location = System::Drawing::Point(18, 414);
-			this->RackItem4->MixVolume = 100;
-			this->RackItem4->Name = L"RackItem4";
-			this->RackItem4->RackItemId = 4;
-			this->RackItem4->Size = System::Drawing::Size(407, 61);
-			this->RackItem4->TabIndex = 19;
-			this->RackItem4->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem4->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem4->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem4->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem4->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem4->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
-			// 
-			// RackItem3
-			// 
-			this->RackItem3->Location = System::Drawing::Point(18, 353);
-			this->RackItem3->MixVolume = 100;
-			this->RackItem3->Name = L"RackItem3";
-			this->RackItem3->RackItemId = 3;
-			this->RackItem3->Size = System::Drawing::Size(407, 61);
-			this->RackItem3->TabIndex = 18;
-			this->RackItem3->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem3->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem3->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem3->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem3->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem3->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
-			// 
-			// RackItem2
-			// 
-			this->RackItem2->Location = System::Drawing::Point(18, 292);
-			this->RackItem2->MixVolume = 100;
-			this->RackItem2->Name = L"RackItem2";
-			this->RackItem2->RackItemId = 2;
-			this->RackItem2->Size = System::Drawing::Size(407, 61);
-			this->RackItem2->TabIndex = 17;
-			this->RackItem2->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem2->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem2->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem2->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem2->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem2->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
-			// 
-			// RackItem1
-			// 
-			this->RackItem1->Location = System::Drawing::Point(18, 231);
-			this->RackItem1->MixVolume = 100;
-			this->RackItem1->Name = L"RackItem1";
-			this->RackItem1->RackItemId = 1;
-			this->RackItem1->Size = System::Drawing::Size(407, 61);
-			this->RackItem1->TabIndex = 16;
-			this->RackItem1->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem1->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem1->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem1->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem1->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem1->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
-			// 
-			// RackItem0
-			// 
-			this->RackItem0->Location = System::Drawing::Point(18, 170);
-			this->RackItem0->MixVolume = 100;
-			this->RackItem0->Name = L"RackItem0";
-			this->RackItem0->RackItemId = 0;
-			this->RackItem0->Size = System::Drawing::Size(407, 61);
-			this->RackItem0->TabIndex = 15;
-			this->RackItem0->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
-			this->RackItem0->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
-			this->RackItem0->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
-			this->RackItem0->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
-			this->RackItem0->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
-			this->RackItem0->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			this->ButtonOutputStreamStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputStreamStart_Click);
 			// 
 			// groupBox1
 			// 
@@ -558,6 +449,143 @@ namespace AudioAnalyser
 			this->ButtonStartProcessing->UseVisualStyleBackColor = true;
 			this->ButtonStartProcessing->Click += gcnew System::EventHandler(this, &MainWindow::ButtonStartProcessing_Click);
 			// 
+			// RackItem6
+			// 
+			this->RackItem6->LastRackItem = true;
+			this->RackItem6->Location = System::Drawing::Point(18, 536);
+			this->RackItem6->MixVolume = 100;
+			this->RackItem6->Name = L"RackItem6";
+			this->RackItem6->RackItemId = 6;
+			this->RackItem6->Size = System::Drawing::Size(407, 61);
+			this->RackItem6->TabIndex = 21;
+			this->RackItem6->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem6->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem6->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem6->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem6->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem6->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem6->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// RackItem5
+			// 
+			this->RackItem5->LastRackItem = false;
+			this->RackItem5->Location = System::Drawing::Point(18, 475);
+			this->RackItem5->MixVolume = 100;
+			this->RackItem5->Name = L"RackItem5";
+			this->RackItem5->RackItemId = 5;
+			this->RackItem5->Size = System::Drawing::Size(407, 61);
+			this->RackItem5->TabIndex = 20;
+			this->RackItem5->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem5->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem5->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem5->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem5->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem5->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem5->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// RackItem4
+			// 
+			this->RackItem4->LastRackItem = false;
+			this->RackItem4->Location = System::Drawing::Point(18, 414);
+			this->RackItem4->MixVolume = 100;
+			this->RackItem4->Name = L"RackItem4";
+			this->RackItem4->RackItemId = 4;
+			this->RackItem4->Size = System::Drawing::Size(407, 61);
+			this->RackItem4->TabIndex = 19;
+			this->RackItem4->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem4->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem4->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem4->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem4->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem4->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem4->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// RackItem3
+			// 
+			this->RackItem3->LastRackItem = false;
+			this->RackItem3->Location = System::Drawing::Point(18, 353);
+			this->RackItem3->MixVolume = 100;
+			this->RackItem3->Name = L"RackItem3";
+			this->RackItem3->RackItemId = 3;
+			this->RackItem3->Size = System::Drawing::Size(407, 61);
+			this->RackItem3->TabIndex = 18;
+			this->RackItem3->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem3->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem3->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem3->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem3->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem3->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem3->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// RackItem2
+			// 
+			this->RackItem2->LastRackItem = false;
+			this->RackItem2->Location = System::Drawing::Point(18, 292);
+			this->RackItem2->MixVolume = 100;
+			this->RackItem2->Name = L"RackItem2";
+			this->RackItem2->RackItemId = 2;
+			this->RackItem2->Size = System::Drawing::Size(407, 61);
+			this->RackItem2->TabIndex = 17;
+			this->RackItem2->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem2->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem2->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem2->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem2->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem2->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem2->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// RackItem1
+			// 
+			this->RackItem1->LastRackItem = false;
+			this->RackItem1->Location = System::Drawing::Point(18, 231);
+			this->RackItem1->MixVolume = 100;
+			this->RackItem1->Name = L"RackItem1";
+			this->RackItem1->RackItemId = 1;
+			this->RackItem1->Size = System::Drawing::Size(407, 61);
+			this->RackItem1->TabIndex = 16;
+			this->RackItem1->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem1->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem1->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem1->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem1->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem1->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem1->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// RackItem0
+			// 
+			this->RackItem0->LastRackItem = false;
+			this->RackItem0->Location = System::Drawing::Point(18, 170);
+			this->RackItem0->MixVolume = 100;
+			this->RackItem0->Name = L"RackItem0";
+			this->RackItem0->RackItemId = 0;
+			this->RackItem0->Size = System::Drawing::Size(407, 61);
+			this->RackItem0->TabIndex = 15;
+			this->RackItem0->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
+			this->RackItem0->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
+			this->RackItem0->BypassRequested += gcnew RackControls::OnBypassRequested(this, &MainWindow::RackItem_BypassRequested);
+			this->RackItem0->VisWindowRequested += gcnew RackControls::OnVisWindowRequested(this, &MainWindow::RackItem_VisWindowRequested);
+			this->RackItem0->ConfigWindowRequested += gcnew RackControls::OnConfigWindowRequested(this, &MainWindow::RackItem_ConfigWindowRequested);
+			this->RackItem0->NewPluginRequested += gcnew RackControls::OnNewPluginRequested(this, &MainWindow::RackItem_NewPluginRequested);
+			this->RackItem0->VolumeMixChanged += gcnew RackControls::OnVolumeMixChanged(this, &MainWindow::RackItem_VolumeMixChanged);
+			// 
+			// OpenDialogRack
+			// 
+			this->OpenDialogRack->DefaultExt = L"aap";
+			this->OpenDialogRack->FileName = L"openFileDialog1";
+			this->OpenDialogRack->Filter = L"Audio Analyser Project|*.aap";
+			this->OpenDialogRack->Title = L"Open rack configuration";
+			this->OpenDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogRack_FileOk);
+			// 
+			// OpenDialogFile
+			// 
+			this->OpenDialogFile->FileName = L"openFileDialog1";
+			// 
+			// SaveDialogRack
+			// 
+			this->SaveDialogRack->DefaultExt = L"aap";
+			this->SaveDialogRack->Filter = L"Audio Analyser Project|*.aap";
+			this->SaveDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogRack_FileOk);
+			// 
 			// MainWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -598,56 +626,191 @@ namespace AudioAnalyser
 #pragma endregion
 	private:
 		
-		System::Void Btn_StartGrabbing_Click(System::Object^  sender, System::EventArgs^  e)
+		//Interfejs MainWindow - przyciski w menu g³ównym
+		System::Void ButtonNewFile_Click(System::Object^  sender, System::EventArgs^  e)
 		{
+			AudioProcessor::GetInstance()->ResetPlugins();
+			PerformFullRackRefresh(true);
 		}
-
-		System::Void ButtonInputFileStart_Click(System::Object^  sender, System::EventArgs^  e)
+		System::Void ButtonOpenFile_Click(System::Object^  sender, System::EventArgs^  e)
 		{
-			//MessageBox::Show()
+			OpenDialogRack->ShowDialog();
 		}
-		
+		System::Void ButtonSaveFile_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			SaveDialogRack->ShowDialog();
+		}
+		System::Void ButtonStartProcessing_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			if (IoManager::GetInstance()->IsProcessing()) IoManager::GetInstance()->StartProcessing();
+			else IoManager::GetInstance()->StopProcessing();
+		}
 		System::Void ButtonOpenConfig_Click(System::Object^  sender, System::EventArgs^  e)
 		{
 			ConfigWindow^ Config = gcnew ConfigWindow();
 			Config->ShowDialog();
 		}
-
-		System::Void RackItem_ConfigWindowRequested(System::Int32 AtIndex)
+		
+		//Interfejs MainWindow - switche otwierania sygna³ów audio (stream-in, file-in, stream-out, file-out)
+		System::Void ButtonInputStreamStart_Click(System::Object^  sender, System::EventArgs^  e)
 		{
+		}
+		System::Void ButtonInputFileStart_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+		}
+		System::Void ButtonOutputStreamStart_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+		}
+		System::Void ButtonOutputFileStart_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+		}
+
+		//Interfejs MainWindow - obs³uga plików projektu (aap)
+		System::Void OpenDialogRack_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		{
+			System::String^ TargetPath = OpenDialogRack->FileName;
+			XmlTextReader^ XmlReader = gcnew XmlTextReader(TargetPath);
+			FileSerializer::DeserializeRack(XmlReader);
+			PerformFullRackRefresh(true);
+			XmlReader->Close();
+
+		}
+		System::Void SaveDialogRack_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		{
+			System::String^ TargetPath = SaveDialogRack->FileName;
+			XmlTextWriter^ XmlWriter = gcnew XmlTextWriter(TargetPath, System::Text::Encoding::UTF8);
+			FileSerializer::SerializeRack(XmlWriter);
+			XmlWriter->Close();
+		}
+
+		//Helpery RackItemów
+		System::Void PerformFullRackRefresh(bool IncludeDryWetMixes)
+		{
+			for (int i = 0; i < GUI_RACKITEMS_COUNT; ++i)
+			{
+				UpdateRackItemContents(i);
+				PluginConfigWindows[i]->Close();
+				CreateNewPluginConfig(i);
+				if (IncludeDryWetMixes)
+					SelectRackItem(i)->UpdateVolumeMixStatus(
+						AudioProcessor::GetInstance()->GetPluginVolumeMix(i));
+			}
+		}
+		RackControls::RackItem^ SelectRackItem(System::Int32 AtIndex)
+		{
+			RackControls::RackItem^ Item;
+			switch (AtIndex)
+			{
+			case 0: Item = RackItem0; break;
+			case 1: Item = RackItem1; break;
+			case 2: Item = RackItem2; break;
+			case 3: Item = RackItem3; break;
+			case 4: Item = RackItem4; break;
+			case 5: Item = RackItem5; break;
+			case 6: Item = RackItem6; break;
+			}
+
+			return Item;
+		}
+		System::Void CreateNewPluginConfig(Int32 AtIndex)
+		{
+			PluginConfigWindows[AtIndex] = gcnew DynamicPluginConfigWindow();
 			const std::vector <DspPluginParameter*> Params = AudioProcessor::GetInstance()->GetPluginParameters(AtIndex);
-			DynamicPluginConfigWindow^ ConfigWindow = gcnew DynamicPluginConfigWindow();
-			ConfigWindow->PopulateWithParameters(Params, AtIndex);
-			ConfigWindow->Show();
+			PluginConfigWindows[AtIndex]->PopulateWithParameters(Params, AtIndex);
+			PluginConfigWindows[AtIndex]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
 		}
-
-		System::Void RackItem_BypassRequested(System::Int32 A_0)
+		System::Void UpdateConfigWindow(System::Int32 AtIndex)
 		{
+			bool PluginHasConfigWindow, B;
 
+			//Jeœli stare okno konfiguracji istnieje, zamknij je
+			DynamicPluginConfigWindow^ Window = PluginConfigWindows[AtIndex];
+			bool WasWindowOpenedBeforeShutdown = Window->IsOpened;
+			System::Drawing::Point WindowLocation;
+			if (WasWindowOpenedBeforeShutdown)
+			{
+				WindowLocation = Window->DesktopLocation;
+				Window->Close();
+			}
+
+			//Stwórz nowe okno konfiguracji
+			CreateNewPluginConfig(AtIndex);
+			Window = PluginConfigWindows[AtIndex];
+
+			//Poka¿ nowe okno konfiguracji, jeœli stare by³o otwarte, a nowe je posiada
+			AudioProcessor::GetInstance()->GetPluginWindowCapabilities(AtIndex, PluginHasConfigWindow, B);
+			if (WasWindowOpenedBeforeShutdown && PluginHasConfigWindow)
+			{
+				Window->Show();
+				Window->IsOpened = true;
+				Window->DesktopLocation = WindowLocation;
+			}
+		}
+		System::Void UpdateRackItemContents(System::Int32 AtIndex)
+		{
+			AudioProcessor* Ap = AudioProcessor::GetInstance();
+			RackItemContents^ NewContents = gcnew RackItemContents();
+			bool ConfigWindow, VisWindow;
+			Ap->GetPluginWindowCapabilities(AtIndex, ConfigWindow, VisWindow);
+
+			NewContents->CurrentPluginName = gcnew System::String(Ap->GetPluginName(AtIndex).c_str());
+			NewContents->IsBypassed = Ap->IsPluginBypassed(AtIndex);
+			NewContents->IsNullPlugin = (Ap->GetPluginName(AtIndex) == L"(none)");
+			NewContents->HasConfigWindow = ConfigWindow;
+			NewContents->HasVisWindow = VisWindow;
+
+			RackControls::RackItem^ RackItemRef = SelectRackItem(AtIndex);
+			RackItemRef->SetContents(NewContents);
+			RackItemRef->UpdateForm();
 		}
 
+		//Kontrola RackItemów
 		System::Void RackItem_NewPluginRequested(System::Int32 AtIndex, System::String^  NewPluginName)
 		{
+			//Stwórz nowego plugina
 			AudioProcessor::GetInstance()->ChangePlugin(AtIndex, Utilities::WideFromSystemString(NewPluginName));
-		}
 
-		System::Void RackItem_SoloRequested(System::Int32 A_0)
+			//Zaktualizuj okna konfiguracji
+			UpdateConfigWindow(AtIndex);
+
+			//Zaktualizuj parametery RackItemu
+			UpdateRackItemContents(AtIndex);
+		}
+		System::Void RackItem_SwapRequested(System::Int32 AtIndex, System::Boolean IsDownwards)
+		{
+			AudioProcessor::GetInstance()->SwapPlugins(AtIndex, IsDownwards ? MoveDownInRack : MoveUpInRack);
+			
+			UpdateRackItemContents(AtIndex);
+			UpdateRackItemContents(AtIndex + (IsDownwards ? 1 : -1));
+
+			UpdateConfigWindow(AtIndex);
+			UpdateConfigWindow(AtIndex + (IsDownwards ? 1 : -1));
+		}
+		System::Void RackItem_ConfigWindowRequested(System::Int32 AtIndex)
+		{
+			DynamicPluginConfigWindow^ ConfigWindow = PluginConfigWindows[AtIndex];
+			ConfigWindow->Show();
+			ConfigWindow->BringToFront();
+			ConfigWindow->IsOpened = true;
+		}
+		System::Void RackItem_VisWindowRequested(System::Int32 AtIndex)
 		{
 
 		}
-		System::Void RackItem_VisWindowRequested(System::Int32 A_0)
+		System::Void RackItem_BypassRequested(System::Int32 AtIndex)
 		{
-
+			AudioProcessor::GetInstance()->SetPluginBypassed(AtIndex);
+			UpdateRackItemContents(AtIndex);
+		}
+		System::Void RackItem_SoloRequested(System::Int32 AtIndex)
+		{
+			AudioProcessor::GetInstance()->SetPluginSolo(AtIndex);
+			for(int i = 0; i < GUI_RACKITEMS_COUNT; i++) UpdateRackItemContents(i);
 		}
 		System::Void RackItem_VolumeMixChanged(System::Int32 AtIndex, System::Single NewValue)
 		{
-			AudioProcessor::GetInstance()->ChangePluginVolumeMix(AtIndex, NewValue);
+			AudioProcessor::GetInstance()->SetPluginVolumeMix(AtIndex, NewValue);
 		}
-		
-		private: System::Void ButtonStartProcessing_Click(System::Object^  sender, System::EventArgs^  e)
-		{
-			IoManager::GetInstance()->StartProcessing();
-		}
-		};
 
+};
 }
