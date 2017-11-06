@@ -189,7 +189,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)MainWindow.resx</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
