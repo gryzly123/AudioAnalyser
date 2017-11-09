@@ -1,12 +1,28 @@
 #pragma once
 #include "PCH.h"
 #include "AudioProcessor.h"
+#include "SoundFile.h"
 
 struct AudioDevice
 {
 	std::wstring DeviceName = L"uninitialized";
 	int ChannelCount = 0;
 	int PaId = -1;
+};
+
+enum InputSource
+{
+	IS_None = 1,
+	IS_Stream = 2,
+	IS_File = 3
+};
+
+enum OutputSource
+{
+	OS_None = 1,
+	OS_Stream = 2,
+	OS_File = 3,
+	OS_Both = 4
 };
 
 static int PaSoundCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
@@ -44,6 +60,14 @@ private:
 	int SelectedAudioOutput = 0;
 	bool IsInputMono = false;
 	bool IsOutputMono = false;
+
+	//pliki audio
+	InSoundFile* CurrentInFile = nullptr;
+	OutSoundFile* CurrentOutFile = nullptr;
+
+	//sesja
+	InputSource CurrentInput = IS_None;
+	OutputSource CurrentOutput = OS_None;
 
 	//metody abstrakcji portaudio
 	bool ThrowPaError() { return false; }
@@ -102,12 +126,10 @@ private:
 
 		return true;
 	}
-
 	bool DeinitializePortAudio()
 	{
 		Pa_Terminate();
 	}
-
 	bool StartPortAudio()
 	{
 		if (PaStarted) return true;
@@ -147,7 +169,6 @@ private:
 		PaStarted = true;
 		return PaStarted;
 	}
-
 	bool StopPortAudio()
 	{
 		if (!PaStarted) return true;
@@ -176,20 +197,101 @@ public:
 		OutputDevices = AudioDevicesOutput;
 		Blocksize = InSamplesInBlock;
 	}
-
-	void SetNewConfig(int NewInput, int NewOutput, int NewBlocksize)
+	void SetNewConfig(int NewInput, int NewOutput, int NewBlocksize, bool StartNow = false)
 	{
-		if (NewInput     >= 0) SelectedAudioInput = NewInput;
-		if (NewOutput    >= 0) SelectedAudioOutput = NewOutput;
+		if (NewInput >= 0) SelectedAudioInput = NewInput;
+		if (NewOutput >= 0) SelectedAudioOutput = NewOutput;
 		if (NewBlocksize >= 0) InSamplesInBlock = (int)pow(2, NewBlocksize + 6);
 
+		bool WasRunning = PaStarted;
 		StopPortAudio();
-		StartPortAudio();
+		if (StartNow || WasRunning) StartPortAudio();
 	}
-
+	
 	void StartProcessing() { StartPortAudio(); }
 	void StopProcessing() { StopPortAudio(); }
-
 	bool IsProcessing() { return PaStarted; }
-};
+	
+	InputSource SetInputSource(InputSource NewTargetSource)
+	{
+		int Direction = NewTargetSource + (10 * CurrentInput);
+		switch (Direction)
+		{
+		case 11: //None->None
+		case 21: //Stream->None
+		case 31: //File->None
+		case 22: //Stream->Stream
+		case 33: //File->File
+			CurrentInput = IS_None;
+			break;
 
+		case 32: //File->Stream
+		case 12: //None->Stream
+			CurrentInput = IS_Stream;
+			break;
+
+		case 13: //None->File
+		case 23: //Stream->File
+			CurrentInput = IS_File;
+			break;
+		}
+
+		return CurrentInput;
+	}
+
+	void CreateNewOutputFile()
+	{
+		CurrentOutFile = new OutSoundFile();
+	}
+
+	void FinalizeOutputFile()
+	{
+		delete CurrentOutFile;
+		CurrentOutFile = nullptr;
+	}
+
+	OutputSource SetOutputSource(OutputSource NewTargetSource)
+	{
+		int Direction = NewTargetSource + (10 * CurrentOutput);
+		switch (Direction)
+		{
+		case 12: //None->Stream
+			CurrentOutput = OS_Stream;
+			break;
+
+		case 13: //None->File
+			CurrentOutput = OS_File;
+			CreateNewOutputFile();
+			break;
+
+		case 22: //Stream->Stream
+			CurrentOutput = OS_None;
+			break;
+
+		case 23: //Stream->File
+			CurrentOutput = OS_Both;
+			CreateNewOutputFile();
+			break;
+
+		case 32: //File->Stream
+			CurrentOutput = OS_Both;
+			break;
+
+		case 33: //File->File
+			CurrentOutput = OS_None;
+			FinalizeOutputFile();
+			break;
+
+		case 42: //Both->Stream
+			CurrentOutput = OS_File;
+			break;
+
+		case 43: //Both->File
+			CurrentOutput = OS_Stream;
+			FinalizeOutputFile();
+			break;
+		}
+
+		return CurrentOutput;
+	}
+};

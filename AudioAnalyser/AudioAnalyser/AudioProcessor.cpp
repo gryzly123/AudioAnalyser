@@ -178,6 +178,9 @@ void AudioProcessor::ResetPlugins()
 
 int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
+	//int a = 2 * framesPerBuffer;
+	//AudioFile.ProcessData((float*)inputBuffer, a);
+	
 	float* InputLPre = new float[framesPerBuffer];
 	float* InputRPre = new float[framesPerBuffer];
 	float* InputLPost = new float[framesPerBuffer];

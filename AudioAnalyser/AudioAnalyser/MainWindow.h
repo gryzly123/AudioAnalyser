@@ -30,6 +30,15 @@ namespace AudioAnalyser
 				PluginConfigWindows->Add(gcnew DynamicPluginConfigWindow());
 				PluginConfigWindows[i]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
 			}
+
+			SetProcessButtonsEnabled(false);
+
+			//XmlTextReader^ FileReader = gcnew XmlTextReader(L"C:\\Program Filesl\\bepis.aap");
+			//FileSerializer::DeserializeRack(FileReader);
+			//PerformFullRackRefresh(true);
+			//FileReader->Close();
+			//Version^ AppVersion = System::Reflection::Assembly::GetExecutingAssembly()->GetName()->Version;
+			//MessageBox::Show(AppVersion->ToString());
 		}
 
 	protected:
@@ -69,7 +78,7 @@ namespace AudioAnalyser
 	
 	private: System::Windows::Forms::TrackBar^ SeekbarInputFile;
 	private: System::Windows::Forms::TextBox^  TextboxOutputFilePath;
-	private: System::Windows::Forms::TextBox^  TextboxInputFilePath;
+
 	
 	private: RackControls::RackItem^  RackItem0;
 	private: RackControls::RackItem^  RackItem1;
@@ -88,6 +97,8 @@ namespace AudioAnalyser
 	private: System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
 	private: System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
 	private: System::Windows::Forms::SaveFileDialog^  SaveDialogFile;
+	private: System::Windows::Forms::Button^  ButtonInputFileAbout;
+	private: System::Windows::Forms::Label^  DynamicLabelInputFileSource;
 
 	private: System::ComponentModel::IContainer^  components;
 	private:
@@ -111,10 +122,11 @@ namespace AudioAnalyser
 			this->ButtonOpenFile = (gcnew System::Windows::Forms::Button());
 			this->ButtonSaveFile = (gcnew System::Windows::Forms::Button());
 			this->GroupInputFile = (gcnew System::Windows::Forms::GroupBox());
+			this->ButtonInputFileAbout = (gcnew System::Windows::Forms::Button());
+			this->DynamicLabelInputFileSource = (gcnew System::Windows::Forms::Label());
 			this->StaticLabelInputFileTime = (gcnew System::Windows::Forms::Label());
 			this->SeekbarInputFile = (gcnew System::Windows::Forms::TrackBar());
 			this->ButtonInputFileBrowse = (gcnew System::Windows::Forms::Button());
-			this->TextboxInputFilePath = (gcnew System::Windows::Forms::TextBox());
 			this->ButtonInputFileStart = (gcnew System::Windows::Forms::Button());
 			this->StaticLabelInputFileSource = (gcnew System::Windows::Forms::Label());
 			this->GroupOutputFile = (gcnew System::Windows::Forms::GroupBox());
@@ -222,24 +234,50 @@ namespace AudioAnalyser
 			// 
 			// GroupInputFile
 			// 
+			this->GroupInputFile->Controls->Add(this->ButtonInputFileAbout);
+			this->GroupInputFile->Controls->Add(this->DynamicLabelInputFileSource);
 			this->GroupInputFile->Controls->Add(this->StaticLabelInputFileTime);
 			this->GroupInputFile->Controls->Add(this->SeekbarInputFile);
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileBrowse);
-			this->GroupInputFile->Controls->Add(this->TextboxInputFilePath);
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileStart);
 			this->GroupInputFile->Controls->Add(this->StaticLabelInputFileSource);
 			this->GroupInputFile->Location = System::Drawing::Point(111, 64);
 			this->GroupInputFile->Name = L"GroupInputFile";
-			this->GroupInputFile->Size = System::Drawing::Size(317, 100);
+			this->GroupInputFile->Size = System::Drawing::Size(317, 96);
 			this->GroupInputFile->TabIndex = 12;
 			this->GroupInputFile->TabStop = false;
 			this->GroupInputFile->Text = L"Input file";
 			// 
+			// ButtonInputFileAbout
+			// 
+			this->ButtonInputFileAbout->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputFileAbout->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(238)));
+			this->ButtonInputFileAbout->ImageIndex = 6;
+			this->ButtonInputFileAbout->Location = System::Drawing::Point(204, 23);
+			this->ButtonInputFileAbout->Margin = System::Windows::Forms::Padding(0);
+			this->ButtonInputFileAbout->Name = L"ButtonInputFileAbout";
+			this->ButtonInputFileAbout->Size = System::Drawing::Size(24, 20);
+			this->ButtonInputFileAbout->TabIndex = 18;
+			this->ButtonInputFileAbout->Text = L"\?";
+			this->ButtonInputFileAbout->TextAlign = System::Drawing::ContentAlignment::BottomCenter;
+			this->ButtonInputFileAbout->UseVisualStyleBackColor = true;
+			this->ButtonInputFileAbout->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputFileAbout_Click);
+			// 
+			// DynamicLabelInputFileSource
+			// 
+			this->DynamicLabelInputFileSource->AutoSize = true;
+			this->DynamicLabelInputFileSource->Location = System::Drawing::Point(89, 26);
+			this->DynamicLabelInputFileSource->Name = L"DynamicLabelInputFileSource";
+			this->DynamicLabelInputFileSource->Size = System::Drawing::Size(37, 13);
+			this->DynamicLabelInputFileSource->TabIndex = 17;
+			this->DynamicLabelInputFileSource->Text = L"(none)";
+			// 
 			// StaticLabelInputFileTime
 			// 
-			this->StaticLabelInputFileTime->Location = System::Drawing::Point(263, 72);
+			this->StaticLabelInputFileTime->Location = System::Drawing::Point(261, 72);
 			this->StaticLabelInputFileTime->Name = L"StaticLabelInputFileTime";
-			this->StaticLabelInputFileTime->Size = System::Drawing::Size(48, 22);
+			this->StaticLabelInputFileTime->Size = System::Drawing::Size(48, 13);
 			this->StaticLabelInputFileTime->TabIndex = 12;
 			this->StaticLabelInputFileTime->Text = L"00:00";
 			this->StaticLabelInputFileTime->TextAlign = System::Drawing::ContentAlignment::TopCenter;
@@ -260,19 +298,12 @@ namespace AudioAnalyser
 			this->ButtonInputFileBrowse->Location = System::Drawing::Point(227, 23);
 			this->ButtonInputFileBrowse->Margin = System::Windows::Forms::Padding(0);
 			this->ButtonInputFileBrowse->Name = L"ButtonInputFileBrowse";
-			this->ButtonInputFileBrowse->Size = System::Drawing::Size(30, 20);
+			this->ButtonInputFileBrowse->Size = System::Drawing::Size(24, 20);
 			this->ButtonInputFileBrowse->TabIndex = 16;
 			this->ButtonInputFileBrowse->Text = L"...";
 			this->ButtonInputFileBrowse->TextAlign = System::Drawing::ContentAlignment::TopCenter;
 			this->ButtonInputFileBrowse->UseVisualStyleBackColor = true;
-			// 
-			// TextboxInputFilePath
-			// 
-			this->TextboxInputFilePath->CausesValidation = false;
-			this->TextboxInputFilePath->Location = System::Drawing::Point(92, 23);
-			this->TextboxInputFilePath->Name = L"TextboxInputFilePath";
-			this->TextboxInputFilePath->Size = System::Drawing::Size(132, 20);
-			this->TextboxInputFilePath->TabIndex = 16;
+			this->ButtonInputFileBrowse->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputFileBrowse_Click);
 			// 
 			// ButtonInputFileStart
 			// 
@@ -305,7 +336,7 @@ namespace AudioAnalyser
 			this->GroupOutputFile->Controls->Add(this->TextboxOutputFilePath);
 			this->GroupOutputFile->Controls->Add(this->ButtonOutputFileStart);
 			this->GroupOutputFile->Controls->Add(this->StaticLabelOutputFileSource);
-			this->GroupOutputFile->Location = System::Drawing::Point(111, 603);
+			this->GroupOutputFile->Location = System::Drawing::Point(111, 592);
 			this->GroupOutputFile->Name = L"GroupOutputFile";
 			this->GroupOutputFile->Size = System::Drawing::Size(317, 85);
 			this->GroupOutputFile->TabIndex = 14;
@@ -393,7 +424,7 @@ namespace AudioAnalyser
 			this->groupBox1->Controls->Add(this->ButtonInputStreamStart);
 			this->groupBox1->Location = System::Drawing::Point(12, 64);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(93, 100);
+			this->groupBox1->Size = System::Drawing::Size(93, 96);
 			this->groupBox1->TabIndex = 22;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Input stream";
@@ -401,7 +432,7 @@ namespace AudioAnalyser
 			// groupBox2
 			// 
 			this->groupBox2->Controls->Add(this->ButtonOutputStreamStart);
-			this->groupBox2->Location = System::Drawing::Point(14, 603);
+			this->groupBox2->Location = System::Drawing::Point(14, 592);
 			this->groupBox2->Name = L"groupBox2";
 			this->groupBox2->Size = System::Drawing::Size(91, 85);
 			this->groupBox2->TabIndex = 23;
@@ -452,7 +483,7 @@ namespace AudioAnalyser
 			// RackItem6
 			// 
 			this->RackItem6->LastRackItem = true;
-			this->RackItem6->Location = System::Drawing::Point(18, 536);
+			this->RackItem6->Location = System::Drawing::Point(18, 525);
 			this->RackItem6->MixVolume = 100;
 			this->RackItem6->Name = L"RackItem6";
 			this->RackItem6->RackItemId = 6;
@@ -469,7 +500,7 @@ namespace AudioAnalyser
 			// RackItem5
 			// 
 			this->RackItem5->LastRackItem = false;
-			this->RackItem5->Location = System::Drawing::Point(18, 475);
+			this->RackItem5->Location = System::Drawing::Point(18, 464);
 			this->RackItem5->MixVolume = 100;
 			this->RackItem5->Name = L"RackItem5";
 			this->RackItem5->RackItemId = 5;
@@ -486,7 +517,7 @@ namespace AudioAnalyser
 			// RackItem4
 			// 
 			this->RackItem4->LastRackItem = false;
-			this->RackItem4->Location = System::Drawing::Point(18, 414);
+			this->RackItem4->Location = System::Drawing::Point(18, 403);
 			this->RackItem4->MixVolume = 100;
 			this->RackItem4->Name = L"RackItem4";
 			this->RackItem4->RackItemId = 4;
@@ -503,7 +534,7 @@ namespace AudioAnalyser
 			// RackItem3
 			// 
 			this->RackItem3->LastRackItem = false;
-			this->RackItem3->Location = System::Drawing::Point(18, 353);
+			this->RackItem3->Location = System::Drawing::Point(18, 342);
 			this->RackItem3->MixVolume = 100;
 			this->RackItem3->Name = L"RackItem3";
 			this->RackItem3->RackItemId = 3;
@@ -520,7 +551,7 @@ namespace AudioAnalyser
 			// RackItem2
 			// 
 			this->RackItem2->LastRackItem = false;
-			this->RackItem2->Location = System::Drawing::Point(18, 292);
+			this->RackItem2->Location = System::Drawing::Point(18, 281);
 			this->RackItem2->MixVolume = 100;
 			this->RackItem2->Name = L"RackItem2";
 			this->RackItem2->RackItemId = 2;
@@ -537,7 +568,7 @@ namespace AudioAnalyser
 			// RackItem1
 			// 
 			this->RackItem1->LastRackItem = false;
-			this->RackItem1->Location = System::Drawing::Point(18, 231);
+			this->RackItem1->Location = System::Drawing::Point(18, 220);
 			this->RackItem1->MixVolume = 100;
 			this->RackItem1->Name = L"RackItem1";
 			this->RackItem1->RackItemId = 1;
@@ -554,7 +585,7 @@ namespace AudioAnalyser
 			// RackItem0
 			// 
 			this->RackItem0->LastRackItem = false;
-			this->RackItem0->Location = System::Drawing::Point(18, 170);
+			this->RackItem0->Location = System::Drawing::Point(18, 159);
 			this->RackItem0->MixVolume = 100;
 			this->RackItem0->Name = L"RackItem0";
 			this->RackItem0->RackItemId = 0;
@@ -579,6 +610,7 @@ namespace AudioAnalyser
 			// OpenDialogFile
 			// 
 			this->OpenDialogFile->FileName = L"openFileDialog1";
+			this->OpenDialogFile->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogFile_FileOk);
 			// 
 			// SaveDialogRack
 			// 
@@ -586,11 +618,15 @@ namespace AudioAnalyser
 			this->SaveDialogRack->Filter = L"Audio Analyser Project|*.aap";
 			this->SaveDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogRack_FileOk);
 			// 
+			// SaveDialogFile
+			// 
+			this->SaveDialogFile->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogFile_FileOk);
+			// 
 			// MainWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(438, 697);
+			this->ClientSize = System::Drawing::Size(438, 685);
 			this->Controls->Add(this->ButtonStartProcessing);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->ButtonOpenConfig);
@@ -642,16 +678,34 @@ namespace AudioAnalyser
 		}
 		System::Void ButtonStartProcessing_Click(System::Object^  sender, System::EventArgs^  e)
 		{
-			if (IoManager::GetInstance()->IsProcessing()) IoManager::GetInstance()->StartProcessing();
-			else IoManager::GetInstance()->StopProcessing();
+			if (IoManager::GetInstance()->IsProcessing()) IoManager::GetInstance()->StopProcessing();
+			else IoManager::GetInstance()->StartProcessing();
+
+			SetProcessButtonsEnabled(IoManager::GetInstance()->IsProcessing());
 		}
 		System::Void ButtonOpenConfig_Click(System::Object^  sender, System::EventArgs^  e)
 		{
 			ConfigWindow^ Config = gcnew ConfigWindow();
 			Config->ShowDialog();
 		}
+		System::Void ButtonInputFileBrowse_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			OpenDialogFile->ShowDialog();
+
+		}
+		System::Void ButtonInputFileAbout_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+
+		}
 		
 		//Interfejs MainWindow - switche otwierania sygna³ów audio (stream-in, file-in, stream-out, file-out)
+		System::Void SetProcessButtonsEnabled(bool IsProcessing)
+		{
+			ButtonInputStreamStart->Enabled = IsProcessing;
+			ButtonInputFileStart->Enabled = IsProcessing;
+			ButtonOutputStreamStart->Enabled = IsProcessing;
+			ButtonOutputFileStart->Enabled = IsProcessing;
+		}
 		System::Void ButtonInputStreamStart_Click(System::Object^  sender, System::EventArgs^  e)
 		{
 		}
@@ -673,7 +727,6 @@ namespace AudioAnalyser
 			FileSerializer::DeserializeRack(XmlReader);
 			PerformFullRackRefresh(true);
 			XmlReader->Close();
-
 		}
 		System::Void SaveDialogRack_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
@@ -681,6 +734,14 @@ namespace AudioAnalyser
 			XmlTextWriter^ XmlWriter = gcnew XmlTextWriter(TargetPath, System::Text::Encoding::UTF8);
 			FileSerializer::SerializeRack(XmlWriter);
 			XmlWriter->Close();
+		}
+
+		//Interfejs MainWindow - obs³uga plików audio
+		System::Void OpenDialogFile_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		{
+		}
+		System::Void SaveDialogFile_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		{
 		}
 
 		//Helpery RackItemów
@@ -811,6 +872,5 @@ namespace AudioAnalyser
 		{
 			AudioProcessor::GetInstance()->SetPluginVolumeMix(AtIndex, NewValue);
 		}
-
-};
+	};
 }

@@ -18,6 +18,9 @@
 //PortAudio
 #include "portaudio.h"
 
+//Libsndfile
+#include "sndfile.h"
+
 //SFML
 #include "SFML\Graphics.hpp"
 

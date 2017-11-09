@@ -50,6 +50,7 @@ namespace AudioAnalyser
 	private: System::Windows::Forms::GroupBox^  GroupOutputFile;
 	private: System::Windows::Forms::ComboBox^  OutputFileFormat;
 	private: System::Windows::Forms::Label^  label1;
+	private: System::Windows::Forms::CheckBox^  CheckboxStartOnApply;
 
 	private:
 		/// <summary>
@@ -78,6 +79,7 @@ namespace AudioAnalyser
 			this->GroupOutputFile = (gcnew System::Windows::Forms::GroupBox());
 			this->OutputFileFormat = (gcnew System::Windows::Forms::ComboBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->CheckboxStartOnApply = (gcnew System::Windows::Forms::CheckBox());
 			this->GroupStreamConfig->SuspendLayout();
 			this->GroupProcessing->SuspendLayout();
 			this->GroupOutputFile->SuspendLayout();
@@ -216,6 +218,17 @@ namespace AudioAnalyser
 			this->label1->TabIndex = 0;
 			this->label1->Text = L"File format";
 			// 
+			// CheckboxStartOnApply
+			// 
+			this->CheckboxStartOnApply->AutoSize = true;
+			this->CheckboxStartOnApply->Location = System::Drawing::Point(12, 229);
+			this->CheckboxStartOnApply->Name = L"CheckboxStartOnApply";
+			this->CheckboxStartOnApply->Size = System::Drawing::Size(91, 17);
+			this->CheckboxStartOnApply->TabIndex = 19;
+			this->CheckboxStartOnApply->Text = L"Start on apply";
+			this->CheckboxStartOnApply->UseVisualStyleBackColor = true;
+			this->CheckboxStartOnApply->Visible = false;
+			// 
 			// ConfigWindow
 			// 
 			this->AcceptButton = this->ButtonOk;
@@ -223,6 +236,7 @@ namespace AudioAnalyser
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->CancelButton = this->ButtonCancel;
 			this->ClientSize = System::Drawing::Size(288, 257);
+			this->Controls->Add(this->CheckboxStartOnApply);
 			this->Controls->Add(this->GroupOutputFile);
 			this->Controls->Add(this->ButtonCancel);
 			this->Controls->Add(this->ButtonOk);
@@ -241,11 +255,15 @@ namespace AudioAnalyser
 			this->GroupOutputFile->ResumeLayout(false);
 			this->GroupOutputFile->PerformLayout();
 			this->ResumeLayout(false);
+			this->PerformLayout();
+
 		}
 #pragma endregion
 private:
 		void CustomInitCode()
 		{
+			CheckboxStartOnApply->Visible = !IoManager::GetInstance()->IsProcessing();
+
 			int CurrentIn, CurrentOut, Blocksize;
 			int A, B;
 			std::vector<AudioDevice> InDevices, OutDevices;
@@ -257,13 +275,13 @@ private:
 			for (int i = 0; i < InputDevicesCount; ++i)
 			{
 				System::String^ Str = gcnew System::String(InDevices[i].DeviceName.c_str());
-				this->ComboInputStreamSource->Items->Add(Str);
+				ComboInputStreamSource->Items->Add(Str);
 			}
 
 			for (int i = 0; i < OutputDevicesCount; ++i)
 			{
 				System::String^ Str = gcnew System::String(OutDevices[i].DeviceName.c_str());
-				this->ComboOutputStreamSource->Items->Add(Str);
+				ComboOutputStreamSource->Items->Add(Str);
 			}
 
 			int BlocksizeSelectedIndex = 0;
@@ -274,18 +292,19 @@ private:
 				Blocksize /= 2;
 			}
 
-			this->ComboInputStreamBlocksize->SelectedIndex = BlocksizeSelectedIndex;
-			this->ComboInputStreamSource->SelectedIndex = CurrentIn;
-			this->ComboOutputStreamSource->SelectedIndex = CurrentOut;
+			ComboInputStreamBlocksize->SelectedIndex = BlocksizeSelectedIndex;
+			ComboInputStreamSource->SelectedIndex = CurrentIn;
+			ComboOutputStreamSource->SelectedIndex = CurrentOut;
 		}
 
 		//Interfejs ConfigWindow
 		System::Void ButtonOk_Click(System::Object^  sender, System::EventArgs^  e)
 		{
 			IoManager::GetInstance()->SetNewConfig(
-				this->ComboInputStreamSource->SelectedIndex,
-				this->ComboOutputStreamSource->SelectedIndex,
-				this->ComboInputStreamBlocksize->SelectedIndex
+				ComboInputStreamSource->SelectedIndex,
+				ComboOutputStreamSource->SelectedIndex,
+				ComboInputStreamBlocksize->SelectedIndex,
+				CheckboxStartOnApply->Checked
 			);
 
 			this->Close();
