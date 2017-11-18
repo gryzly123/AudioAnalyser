@@ -22,6 +22,16 @@ std::wstring Utilities::WideFromMultibyteCharArray(const char* In)
 	return Result;
 }
 
+std::string Utilities::MultibyteCharFromWide(std::wstring In)
+{
+	char* TargetStr = new char[MAX_SIZE];
+	WideCharToMultiByte(CP_UTF8, 0, In.c_str(), -1, TargetStr, MAX_SIZE, NULL, NULL);
+	std::string Result = TargetStr;
+	delete TargetStr;
+	return Result;
+}
+
+
 #undef MAX_SIZE
 
 std::wstring Utilities::WideFromSystemString(System::String^ In)

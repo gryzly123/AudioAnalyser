@@ -1,6 +1,8 @@
 #pragma once
 #include "ConfigWindow.h"
 #include "DynamicPluginConfigWindow.h"
+#include "FileDetailsWindow.h"
+
 #include "IoManager.h"
 #include "Utilities.h"
 #include "FileSerializer.h"
@@ -8,13 +10,9 @@
 namespace AudioAnalyser
 {
 	using namespace System;
-	using namespace System::ComponentModel;
-	using namespace System::Collections;
-	using namespace System::Windows::Forms;
-	using namespace System::Data;
-	using namespace System::Drawing;
+
 	/// <summary>
-	/// Summary for MainWindow
+	/// G³ówne okno aplikacji
 	/// </summary>
 	public ref class MainWindow : public System::Windows::Forms::Form
 	{
@@ -31,7 +29,7 @@ namespace AudioAnalyser
 				PluginConfigWindows[i]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
 			}
 
-			SetProcessButtonsEnabled(false);
+			SetProcessButtonsEnabled();
 
 			//XmlTextReader^ FileReader = gcnew XmlTextReader(L"C:\\Program Filesl\\bepis.aap");
 			//FileSerializer::DeserializeRack(FileReader);
@@ -42,71 +40,64 @@ namespace AudioAnalyser
 		}
 
 	protected:
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		~MainWindow()
-		{
-			if (components)
-			{
-				delete components;
-			}
-		}
+		~MainWindow() { if (components) delete components; }
 
-	private: System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
-	private: System::Windows::Forms::ImageList^  Icons32;
-	
-	private: System::Windows::Forms::GroupBox^  GroupInputFile;
-	private: System::Windows::Forms::GroupBox^  GroupOutputFile;
-	private: System::Windows::Forms::ComboBox^  ComboOutputFileFormat;
-	
-	private: System::Windows::Forms::Button^  ButtonNewFile;
-	private: System::Windows::Forms::Button^  ButtonOpenFile;
-	private: System::Windows::Forms::Button^  ButtonSaveFile;
-	private: System::Windows::Forms::Button^  ButtonInputStreamStart;
-	private: System::Windows::Forms::Button^  ButtonInputFileBrowse;
-	private: System::Windows::Forms::Button^  ButtonInputFileStart;
-	private: System::Windows::Forms::Button^  ButtonOutputStreamStart;
-	private: System::Windows::Forms::Button^  ButtonOutputFileBrowse;
-	private: System::Windows::Forms::Button^  ButtonOutputFileStart;
-	private: System::Windows::Forms::Button^  ButtonStartProcessing;
-	
-	private: System::Windows::Forms::Label^  StaticLabelInputFileSource;
-	private: System::Windows::Forms::Label^  StaticLabelInputFileTime;
-	private: System::Windows::Forms::Label^  StaticLabelOutputFileSource;
-	private: System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
-	
-	private: System::Windows::Forms::TrackBar^ SeekbarInputFile;
-	private: System::Windows::Forms::TextBox^  TextboxOutputFilePath;
-
-	
-	private: RackControls::RackItem^  RackItem0;
-	private: RackControls::RackItem^  RackItem1;
-	private: RackControls::RackItem^  RackItem2;
-	private: RackControls::RackItem^  RackItem3;
-	private: RackControls::RackItem^  RackItem4;
-	private: RackControls::RackItem^  RackItem5;
-	private: RackControls::RackItem^  RackItem6;
-
-	private: System::Windows::Forms::GroupBox^  groupBox1;
-	private: System::Windows::Forms::GroupBox^  groupBox2;
-	private: System::Windows::Forms::Button^  ButtonOpenConfig;
-
-	private: System::Windows::Forms::Button^  button2;
-	private: System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
-	private: System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
-	private: System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
-	private: System::Windows::Forms::SaveFileDialog^  SaveDialogFile;
-	private: System::Windows::Forms::Button^  ButtonInputFileAbout;
-	private: System::Windows::Forms::Label^  DynamicLabelInputFileSource;
-
-	private: System::ComponentModel::IContainer^  components;
 	private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+		bool IsSeekbarClicked = false;
+		bool IsInputFileOpened = false;
 
+		System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
+		System::Windows::Forms::ImageList^  Icons32;
+		
+		System::Windows::Forms::GroupBox^  GroupInputFile;
+		System::Windows::Forms::GroupBox^  GroupOutputFile;
 
+		
+		System::Windows::Forms::Button^  ButtonNewFile;
+		System::Windows::Forms::Button^  ButtonOpenFile;
+		System::Windows::Forms::Button^  ButtonSaveFile;
+		System::Windows::Forms::Button^  ButtonInputStreamStart;
+		System::Windows::Forms::Button^  ButtonInputFileBrowse;
+		System::Windows::Forms::Button^  ButtonInputFileStart;
+		System::Windows::Forms::Button^  ButtonOutputStreamStart;
+		System::Windows::Forms::Button^  ButtonOutputFileBrowse;
+		System::Windows::Forms::Button^  ButtonOutputFileStart;
+		System::Windows::Forms::Button^  ButtonStartProcessing;
+		
+		System::Windows::Forms::Label^  StaticLabelInputFileSource;
+		System::Windows::Forms::Label^  DynamicLabelInputFileTime;
+
+		System::Windows::Forms::Label^  StaticLabelOutputFileSource;
+		System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
+		
+		System::Windows::Forms::TrackBar^ SeekbarInputFile;
+		System::Windows::Forms::TextBox^  TextboxOutputFilePath;
+		
+		RackControls::RackItem^  RackItem0;
+		RackControls::RackItem^  RackItem1;
+		RackControls::RackItem^  RackItem2;
+		RackControls::RackItem^  RackItem3;
+		RackControls::RackItem^  RackItem4;
+		RackControls::RackItem^  RackItem5;
+		RackControls::RackItem^  RackItem6;
+
+		System::Windows::Forms::GroupBox^  groupBox1;
+		System::Windows::Forms::GroupBox^  groupBox2;
+		System::Windows::Forms::Button^  ButtonOpenConfig;
+
+		System::Windows::Forms::Button^  button2;
+		System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
+		System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
+		System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
+
+		System::Windows::Forms::Button^  ButtonInputFileAbout;
+		System::Windows::Forms::Label^  DynamicLabelInputFileSource;
+		System::Windows::Forms::FolderBrowserDialog^  SaveDialogFile;
+		System::Windows::Forms::Timer^  PlayerUpdateTimer;
+	private: System::Windows::Forms::TextBox^  TextboxFilenamePrefix;
+
+		System::ComponentModel::IContainer^  components;
+		
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -124,13 +115,13 @@ namespace AudioAnalyser
 			this->GroupInputFile = (gcnew System::Windows::Forms::GroupBox());
 			this->ButtonInputFileAbout = (gcnew System::Windows::Forms::Button());
 			this->DynamicLabelInputFileSource = (gcnew System::Windows::Forms::Label());
-			this->StaticLabelInputFileTime = (gcnew System::Windows::Forms::Label());
+			this->DynamicLabelInputFileTime = (gcnew System::Windows::Forms::Label());
 			this->SeekbarInputFile = (gcnew System::Windows::Forms::TrackBar());
 			this->ButtonInputFileBrowse = (gcnew System::Windows::Forms::Button());
 			this->ButtonInputFileStart = (gcnew System::Windows::Forms::Button());
 			this->StaticLabelInputFileSource = (gcnew System::Windows::Forms::Label());
 			this->GroupOutputFile = (gcnew System::Windows::Forms::GroupBox());
-			this->ComboOutputFileFormat = (gcnew System::Windows::Forms::ComboBox());
+			this->TextboxFilenamePrefix = (gcnew System::Windows::Forms::TextBox());
 			this->ButtonOutputFileBrowse = (gcnew System::Windows::Forms::Button());
 			this->StaticLabelOutputFileFormat = (gcnew System::Windows::Forms::Label());
 			this->TextboxOutputFilePath = (gcnew System::Windows::Forms::TextBox());
@@ -152,7 +143,8 @@ namespace AudioAnalyser
 			this->OpenDialogRack = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->OpenDialogFile = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->SaveDialogRack = (gcnew System::Windows::Forms::SaveFileDialog());
-			this->SaveDialogFile = (gcnew System::Windows::Forms::SaveFileDialog());
+			this->SaveDialogFile = (gcnew System::Windows::Forms::FolderBrowserDialog());
+			this->PlayerUpdateTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->GroupInputFile->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->BeginInit();
 			this->GroupOutputFile->SuspendLayout();
@@ -236,7 +228,7 @@ namespace AudioAnalyser
 			// 
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileAbout);
 			this->GroupInputFile->Controls->Add(this->DynamicLabelInputFileSource);
-			this->GroupInputFile->Controls->Add(this->StaticLabelInputFileTime);
+			this->GroupInputFile->Controls->Add(this->DynamicLabelInputFileTime);
 			this->GroupInputFile->Controls->Add(this->SeekbarInputFile);
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileBrowse);
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileStart);
@@ -273,14 +265,14 @@ namespace AudioAnalyser
 			this->DynamicLabelInputFileSource->TabIndex = 17;
 			this->DynamicLabelInputFileSource->Text = L"(none)";
 			// 
-			// StaticLabelInputFileTime
+			// DynamicLabelInputFileTime
 			// 
-			this->StaticLabelInputFileTime->Location = System::Drawing::Point(261, 72);
-			this->StaticLabelInputFileTime->Name = L"StaticLabelInputFileTime";
-			this->StaticLabelInputFileTime->Size = System::Drawing::Size(48, 13);
-			this->StaticLabelInputFileTime->TabIndex = 12;
-			this->StaticLabelInputFileTime->Text = L"00:00";
-			this->StaticLabelInputFileTime->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->DynamicLabelInputFileTime->Location = System::Drawing::Point(261, 72);
+			this->DynamicLabelInputFileTime->Name = L"DynamicLabelInputFileTime";
+			this->DynamicLabelInputFileTime->Size = System::Drawing::Size(48, 13);
+			this->DynamicLabelInputFileTime->TabIndex = 12;
+			this->DynamicLabelInputFileTime->Text = L"00:00";
+			this->DynamicLabelInputFileTime->TextAlign = System::Drawing::ContentAlignment::TopCenter;
 			// 
 			// SeekbarInputFile
 			// 
@@ -288,6 +280,9 @@ namespace AudioAnalyser
 			this->SeekbarInputFile->Name = L"SeekbarInputFile";
 			this->SeekbarInputFile->Size = System::Drawing::Size(248, 45);
 			this->SeekbarInputFile->TabIndex = 15;
+			this->SeekbarInputFile->Scroll += gcnew System::EventHandler(this, &MainWindow::SeekbarInputFile_Scroll);
+			this->SeekbarInputFile->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MainWindow::SeekbarInputFile_MouseDown);
+			this->SeekbarInputFile->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MainWindow::SeekbarInputFile_MouseUp);
 			// 
 			// ButtonInputFileBrowse
 			// 
@@ -330,7 +325,7 @@ namespace AudioAnalyser
 			// 
 			// GroupOutputFile
 			// 
-			this->GroupOutputFile->Controls->Add(this->ComboOutputFileFormat);
+			this->GroupOutputFile->Controls->Add(this->TextboxFilenamePrefix);
 			this->GroupOutputFile->Controls->Add(this->ButtonOutputFileBrowse);
 			this->GroupOutputFile->Controls->Add(this->StaticLabelOutputFileFormat);
 			this->GroupOutputFile->Controls->Add(this->TextboxOutputFilePath);
@@ -343,13 +338,13 @@ namespace AudioAnalyser
 			this->GroupOutputFile->TabStop = false;
 			this->GroupOutputFile->Text = L"Output file";
 			// 
-			// ComboOutputFileFormat
+			// TextboxFilenamePrefix
 			// 
-			this->ComboOutputFileFormat->FormattingEnabled = true;
-			this->ComboOutputFileFormat->Location = System::Drawing::Point(92, 48);
-			this->ComboOutputFileFormat->Name = L"ComboOutputFileFormat";
-			this->ComboOutputFileFormat->Size = System::Drawing::Size(165, 21);
-			this->ComboOutputFileFormat->TabIndex = 13;
+			this->TextboxFilenamePrefix->Location = System::Drawing::Point(92, 48);
+			this->TextboxFilenamePrefix->Name = L"TextboxFilenamePrefix";
+			this->TextboxFilenamePrefix->Size = System::Drawing::Size(159, 20);
+			this->TextboxFilenamePrefix->TabIndex = 17;
+			this->TextboxFilenamePrefix->Text = L"Untitled project";
 			// 
 			// ButtonOutputFileBrowse
 			// 
@@ -360,25 +355,27 @@ namespace AudioAnalyser
 			this->ButtonOutputFileBrowse->Location = System::Drawing::Point(227, 23);
 			this->ButtonOutputFileBrowse->Margin = System::Windows::Forms::Padding(0);
 			this->ButtonOutputFileBrowse->Name = L"ButtonOutputFileBrowse";
-			this->ButtonOutputFileBrowse->Size = System::Drawing::Size(30, 20);
+			this->ButtonOutputFileBrowse->Size = System::Drawing::Size(24, 20);
 			this->ButtonOutputFileBrowse->TabIndex = 16;
 			this->ButtonOutputFileBrowse->Text = L"...";
 			this->ButtonOutputFileBrowse->TextAlign = System::Drawing::ContentAlignment::TopCenter;
 			this->ButtonOutputFileBrowse->UseVisualStyleBackColor = true;
+			this->ButtonOutputFileBrowse->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputFileBrowse_Click);
 			// 
 			// StaticLabelOutputFileFormat
 			// 
 			this->StaticLabelOutputFileFormat->AutoSize = true;
 			this->StaticLabelOutputFileFormat->Location = System::Drawing::Point(6, 51);
 			this->StaticLabelOutputFileFormat->Name = L"StaticLabelOutputFileFormat";
-			this->StaticLabelOutputFileFormat->Size = System::Drawing::Size(55, 13);
+			this->StaticLabelOutputFileFormat->Size = System::Drawing::Size(80, 13);
 			this->StaticLabelOutputFileFormat->TabIndex = 12;
-			this->StaticLabelOutputFileFormat->Text = L"File format";
+			this->StaticLabelOutputFileFormat->Text = L"File name prefix";
 			// 
 			// TextboxOutputFilePath
 			// 
 			this->TextboxOutputFilePath->Location = System::Drawing::Point(92, 23);
 			this->TextboxOutputFilePath->Name = L"TextboxOutputFilePath";
+			this->TextboxOutputFilePath->ReadOnly = true;
 			this->TextboxOutputFilePath->Size = System::Drawing::Size(132, 20);
 			this->TextboxOutputFilePath->TabIndex = 16;
 			// 
@@ -618,9 +615,9 @@ namespace AudioAnalyser
 			this->SaveDialogRack->Filter = L"Audio Analyser Project|*.aap";
 			this->SaveDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogRack_FileOk);
 			// 
-			// SaveDialogFile
+			// PlayerUpdateTimer
 			// 
-			this->SaveDialogFile->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogFile_FileOk);
+			this->PlayerUpdateTimer->Tick += gcnew System::EventHandler(this, &MainWindow::PlayerUpdateTimer_Tick);
 			// 
 			// MainWindow
 			// 
@@ -663,89 +660,193 @@ namespace AudioAnalyser
 	private:
 		
 		//Interfejs MainWindow - przyciski w menu g³ównym
-		System::Void ButtonNewFile_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonNewFile_Click(Object^  sender, EventArgs^  e)
 		{
 			AudioProcessor::GetInstance()->ResetPlugins();
 			PerformFullRackRefresh(true);
 		}
-		System::Void ButtonOpenFile_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonOpenFile_Click(Object^  sender, EventArgs^  e)
 		{
 			OpenDialogRack->ShowDialog();
 		}
-		System::Void ButtonSaveFile_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonSaveFile_Click(Object^  sender, EventArgs^  e)
 		{
 			SaveDialogRack->ShowDialog();
 		}
-		System::Void ButtonStartProcessing_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonStartProcessing_Click(Object^  sender, EventArgs^  e)
 		{
 			if (IoManager::GetInstance()->IsProcessing()) IoManager::GetInstance()->StopProcessing();
 			else IoManager::GetInstance()->StartProcessing();
 
-			SetProcessButtonsEnabled(IoManager::GetInstance()->IsProcessing());
+			SetProcessButtonsEnabled();
+			UpdateProcessButtonsIcons();
 		}
-		System::Void ButtonOpenConfig_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonOpenConfig_Click(Object^  sender, EventArgs^  e)
 		{
 			ConfigWindow^ Config = gcnew ConfigWindow();
 			Config->ShowDialog();
+			SetProcessButtonsEnabled();
+			UpdateProcessButtonsIcons();
 		}
-		System::Void ButtonInputFileBrowse_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonInputFileBrowse_Click(Object^  sender, EventArgs^  e)
 		{
 			OpenDialogFile->ShowDialog();
 
 		}
-		System::Void ButtonInputFileAbout_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonOutputFileBrowse_Click(Object^  sender, EventArgs^  e)
 		{
+			System::Windows::Forms::DialogResult Result = SaveDialogFile->ShowDialog();
+			if (Result == System::Windows::Forms::DialogResult::OK)
+			{
+				IoManager::GetInstance()->SetOutFilesWorkingFolder(
+					Utilities::WideFromSystemString(SaveDialogFile->SelectedPath));
 
+				TextboxOutputFilePath->Text = SaveDialogFile->SelectedPath;
+			}
+
+		}
+		Void ButtonInputFileAbout_Click(Object^  sender, EventArgs^  e)
+		{
+			FileDetailsWindow^ Window = gcnew FileDetailsWindow();
+			Window->ShowDialog();
 		}
 		
 		//Interfejs MainWindow - switche otwierania sygna³ów audio (stream-in, file-in, stream-out, file-out)
-		System::Void SetProcessButtonsEnabled(bool IsProcessing)
+		Void SetProcessButtonsEnabled()
 		{
+			bool IsProcessing = IoManager::GetInstance()->IsProcessing();
 			ButtonInputStreamStart->Enabled = IsProcessing;
-			ButtonInputFileStart->Enabled = IsProcessing;
+			ButtonInputFileStart->Enabled = IsProcessing && IsInputFileOpened;
 			ButtonOutputStreamStart->Enabled = IsProcessing;
 			ButtonOutputFileStart->Enabled = IsProcessing;
 		}
-		System::Void ButtonInputStreamStart_Click(System::Object^  sender, System::EventArgs^  e)
+		Void UpdateProcessButtonsIcons()
 		{
+			InputSource IS; OutputSource OS;
+			IoManager::GetInstance()->GetCurrentSources(IS, OS);
+
+			int On = 5;
+			int InStreamOff = 3, InFileOff = 4;
+			int OutStreamOff = 7, OutStreamOn = 8, OutFileOff = 6;
+
+			switch (IS)
+			{
+			case IS_None:
+				ButtonInputStreamStart->ImageIndex = InStreamOff;
+				ButtonInputFileStart->ImageIndex = InFileOff;
+				break;
+			case IS_Stream:
+				ButtonInputStreamStart->ImageIndex = On;
+				ButtonInputFileStart->ImageIndex = InFileOff;
+				break;
+			case IS_File:
+				ButtonInputStreamStart->ImageIndex = InStreamOff;
+				ButtonInputFileStart->ImageIndex = On;
+				break;
+			}
+
+			switch (OS)
+			{
+			case OS_None:
+				ButtonOutputStreamStart->ImageIndex = OutStreamOff;
+				ButtonOutputFileStart->ImageIndex = OutFileOff;
+				break;
+			case OS_File:
+				ButtonOutputStreamStart->ImageIndex = OutStreamOff;
+				ButtonOutputFileStart->ImageIndex = On;
+				break;
+			case OS_Stream:
+				ButtonOutputStreamStart->ImageIndex = OutStreamOn;
+				ButtonOutputFileStart->ImageIndex = OutFileOff;
+				break;
+			case OS_Both:
+				ButtonOutputStreamStart->ImageIndex = OutStreamOn;
+				ButtonOutputFileStart->ImageIndex = On;
+				break;
+			}
 		}
-		System::Void ButtonInputFileStart_Click(System::Object^  sender, System::EventArgs^  e)
+
+
+		Void ButtonInputStreamStart_Click(Object^  sender, EventArgs^  e)
 		{
+			IoManager::GetInstance()->SetInputSource(InputSource::IS_Stream);
+			UpdateProcessButtonsIcons();
 		}
-		System::Void ButtonOutputStreamStart_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonInputFileStart_Click(Object^  sender, EventArgs^  e)
 		{
+			IoManager::GetInstance()->SetInputSource(InputSource::IS_File);
+			UpdateProcessButtonsIcons();
+			PlayerUpdateTimer->Start();
 		}
-		System::Void ButtonOutputFileStart_Click(System::Object^  sender, System::EventArgs^  e)
+		Void ButtonOutputStreamStart_Click(Object^  sender, EventArgs^  e)
 		{
+			IoManager::GetInstance()->SetOutputSource(OutputSource::OS_Stream);
+			UpdateProcessButtonsIcons();
+		}
+		Void ButtonOutputFileStart_Click(Object^  sender, EventArgs^  e)
+		{
+			IoManager::GetInstance()->SetOutFilesPrefix(Utilities::WideFromSystemString(TextboxFilenamePrefix->Text));
+			IoManager::GetInstance()->SetOutputSource(OutputSource::OS_File);
+			UpdateProcessButtonsIcons();
+		}
+		Void PlayerUpdateTimer_Tick(Object^  sender, EventArgs^  e)
+		{
+			UpdateAudioPlayerLabels();
+		}
+		Void UpdateAudioPlayerLabels()
+		{
+			int TotalSeconds, CurrentSeconds, A, B;
+			IoManager::GetInstance()->GetInputFilePosition(A, CurrentSeconds, B, TotalSeconds);
+			SeekbarInputFile->Maximum = TotalSeconds;
+			if(!IsSeekbarClicked) SeekbarInputFile->Value = CurrentSeconds;
+			DynamicLabelInputFileTime->Text = String::Format("{0:00}:{1:00}", CurrentSeconds / 60, CurrentSeconds % 60);
+
+			if (A == B)
+			{
+				IoManager::GetInstance()->SetInputSource(InputSource::IS_File);
+				IoManager::GetInstance()->SetInputFilePosition(0);
+				UpdateProcessButtonsIcons();
+				SeekbarInputFile->Value = 0;
+				PlayerUpdateTimer->Stop();
+			}
 		}
 
 		//Interfejs MainWindow - obs³uga plików projektu (aap)
-		System::Void OpenDialogRack_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void OpenDialogRack_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
-			System::String^ TargetPath = OpenDialogRack->FileName;
+			String^ TargetPath = OpenDialogRack->FileName;
 			XmlTextReader^ XmlReader = gcnew XmlTextReader(TargetPath);
 			FileSerializer::DeserializeRack(XmlReader);
 			PerformFullRackRefresh(true);
 			XmlReader->Close();
 		}
-		System::Void SaveDialogRack_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void SaveDialogRack_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
-			System::String^ TargetPath = SaveDialogRack->FileName;
+			String^ TargetPath = SaveDialogRack->FileName;
 			XmlTextWriter^ XmlWriter = gcnew XmlTextWriter(TargetPath, System::Text::Encoding::UTF8);
 			FileSerializer::SerializeRack(XmlWriter);
 			XmlWriter->Close();
 		}
 
 		//Interfejs MainWindow - obs³uga plików audio
-		System::Void OpenDialogFile_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void OpenDialogFile_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
+			IsInputFileOpened = IoManager::GetInstance()->OpenNewInputFile(Utilities::WideFromSystemString(OpenDialogFile->FileName));
+			 String^ Filename = IsInputFileOpened
+				? ToClr(IoManager::GetInstance()->GetInputFileDetails().Filename)
+				: "-";
+			 if (Filename->Length > 20) Filename = Filename->Substring(0, 20);
+			 DynamicLabelInputFileSource->Text = Filename;
+
+			SetProcessButtonsEnabled();
+			UpdateProcessButtonsIcons();
 		}
-		System::Void SaveDialogFile_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void SaveDialogFile_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
 		}
 
 		//Helpery RackItemów
-		System::Void PerformFullRackRefresh(bool IncludeDryWetMixes)
+		Void PerformFullRackRefresh(bool IncludeDryWetMixes)
 		{
 			for (int i = 0; i < GUI_RACKITEMS_COUNT; ++i)
 			{
@@ -757,7 +858,7 @@ namespace AudioAnalyser
 						AudioProcessor::GetInstance()->GetPluginVolumeMix(i));
 			}
 		}
-		RackControls::RackItem^ SelectRackItem(System::Int32 AtIndex)
+		RackControls::RackItem^ SelectRackItem(Int32 AtIndex)
 		{
 			RackControls::RackItem^ Item;
 			switch (AtIndex)
@@ -773,14 +874,14 @@ namespace AudioAnalyser
 
 			return Item;
 		}
-		System::Void CreateNewPluginConfig(Int32 AtIndex)
+		Void CreateNewPluginConfig(Int32 AtIndex)
 		{
 			PluginConfigWindows[AtIndex] = gcnew DynamicPluginConfigWindow();
 			const std::vector <DspPluginParameter*> Params = AudioProcessor::GetInstance()->GetPluginParameters(AtIndex);
 			PluginConfigWindows[AtIndex]->PopulateWithParameters(Params, AtIndex);
 			PluginConfigWindows[AtIndex]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
 		}
-		System::Void UpdateConfigWindow(System::Int32 AtIndex)
+		Void UpdateConfigWindow(Int32 AtIndex)
 		{
 			bool PluginHasConfigWindow, B;
 
@@ -807,14 +908,14 @@ namespace AudioAnalyser
 				Window->DesktopLocation = WindowLocation;
 			}
 		}
-		System::Void UpdateRackItemContents(System::Int32 AtIndex)
+		Void UpdateRackItemContents(Int32 AtIndex)
 		{
 			AudioProcessor* Ap = AudioProcessor::GetInstance();
 			RackItemContents^ NewContents = gcnew RackItemContents();
 			bool ConfigWindow, VisWindow;
 			Ap->GetPluginWindowCapabilities(AtIndex, ConfigWindow, VisWindow);
 
-			NewContents->CurrentPluginName = gcnew System::String(Ap->GetPluginName(AtIndex).c_str());
+			NewContents->CurrentPluginName = gcnew String(ToClr(Ap->GetPluginName(AtIndex)));
 			NewContents->IsBypassed = Ap->IsPluginBypassed(AtIndex);
 			NewContents->IsNullPlugin = (Ap->GetPluginName(AtIndex) == L"(none)");
 			NewContents->HasConfigWindow = ConfigWindow;
@@ -825,8 +926,8 @@ namespace AudioAnalyser
 			RackItemRef->UpdateForm();
 		}
 
-		//Kontrola RackItemów
-		System::Void RackItem_NewPluginRequested(System::Int32 AtIndex, System::String^  NewPluginName)
+		//Przekazywanie intencji miêdzy RackItemami i AudioProcessorem
+		Void RackItem_NewPluginRequested(Int32 AtIndex, String^  NewPluginName)
 		{
 			//Stwórz nowego plugina
 			AudioProcessor::GetInstance()->ChangePlugin(AtIndex, Utilities::WideFromSystemString(NewPluginName));
@@ -837,7 +938,7 @@ namespace AudioAnalyser
 			//Zaktualizuj parametery RackItemu
 			UpdateRackItemContents(AtIndex);
 		}
-		System::Void RackItem_SwapRequested(System::Int32 AtIndex, System::Boolean IsDownwards)
+		Void RackItem_SwapRequested(Int32 AtIndex, System::Boolean IsDownwards)
 		{
 			AudioProcessor::GetInstance()->SwapPlugins(AtIndex, IsDownwards ? MoveDownInRack : MoveUpInRack);
 			
@@ -847,30 +948,43 @@ namespace AudioAnalyser
 			UpdateConfigWindow(AtIndex);
 			UpdateConfigWindow(AtIndex + (IsDownwards ? 1 : -1));
 		}
-		System::Void RackItem_ConfigWindowRequested(System::Int32 AtIndex)
+		Void RackItem_ConfigWindowRequested(Int32 AtIndex)
 		{
 			DynamicPluginConfigWindow^ ConfigWindow = PluginConfigWindows[AtIndex];
 			ConfigWindow->Show();
 			ConfigWindow->BringToFront();
 			ConfigWindow->IsOpened = true;
 		}
-		System::Void RackItem_VisWindowRequested(System::Int32 AtIndex)
+		Void RackItem_VisWindowRequested(Int32 AtIndex)
 		{
 
 		}
-		System::Void RackItem_BypassRequested(System::Int32 AtIndex)
+		Void RackItem_BypassRequested(Int32 AtIndex)
 		{
 			AudioProcessor::GetInstance()->SetPluginBypassed(AtIndex);
 			UpdateRackItemContents(AtIndex);
 		}
-		System::Void RackItem_SoloRequested(System::Int32 AtIndex)
+		Void RackItem_SoloRequested(Int32 AtIndex)
 		{
 			AudioProcessor::GetInstance()->SetPluginSolo(AtIndex);
 			for(int i = 0; i < GUI_RACKITEMS_COUNT; i++) UpdateRackItemContents(i);
 		}
-		System::Void RackItem_VolumeMixChanged(System::Int32 AtIndex, System::Single NewValue)
+		Void RackItem_VolumeMixChanged(Int32 AtIndex, Single NewValue)
 		{
 			AudioProcessor::GetInstance()->SetPluginVolumeMix(AtIndex, NewValue);
+		}
+
+		Void SeekbarInputFile_Scroll(Object^  sender, EventArgs^  e)
+		{
+			IoManager::GetInstance()->SetInputFilePosition(SeekbarInputFile->Value);
+		}
+		Void SeekbarInputFile_MouseDown(Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+		{
+			IsSeekbarClicked = true;
+		}
+		Void SeekbarInputFile_MouseUp(Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+		{
+			IsSeekbarClicked = false;
 		}
 	};
 }

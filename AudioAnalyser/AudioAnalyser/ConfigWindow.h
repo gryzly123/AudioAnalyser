@@ -47,9 +47,9 @@ namespace AudioAnalyser
 	private: System::Windows::Forms::Label^  StaticLabelBlocksize;
 	private: System::Windows::Forms::Button^  ButtonOk;
 	private: System::Windows::Forms::Button^  ButtonCancel;
-	private: System::Windows::Forms::GroupBox^  GroupOutputFile;
-	private: System::Windows::Forms::ComboBox^  OutputFileFormat;
-	private: System::Windows::Forms::Label^  label1;
+
+
+
 	private: System::Windows::Forms::CheckBox^  CheckboxStartOnApply;
 
 	private:
@@ -76,13 +76,9 @@ namespace AudioAnalyser
 			this->StaticLabelBlocksize = (gcnew System::Windows::Forms::Label());
 			this->ButtonOk = (gcnew System::Windows::Forms::Button());
 			this->ButtonCancel = (gcnew System::Windows::Forms::Button());
-			this->GroupOutputFile = (gcnew System::Windows::Forms::GroupBox());
-			this->OutputFileFormat = (gcnew System::Windows::Forms::ComboBox());
-			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->CheckboxStartOnApply = (gcnew System::Windows::Forms::CheckBox());
 			this->GroupStreamConfig->SuspendLayout();
 			this->GroupProcessing->SuspendLayout();
-			this->GroupOutputFile->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// ComboOutputStreamSource
@@ -150,9 +146,9 @@ namespace AudioAnalyser
 			// 
 			this->ComboInputStreamBlocksize->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->ComboInputStreamBlocksize->FormattingEnabled = true;
-			this->ComboInputStreamBlocksize->Items->AddRange(gcnew cli::array< System::Object^  >(8) {
+			this->ComboInputStreamBlocksize->Items->AddRange(gcnew cli::array< System::Object^  >(11) {
 				L"64", L"128", L"256", L"512",
-					L"1024", L"2048", L"4096", L"8192"
+					L"1024", L"2048", L"4096", L"8192", L"16384", L"32768", L"65536"
 			});
 			this->ComboInputStreamBlocksize->Location = System::Drawing::Point(92, 19);
 			this->ComboInputStreamBlocksize->Name = L"ComboInputStreamBlocksize";
@@ -170,7 +166,7 @@ namespace AudioAnalyser
 			// 
 			// ButtonOk
 			// 
-			this->ButtonOk->Location = System::Drawing::Point(122, 225);
+			this->ButtonOk->Location = System::Drawing::Point(123, 164);
 			this->ButtonOk->Name = L"ButtonOk";
 			this->ButtonOk->Size = System::Drawing::Size(75, 23);
 			this->ButtonOk->TabIndex = 17;
@@ -181,47 +177,17 @@ namespace AudioAnalyser
 			// ButtonCancel
 			// 
 			this->ButtonCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-			this->ButtonCancel->Location = System::Drawing::Point(203, 225);
+			this->ButtonCancel->Location = System::Drawing::Point(204, 164);
 			this->ButtonCancel->Name = L"ButtonCancel";
 			this->ButtonCancel->Size = System::Drawing::Size(75, 23);
 			this->ButtonCancel->TabIndex = 18;
 			this->ButtonCancel->Text = L"Cancel";
 			this->ButtonCancel->UseVisualStyleBackColor = true;
 			// 
-			// GroupOutputFile
-			// 
-			this->GroupOutputFile->Controls->Add(this->OutputFileFormat);
-			this->GroupOutputFile->Controls->Add(this->label1);
-			this->GroupOutputFile->Location = System::Drawing::Point(12, 164);
-			this->GroupOutputFile->Name = L"GroupOutputFile";
-			this->GroupOutputFile->Size = System::Drawing::Size(266, 55);
-			this->GroupOutputFile->TabIndex = 15;
-			this->GroupOutputFile->TabStop = false;
-			this->GroupOutputFile->Text = L"Output file";
-			// 
-			// OutputFileFormat
-			// 
-			this->OutputFileFormat->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
-			this->OutputFileFormat->FormattingEnabled = true;
-			this->OutputFileFormat->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"WAV", L"OGG", L"RAW (Stereo 32-bit float)" });
-			this->OutputFileFormat->Location = System::Drawing::Point(92, 19);
-			this->OutputFileFormat->Name = L"OutputFileFormat";
-			this->OutputFileFormat->Size = System::Drawing::Size(165, 21);
-			this->OutputFileFormat->TabIndex = 2;
-			// 
-			// label1
-			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(6, 22);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(55, 13);
-			this->label1->TabIndex = 0;
-			this->label1->Text = L"File format";
-			// 
 			// CheckboxStartOnApply
 			// 
 			this->CheckboxStartOnApply->AutoSize = true;
-			this->CheckboxStartOnApply->Location = System::Drawing::Point(12, 229);
+			this->CheckboxStartOnApply->Location = System::Drawing::Point(13, 168);
 			this->CheckboxStartOnApply->Name = L"CheckboxStartOnApply";
 			this->CheckboxStartOnApply->Size = System::Drawing::Size(91, 17);
 			this->CheckboxStartOnApply->TabIndex = 19;
@@ -235,9 +201,8 @@ namespace AudioAnalyser
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->CancelButton = this->ButtonCancel;
-			this->ClientSize = System::Drawing::Size(288, 257);
+			this->ClientSize = System::Drawing::Size(288, 196);
 			this->Controls->Add(this->CheckboxStartOnApply);
-			this->Controls->Add(this->GroupOutputFile);
 			this->Controls->Add(this->ButtonCancel);
 			this->Controls->Add(this->ButtonOk);
 			this->Controls->Add(this->GroupProcessing);
@@ -252,8 +217,6 @@ namespace AudioAnalyser
 			this->GroupStreamConfig->PerformLayout();
 			this->GroupProcessing->ResumeLayout(false);
 			this->GroupProcessing->PerformLayout();
-			this->GroupOutputFile->ResumeLayout(false);
-			this->GroupOutputFile->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 

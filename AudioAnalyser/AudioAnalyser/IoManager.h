@@ -37,9 +37,8 @@ private:
 	static IoManager* Instance;
 
 	//config
-	const int InSampleRate = 44100;
-	const int InBitDepth = 16;
-	int InSamplesInBlock = 256;
+	public: const int InSampleRate = AUDIO_SAMPLERATE;
+	private: int InSamplesInBlock = 256;
 
 	//portaudio
 	PaStreamParameters InputParameters, OutputParameters;
@@ -64,8 +63,10 @@ private:
 	//pliki audio
 	InSoundFile* CurrentInFile = nullptr;
 	OutSoundFile* CurrentOutFile = nullptr;
+	std::wstring OutFilesWorkingFolder;
+	std::wstring OutFilesPrefix;
 
-	//sesja
+	//sesja audio
 	InputSource CurrentInput = IS_None;
 	OutputSource CurrentOutput = OS_None;
 
@@ -157,7 +158,7 @@ private:
 			NoInputDevices  ? nullptr : &InputParameters,
 			NoOutputDevices ? nullptr : &OutputParameters,
 			InSampleRate,
-			InSamplesInBlock * 2,
+			InSamplesInBlock,
 			true,
 			&PaSoundCallback,
 			NULL);
@@ -172,6 +173,7 @@ private:
 	bool StopPortAudio()
 	{
 		if (!PaStarted) return true;
+		while (AudioProcessor::GetInstance()->GetIsBusy()) { }
 		LastPaErrorCode = Pa_CloseStream(CurrentStream);
 		PaStarted = false;
 		if (LastPaErrorCode != paNoError) return ThrowPaError();
@@ -187,6 +189,7 @@ public:
 		return Instance;
 	}
 
+	//konfiguracja PortAudio
 	void GetCurrentConfig(int& CurrentInput, int& DefaultInput, int& CurrentOutput, int& DefaultOutput, std::vector<AudioDevice>& InputDevices, std::vector<AudioDevice>& OutputDevices, int& Blocksize)
 	{
 		CurrentInput  = SelectedAudioInput;
@@ -199,19 +202,17 @@ public:
 	}
 	void SetNewConfig(int NewInput, int NewOutput, int NewBlocksize, bool StartNow = false)
 	{
+		bool WasRunning = PaStarted;
+		StopPortAudio();
+
 		if (NewInput >= 0) SelectedAudioInput = NewInput;
 		if (NewOutput >= 0) SelectedAudioOutput = NewOutput;
 		if (NewBlocksize >= 0) InSamplesInBlock = (int)pow(2, NewBlocksize + 6);
-
-		bool WasRunning = PaStarted;
-		StopPortAudio();
+		
 		if (StartNow || WasRunning) StartPortAudio();
 	}
 	
-	void StartProcessing() { StartPortAudio(); }
-	void StopProcessing() { StopPortAudio(); }
-	bool IsProcessing() { return PaStarted; }
-	
+	//konfiguracja Ÿróde³
 	InputSource SetInputSource(InputSource NewTargetSource)
 	{
 		int Direction = NewTargetSource + (10 * CurrentInput);
@@ -235,26 +236,16 @@ public:
 			CurrentInput = IS_File;
 			break;
 		}
-
 		return CurrentInput;
 	}
-
-	void CreateNewOutputFile()
-	{
-		CurrentOutFile = new OutSoundFile();
-	}
-
-	void FinalizeOutputFile()
-	{
-		delete CurrentOutFile;
-		CurrentOutFile = nullptr;
-	}
-
 	OutputSource SetOutputSource(OutputSource NewTargetSource)
 	{
 		int Direction = NewTargetSource + (10 * CurrentOutput);
 		switch (Direction)
 		{
+		case 11: //None->None
+			break;
+
 		case 12: //None->Stream
 			CurrentOutput = OS_Stream;
 			break;
@@ -264,6 +255,7 @@ public:
 			CreateNewOutputFile();
 			break;
 
+		case 21: //Stream->None
 		case 22: //Stream->Stream
 			CurrentOutput = OS_None;
 			break;
@@ -277,7 +269,9 @@ public:
 			CurrentOutput = OS_Both;
 			break;
 
+		case 31: //File->None
 		case 33: //File->File
+		case 41: //Both->None
 			CurrentOutput = OS_None;
 			FinalizeOutputFile();
 			break;
@@ -293,5 +287,104 @@ public:
 		}
 
 		return CurrentOutput;
+	}
+	void GetCurrentSources(InputSource& IS, OutputSource& OS)
+	{
+		IS = CurrentInput;
+		OS = CurrentOutput;
+	}
+	
+	void StartProcessing() { StartPortAudio(); }
+	void StopProcessing()
+	{
+		StopPortAudio();
+		SetInputSource(IS_None);
+		SetOutputSource(OS_None);
+	}
+	bool IsProcessing() { return PaStarted; }
+
+	//obs³uga plików wejœciowych Libsndfile
+	bool OpenNewInputFile(std::wstring Path)
+	{
+		if (CurrentInFile)
+		{
+			delete CurrentInFile;
+			CurrentInFile = nullptr;
+		}
+		CurrentInFile = new InSoundFile(Path);
+
+		if (!CurrentInFile->GetFileInfo().FileOk)
+		{
+			delete CurrentInFile;
+			return false;
+		}
+		return true;
+	}
+	bool GetSamplesFromInputFile(float* Samples)
+	{
+		int TargetLength = 2 * InSamplesInBlock;
+		if (!CurrentInFile)
+		{
+			for (int i = 0; i < TargetLength; ++i) Samples[i] = 0.0f;
+			return false;
+		}
+
+		CurrentInFile->ProcessData(Samples, TargetLength);
+		return true;
+	}
+	bool GetInputFilePosition(int& InSamples, int& InSeconds, int& TotalSamples, int& TotalSeconds)
+	{
+		if (!CurrentInFile)
+		{
+			InSamples	 = 0;
+			InSeconds	 = 0;
+			TotalSamples = 0;
+			TotalSeconds = 0;
+			return false;
+		}
+		else
+		{
+			InSamples = CurrentInFile->GetFilePosition();
+			TotalSamples = CurrentInFile->GetFileInfo().Length;
+			InSeconds = InSamples / CurrentInFile->GetFileInfo().SampleRate;
+			TotalSeconds = TotalSamples / CurrentInFile->GetFileInfo().SampleRate;
+		}
+		return true;
+	}
+	void SetInputFilePosition(int ToSeconds)
+	{
+		CurrentInFile->SeekFile((float)ToSeconds);
+	}
+
+	//obs³uga plików wyjœciowych Libsndfile
+	void SetOutFilesWorkingFolder(std::wstring Folder) { OutFilesWorkingFolder = Folder; }
+	void SetOutFilesPrefix(std::wstring Prefix) { OutFilesPrefix = Prefix; }
+	void CreateNewOutputFile()
+	{
+		System::DateTime^ Now = System::DateTime::Now;
+		System::String^ FileFormat = L"wav";
+		System::String^ FileName = System::String::Format("{0} at {1}-{2}-{3}--{4}-{5}-{6}.{7}", ToClr(OutFilesPrefix), Now->Year, Now->Month, Now->Day, Now->Hour, Now->Minute, Now->Second, FileFormat);
+		std::wstring FullPath = OutFilesWorkingFolder + L"\\" + Utilities::WideFromSystemString(FileName);
+		CurrentOutFile = new OutSoundFile(FullPath, SFF_WAV);
+	}
+	bool AppendSamplesToOutputFile(float* Samples)
+	{
+		if (!CurrentOutFile) return false;
+
+		int TargetLength = 2 * InSamplesInBlock;
+		CurrentOutFile->ProcessData(Samples, TargetLength);
+		return true;
+	}
+	void FinalizeOutputFile()
+	{
+		delete CurrentOutFile;
+		CurrentOutFile = nullptr;
+	}
+
+	const AudioFileInfo GetInputFileDetails()
+	{
+		AudioFileInfo Result;
+		if (CurrentInFile) Result = CurrentInFile->GetFileInfo();
+		return Result;
 	}
 };

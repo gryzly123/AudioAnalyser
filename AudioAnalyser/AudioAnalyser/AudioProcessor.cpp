@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "AudioProcessor.h"
+#include "IoManager.h"
 
 AudioProcessor* AudioProcessor::Instance = nullptr;
 
@@ -109,7 +110,7 @@ void AudioProcessor::UpdatePluginParameterByIndex(int PluginIndex, int AtIndex, 
 
 void AudioProcessor::UpdatePluginParameterByName(int PluginIndex, std::wstring AtName, float NewValue)
 {
-	System::String^ Str = PluginIndex.ToString() + " PARAM " + ToCli(AtName) + " " + NewValue.ToString();
+	System::String^ Str = PluginIndex.ToString() + " PARAM " + ToClr(AtName) + " " + NewValue.ToString();
 	System::Windows::Forms::Break(Str);
 
 	for (DspPluginParameter* Param : Plugins[PluginIndex]->GetParameters())
@@ -178,13 +179,30 @@ void AudioProcessor::ResetPlugins()
 
 int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
-	//int a = 2 * framesPerBuffer;
-	//AudioFile.ProcessData((float*)inputBuffer, a);
-	
+	IsBusy = true;
+	int Samplecount = 2 * framesPerBuffer;
+	IoManager* IM = IoManager::GetInstance();
+	InputSource IS;
+	OutputSource OS;
+	IM->GetCurrentSources(IS, OS);
+
 	float* InputLPre = new float[framesPerBuffer];
 	float* InputRPre = new float[framesPerBuffer];
 	float* InputLPost = new float[framesPerBuffer];
 	float* InputRPost = new float[framesPerBuffer];
+	switch (IS)
+	{
+	case InputSource::IS_Stream: //nie rób nic, próbki s¹ ju¿ w buforze
+		break;
+
+	case InputSource::IS_None: //wyzeruj próbki (efekt wy³¹czenia wejœcia)
+		for (int i = 0; i < Samplecount; ++i) ((float*)inputBuffer)[i] = 0.0f;
+		break;
+
+	case InputSource::IS_File: //podmieñ próbki ze strumienia na próbki z pliku
+		IM->GetSamplesFromInputFile((float*)inputBuffer);
+		break;
+	}
 
 	float* Seek = (float*)inputBuffer;
 	for (int i = 0; i < framesPerBuffer; ++i)
@@ -192,18 +210,20 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 		InputLPre[i] = *(Seek++);
 		InputRPre[i] = *(Seek++);
 	}
-	
+
 	int PluginCount = Plugins.size();
 	for (int i = 0; i < PluginCount; i++)
 	{
+		if (Plugins[i]->Bypass) continue;
+
 		for (int i = 0; i < framesPerBuffer; ++i)
 		{
 			InputLPost[i] = InputLPre[i];
 			InputRPost[i] = InputRPre[i];
 		}
-	
+
 		Plugins[i]->ProcessData(InputLPost, InputRPost, framesPerBuffer);
-	
+
 		float DryWetMix = Plugins[i]->DryWetMix;
 		for (int i = 0; i < framesPerBuffer; ++i)
 		{
@@ -211,7 +231,7 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 			InputRPre[i] = (DryWetMix * InputRPost[i]) + ((1 - DryWetMix) * InputRPre[i]);
 		}
 	}
-	
+
 	Seek = (float*)outputBuffer;
 	for (int i = 0; i < framesPerBuffer; ++i)
 	{
@@ -219,10 +239,26 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 		*(Seek++) = InputRPre[i] > 1.0f ? 1.0f : InputRPre[i];
 	}
 
+	switch (OS)
+	{
+	case OutputSource::OS_Stream:
+		break; //nie rób nic, próbki s¹ ju¿ w buforze
+
+	case OutputSource::OS_File: //skopiuj próbki do pliku
+	case OutputSource::OS_Both:
+		IM->AppendSamplesToOutputFile((float*)outputBuffer);
+		if (OS == OutputSource::OS_Both) break; //jeœli dzia³a tylko plik, przejdŸ do zerowania
+
+	case InputSource::IS_None: //wyzeruj próbki (efekt wy³¹czenia wyjœcia)
+		for (int i = 0; i < Samplecount; ++i) ((float*)outputBuffer)[i] = 0.0f;
+		break;
+	}
+
 	delete InputLPre;
 	delete InputRPre;
 	delete InputLPost;
 	delete InputRPost;
 
+	IsBusy = false;
 	return paContinue;
 }

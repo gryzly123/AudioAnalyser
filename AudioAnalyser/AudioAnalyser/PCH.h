@@ -27,5 +27,9 @@
 #endif
 
 #define GUI_RACKITEMS_COUNT 7
-#define ToCli(x) gcnew System::String(x.c_str())
+#define AUDIO_SAMPLERATE 44100
+#define AUDIO_CHANNELCOUNT 2
+#define AUDIO_FORMAT (SF_FORMAT_WAV | SF_FORMAT_PCM_16)
+
+#define ToClr(x) gcnew System::String(x.c_str())
 #define Break(x) MessageBox::Show(x)

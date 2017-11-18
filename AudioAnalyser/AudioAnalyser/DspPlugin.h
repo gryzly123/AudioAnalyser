@@ -502,27 +502,29 @@ public:
 class RetriggerSimple : public DspPlugin
 {
 private:
-	Param Modulo = Param(PT_Enum, L"Retrigger modulo", 0, 6, 3);
+	Param Modulo = Param(PT_Float, L"Retrigger modulo", 0, 6, 1);
 
 public:
 	RetriggerSimple() : DspPlugin(L"Retrigger (Simple)")
 	{
-		std::wstring* ModuloEnum = new std::wstring[6];
-		ModuloEnum[0] = L"256";
-		ModuloEnum[1] = L"512";
-		ModuloEnum[2] = L"1024";
-		ModuloEnum[3] = L"2048";
-		ModuloEnum[4] = L"4096";
-		ModuloEnum[5] = L"8196";
-		Modulo.EnumNames = ModuloEnum;
+		//std::wstring* ModuloEnum = new std::wstring[6];
+		//ModuloEnum[0] = L"256";
+		//ModuloEnum[1] = L"512";
+		//ModuloEnum[2] = L"1024";
+		//ModuloEnum[3] = L"2048";
+		//ModuloEnum[4] = L"4096";
+		//ModuloEnum[5] = L"8192";
+		//Modulo.EnumNames = ModuloEnum;
 
+		Modulo.FloatValueStep = 1.0f;
 		ParameterRefsForUi.push_back(&Modulo);
 	}
 
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int ModuloVal = std::pow(2, (Modulo.Val + 9));
+		//int ModuloVal = std::pow(2, (Modulo.Val + 8));
+		int ModuloVal = Length / std::pow(2, Modulo.Val);
 
 		for (int i = 0; i < Length; i++)
 		{
@@ -539,11 +541,11 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int HalfLength = Length;
+		int HalfLength = Length / 2;
 		for (int i = 0; i < HalfLength; i++)
 		{
-			Utilities::Swap(BufferL[i], BufferL[Length - i]);
-			Utilities::Swap(BufferR[i], BufferR[Length - i]);
+			Utilities::Swap(BufferL[i], BufferL[Length - i - 1]);
+			Utilities::Swap(BufferR[i], BufferR[Length - i - 1]);
 		}
 	}
 };
