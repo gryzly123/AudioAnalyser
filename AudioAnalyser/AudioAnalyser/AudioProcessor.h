@@ -2,6 +2,8 @@
 #include "PCH.h"
 #include "DspPlugin.h"
 
+typedef void(__stdcall *PluginDataCallback)(float*, int);
+
 enum PluginSwapDirection
 {
 	MoveUpInRack = 0,
@@ -11,7 +13,6 @@ enum PluginSwapDirection
 class AudioProcessor
 {
 private:
-
 	std::vector<DspPlugin*> Plugins;
 	static AudioProcessor* Instance;
 
@@ -21,6 +22,7 @@ private:
 	bool IsBusy = false;
 
 public:
+	PluginDataCallback FeedData;
 	static AudioProcessor* GetInstance();
 	int ProcessAudio(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
 	bool GetIsBusy() { return IsBusy; }

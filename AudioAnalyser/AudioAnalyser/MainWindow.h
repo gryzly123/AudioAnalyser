@@ -1,6 +1,7 @@
 #pragma once
 #include "ConfigWindow.h"
 #include "DynamicPluginConfigWindow.h"
+#include "DynamicVizWindow.h"
 #include "FileDetailsWindow.h"
 
 #include "IoManager.h"
@@ -30,6 +31,9 @@ namespace AudioAnalyser
 			}
 
 			SetProcessButtonsEnabled();
+
+			DynamicVizWindow^ V = gcnew DynamicVizWindow();
+			V->Show();
 
 			//XmlTextReader^ FileReader = gcnew XmlTextReader(L"C:\\Program Filesl\\bepis.aap");
 			//FileSerializer::DeserializeRack(FileReader);

@@ -254,6 +254,8 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 		break;
 	}
 
+	FeedData(InputLPost, framesPerBuffer);
+
 	delete InputLPre;
 	delete InputRPre;
 	delete InputLPost;
