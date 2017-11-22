@@ -180,7 +180,7 @@ private:
 	}
 	
 	IoManager() { InitializePortAudio(); }
-	~IoManager() { DeinitializePortAudio(); }
+	~IoManager() { DeinitializePortAudio(); Instance = nullptr; }
 
 public:
 	static IoManager* GetInstance()

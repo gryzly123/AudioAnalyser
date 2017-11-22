@@ -12,6 +12,7 @@ AudioProcessor::AudioProcessor()
 AudioProcessor::~AudioProcessor()
 {
 	for (int i = 0; i < GUI_RACKITEMS_COUNT; ++i) delete Plugins[i];
+	Instance = nullptr;
 }
 
 DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)

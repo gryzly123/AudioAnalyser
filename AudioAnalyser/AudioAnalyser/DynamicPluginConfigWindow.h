@@ -1,8 +1,8 @@
 #pragma once
 #include "AudioProcessor.h"
 
-namespace AudioAnalyser {
-
+namespace AudioAnalyser
+{
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
