@@ -8,12 +8,15 @@
 #include <Windows.h>
 #include <msclr\marshal.h>
 #include <msclr\marshal_cppstd.h>
+//#include <msclr\lock.h>
 
 //tylko wewn¹trz AudioAnalysera - pomijamy headery AA za³¹czane z RackControls
 #ifndef FROM_RACK_CONTROLS
 
-//AudioAnalyser
-#include "Utilities.h"
+//SFML
+#define SFML_STATIC
+#include "SFML\System.hpp"
+#include "SFML\Graphics.hpp"
 
 //PortAudio
 #include "portaudio.h"
@@ -21,8 +24,8 @@
 //Libsndfile
 #include "sndfile.h"
 
-//SFML
-#include "SFML\Graphics.hpp"
+//AudioAnalyser
+#include "Utilities.h"
 
 #endif
 

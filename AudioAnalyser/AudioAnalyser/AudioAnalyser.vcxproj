@@ -91,14 +91,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;SFML_STATIC;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\sfml\include\;$(ProjectDir)..\..\PortAudio\include;$(ProjectDir)..\..\Libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>true</CompileAsManaged>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\sfml\lib\Debug\sfml-graphics-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-window-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-audio-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-system-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-main-d.lib;$(ProjectDir)..\..\PortAudio\lib\Debug\portaudio_static_x86.lib;$(ProjectDir)..\..\Libsndfile\lib\libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-system-d.lib;sfml-audio-d.lib;sfml-network-d.lib;sfml-window-d.lib;portaudio_static_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\PortAudio\lib\Debug\;$(ProjectDir)..\..\sfml\lib\Debug\;$(ProjectDir)..\..\sfml\lib\Common\;$(ProjectDir)..\..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
@@ -160,9 +160,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PCH.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="VisWindow.cpp" />
+    <ClCompile Include="VisWindowFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioProcessor.h" />
+    <ClInclude Include="ClrUnmanagedMutex.h" />
     <ClInclude Include="ComplexNumbers.h" />
     <ClInclude Include="ConfigWindow.h">
       <FileType>CppForm</FileType>
@@ -184,6 +187,7 @@
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="VisWindow.h" />
+    <ClInclude Include="VisWindowFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConfigWindow.resx">

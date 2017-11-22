@@ -233,7 +233,7 @@ public:
     /// \param states   Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void draw(const Drawable& drawable, const RenderStates& states = RenderStates::Default);
+    void draw(const Drawable& drawable, const RenderStates& states = RenderStates());
 
     ////////////////////////////////////////////////////////////
     /// \brief Draw primitives defined by an array of vertices
@@ -245,7 +245,7 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     void draw(const Vertex* vertices, std::size_t vertexCount,
-              PrimitiveType type, const RenderStates& states = RenderStates::Default);
+              PrimitiveType type, const RenderStates& states = RenderStates());
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the size of the rendering region of the target

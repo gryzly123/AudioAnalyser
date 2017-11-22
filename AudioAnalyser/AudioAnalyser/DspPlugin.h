@@ -62,13 +62,17 @@ class DspPlugin
 {
 protected:
 	std::vector<DspPluginParameter*> ParameterRefsForUi;
-	DspPlugin(const std::wstring PluginName) : PluginName(PluginName) { }
+	int VisWindowIndex = -1;
+
+	DspPlugin(const std::wstring PluginName, bool HasVisualization = false)
+		: PluginName(PluginName),
+		HasVisualization(HasVisualization) { }
 
 public:
 	const std::wstring PluginName;
 	bool Bypass = false;
 	float DryWetMix = 1.0f;
-	bool HasVisualization = false;
+	const bool HasVisualization;
 
 	std::vector<DspPluginParameter*> GetParameters() { return ParameterRefsForUi; }
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) = 0;
@@ -82,7 +86,9 @@ public:
 };
 
 #ifndef FROM_RACK_CONTROLS
+#include "VisWindowFactory.h"
 
+#define HAS_VIZ true
 class SineWaveGenerator : public DspPlugin
 {
 private:
@@ -118,6 +124,34 @@ public:
 		}
 	}
 };
+class Oscilloscope : public DspPlugin
+{
+public:
+	Oscilloscope() : DspPlugin(L"Oscilloscope", HAS_VIZ)
+	{
+
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		if (VisWindowIndex >= 0)
+		{
+			VisWindowDataUpdate Update;
+			Update.IsConfig = false;
+			Update.TargetWindow = VisWindowIndex;
+			Update.ContentLength = Length;
+			Update.ContentData = new float[Length];
+			for (int i = 0; i < Length; ++i) Update.ContentData[i] = BufferL[i];
+			VisWindowManager::GetInstance()->PushDataUpdate(Update);
+		}
+		else
+		{
+			VisWindow* Window = VisWindowFactory::ConstructVisWindow(L"Oscilloscope");
+			VisWindowIndex = VisWindowManager::GetInstance()->PushNewWindow(Window);
+		}
+	}
+};
+
 class LinearAmplifier : public DspPlugin
 {
 	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);

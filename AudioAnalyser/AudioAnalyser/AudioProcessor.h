@@ -1,6 +1,7 @@
 #pragma once
 #include "PCH.h"
-#include "DspPlugin.h"
+class DspPlugin;
+struct DspPluginParameter;
 
 enum PluginSwapDirection
 {

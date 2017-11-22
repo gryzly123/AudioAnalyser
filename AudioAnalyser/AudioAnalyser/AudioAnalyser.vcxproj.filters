@@ -42,6 +42,12 @@
     <ClCompile Include="FileDetailsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VisWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VisWindowFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -86,6 +92,12 @@
     <ClInclude Include="FileDetailsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClrUnmanagedMutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VisWindowFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainWindow.resx">
@@ -95,6 +107,9 @@
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="DynamicPluginConfigWindow.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileDetailsWindow.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

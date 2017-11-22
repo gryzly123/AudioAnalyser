@@ -11,7 +11,7 @@ std::wstring Utilities::WideFromAsciiCharArray(const char* In)
 	return Utilities::WideFromString(std::string(In));
 }
 
-#define MAX_SIZE 4096
+#define MAX_SIZE 16384
 
 std::wstring Utilities::WideFromMultibyteCharArray(const char* In)
 {
