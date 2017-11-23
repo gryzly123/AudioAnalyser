@@ -21,9 +21,6 @@
 //Libsndfile
 #include "sndfile.h"
 
-//SFML
-#include "SFML\Graphics.hpp"
-
 #endif
 
 #define GUI_RACKITEMS_COUNT 7

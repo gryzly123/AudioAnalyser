@@ -97,5 +97,8 @@
     <EmbeddedResource Include="DynamicPluginConfigWindow.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
+    <EmbeddedResource Include="FileDetailsWindow.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
