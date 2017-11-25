@@ -170,8 +170,11 @@
     <ClCompile Include="FileDetailsWindow.cpp" />
     <ClCompile Include="IoManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Oscilloscope.cpp" />
     <ClCompile Include="PCH.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="VisWindow.cpp" />
+    <ClCompile Include="VisWindowFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioProcessor.h" />
@@ -196,6 +199,7 @@
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="VisWindow.h" />
+    <ClInclude Include="VisWindowFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConfigWindow.resx">

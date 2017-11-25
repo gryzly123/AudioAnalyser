@@ -1,5 +1,5 @@
 #pragma once
-
+#ifndef FROM_MAIN
 //STD
 #include <string>
 #include <vector>
@@ -28,5 +28,7 @@
 #define AUDIO_CHANNELCOUNT 2
 #define AUDIO_FORMAT (SF_FORMAT_WAV | SF_FORMAT_PCM_16)
 
-#define ToClr(x) gcnew System::String(x.c_str())
+#define ToClr(x) gcnew ::System::String(x.c_str())
 #define Break(x) MessageBox::Show(x)
+
+#endif

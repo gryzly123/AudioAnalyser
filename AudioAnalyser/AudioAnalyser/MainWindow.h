@@ -6,22 +6,28 @@
 #include "IoManager.h"
 #include "Utilities.h"
 #include "FileSerializer.h"
+#include "VisWindowFactory.h"
 
 namespace AudioAnalyser
 {
-	using namespace System;
-
+	using namespace ::System;
+	using namespace ::System::Windows::Forms;
+	using namespace ::System::Collections::Generic;
 	/// <summary>
 	/// G³ówne okno aplikacji
 	/// </summary>
-	public ref class MainWindow : public System::Windows::Forms::Form
+	public ref class MainWindow : public Form
 	{
 	public:
 		MainWindow(void)
 		{
 			InitializeComponent();
 
-			PluginConfigWindows = gcnew System::Collections::Generic::List<DynamicPluginConfigWindow^>();
+			::System::Threading::Thread^ VisThread = gcnew ::System::Threading::Thread(
+				gcnew ::System::Threading::ThreadStart(
+					VisWindowManager::WindowThreadMethodStatic));
+
+			PluginConfigWindows = gcnew List<DynamicPluginConfigWindow^>();
 			for (int i = 0; i < GUI_RACKITEMS_COUNT; i++)
 			{
 				UpdateRackItemContents(i);
@@ -35,7 +41,7 @@ namespace AudioAnalyser
 			//FileSerializer::DeserializeRack(FileReader);
 			//PerformFullRackRefresh(true);
 			//FileReader->Close();
-			//Version^ AppVersion = System::Reflection::Assembly::GetExecutingAssembly()->GetName()->Version;
+			//Version^ AppVersion = ::System::Reflection::Assembly::GetExecutingAssembly()->GetName()->Version;
 			//MessageBox::Show(AppVersion->ToString());
 		}
 
@@ -46,32 +52,32 @@ namespace AudioAnalyser
 		bool IsSeekbarClicked = false;
 		bool IsInputFileOpened = false;
 
-		System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
-		System::Windows::Forms::ImageList^  Icons32;
+		::System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
+		::System::Windows::Forms::ImageList^  Icons32;
 		
-		System::Windows::Forms::GroupBox^  GroupInputFile;
-		System::Windows::Forms::GroupBox^  GroupOutputFile;
+		::System::Windows::Forms::GroupBox^  GroupInputFile;
+		::System::Windows::Forms::GroupBox^  GroupOutputFile;
 
 		
-		System::Windows::Forms::Button^  ButtonNewFile;
-		System::Windows::Forms::Button^  ButtonOpenFile;
-		System::Windows::Forms::Button^  ButtonSaveFile;
-		System::Windows::Forms::Button^  ButtonInputStreamStart;
-		System::Windows::Forms::Button^  ButtonInputFileBrowse;
-		System::Windows::Forms::Button^  ButtonInputFileStart;
-		System::Windows::Forms::Button^  ButtonOutputStreamStart;
-		System::Windows::Forms::Button^  ButtonOutputFileBrowse;
-		System::Windows::Forms::Button^  ButtonOutputFileStart;
-		System::Windows::Forms::Button^  ButtonStartProcessing;
+		::System::Windows::Forms::Button^  ButtonNewFile;
+		::System::Windows::Forms::Button^  ButtonOpenFile;
+		::System::Windows::Forms::Button^  ButtonSaveFile;
+		::System::Windows::Forms::Button^  ButtonInputStreamStart;
+		::System::Windows::Forms::Button^  ButtonInputFileBrowse;
+		::System::Windows::Forms::Button^  ButtonInputFileStart;
+		::System::Windows::Forms::Button^  ButtonOutputStreamStart;
+		::System::Windows::Forms::Button^  ButtonOutputFileBrowse;
+		::System::Windows::Forms::Button^  ButtonOutputFileStart;
+		::System::Windows::Forms::Button^  ButtonStartProcessing;
 		
-		System::Windows::Forms::Label^  StaticLabelInputFileSource;
-		System::Windows::Forms::Label^  DynamicLabelInputFileTime;
+		::System::Windows::Forms::Label^  StaticLabelInputFileSource;
+		::System::Windows::Forms::Label^  DynamicLabelInputFileTime;
 
-		System::Windows::Forms::Label^  StaticLabelOutputFileSource;
-		System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
+		::System::Windows::Forms::Label^  StaticLabelOutputFileSource;
+		::System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
 		
-		System::Windows::Forms::TrackBar^ SeekbarInputFile;
-		System::Windows::Forms::TextBox^  TextboxOutputFilePath;
+		::System::Windows::Forms::TrackBar^ SeekbarInputFile;
+		::System::Windows::Forms::TextBox^  TextboxOutputFilePath;
 		
 		RackControls::RackItem^  RackItem0;
 		RackControls::RackItem^  RackItem1;
@@ -81,22 +87,22 @@ namespace AudioAnalyser
 		RackControls::RackItem^  RackItem5;
 		RackControls::RackItem^  RackItem6;
 
-		System::Windows::Forms::GroupBox^  groupBox1;
-		System::Windows::Forms::GroupBox^  groupBox2;
-		System::Windows::Forms::Button^  ButtonOpenConfig;
+		::System::Windows::Forms::GroupBox^  groupBox1;
+		::System::Windows::Forms::GroupBox^  groupBox2;
+		::System::Windows::Forms::Button^  ButtonOpenConfig;
 
-		System::Windows::Forms::Button^  button2;
-		System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
-		System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
-		System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
+		::System::Windows::Forms::Button^  button2;
+		::System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
+		::System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
+		::System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
 
-		System::Windows::Forms::Button^  ButtonInputFileAbout;
-		System::Windows::Forms::Label^  DynamicLabelInputFileSource;
-		System::Windows::Forms::FolderBrowserDialog^  SaveDialogFile;
-		System::Windows::Forms::Timer^  PlayerUpdateTimer;
-	private: System::Windows::Forms::TextBox^  TextboxFilenamePrefix;
+		::System::Windows::Forms::Button^  ButtonInputFileAbout;
+		::System::Windows::Forms::Label^  DynamicLabelInputFileSource;
+		::System::Windows::Forms::FolderBrowserDialog^  SaveDialogFile;
+		::System::Windows::Forms::Timer^  PlayerUpdateTimer;
+	private: ::System::Windows::Forms::TextBox^  TextboxFilenamePrefix;
 
-		System::ComponentModel::IContainer^  components;
+		::System::ComponentModel::IContainer^  components;
 		
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -105,34 +111,34 @@ namespace AudioAnalyser
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->components = (gcnew System::ComponentModel::Container());
-			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainWindow::typeid));
-			this->ButtonNewFile = (gcnew System::Windows::Forms::Button());
-			this->Icons32 = (gcnew System::Windows::Forms::ImageList(this->components));
-			this->ButtonInputStreamStart = (gcnew System::Windows::Forms::Button());
-			this->ButtonOpenFile = (gcnew System::Windows::Forms::Button());
-			this->ButtonSaveFile = (gcnew System::Windows::Forms::Button());
-			this->GroupInputFile = (gcnew System::Windows::Forms::GroupBox());
-			this->ButtonInputFileAbout = (gcnew System::Windows::Forms::Button());
-			this->DynamicLabelInputFileSource = (gcnew System::Windows::Forms::Label());
-			this->DynamicLabelInputFileTime = (gcnew System::Windows::Forms::Label());
-			this->SeekbarInputFile = (gcnew System::Windows::Forms::TrackBar());
-			this->ButtonInputFileBrowse = (gcnew System::Windows::Forms::Button());
-			this->ButtonInputFileStart = (gcnew System::Windows::Forms::Button());
-			this->StaticLabelInputFileSource = (gcnew System::Windows::Forms::Label());
-			this->GroupOutputFile = (gcnew System::Windows::Forms::GroupBox());
-			this->TextboxFilenamePrefix = (gcnew System::Windows::Forms::TextBox());
-			this->ButtonOutputFileBrowse = (gcnew System::Windows::Forms::Button());
-			this->StaticLabelOutputFileFormat = (gcnew System::Windows::Forms::Label());
-			this->TextboxOutputFilePath = (gcnew System::Windows::Forms::TextBox());
-			this->ButtonOutputFileStart = (gcnew System::Windows::Forms::Button());
-			this->StaticLabelOutputFileSource = (gcnew System::Windows::Forms::Label());
-			this->ButtonOutputStreamStart = (gcnew System::Windows::Forms::Button());
-			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
-			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
-			this->ButtonOpenConfig = (gcnew System::Windows::Forms::Button());
-			this->button2 = (gcnew System::Windows::Forms::Button());
-			this->ButtonStartProcessing = (gcnew System::Windows::Forms::Button());
+			this->components = (gcnew ::System::ComponentModel::Container());
+			::System::ComponentModel::ComponentResourceManager^  resources = (gcnew ::System::ComponentModel::ComponentResourceManager(MainWindow::typeid));
+			this->ButtonNewFile = (gcnew ::System::Windows::Forms::Button());
+			this->Icons32 = (gcnew ::System::Windows::Forms::ImageList(this->components));
+			this->ButtonInputStreamStart = (gcnew ::System::Windows::Forms::Button());
+			this->ButtonOpenFile = (gcnew ::System::Windows::Forms::Button());
+			this->ButtonSaveFile = (gcnew ::System::Windows::Forms::Button());
+			this->GroupInputFile = (gcnew ::System::Windows::Forms::GroupBox());
+			this->ButtonInputFileAbout = (gcnew ::System::Windows::Forms::Button());
+			this->DynamicLabelInputFileSource = (gcnew ::System::Windows::Forms::Label());
+			this->DynamicLabelInputFileTime = (gcnew ::System::Windows::Forms::Label());
+			this->SeekbarInputFile = (gcnew ::System::Windows::Forms::TrackBar());
+			this->ButtonInputFileBrowse = (gcnew ::System::Windows::Forms::Button());
+			this->ButtonInputFileStart = (gcnew ::System::Windows::Forms::Button());
+			this->StaticLabelInputFileSource = (gcnew ::System::Windows::Forms::Label());
+			this->GroupOutputFile = (gcnew ::System::Windows::Forms::GroupBox());
+			this->TextboxFilenamePrefix = (gcnew ::System::Windows::Forms::TextBox());
+			this->ButtonOutputFileBrowse = (gcnew ::System::Windows::Forms::Button());
+			this->StaticLabelOutputFileFormat = (gcnew ::System::Windows::Forms::Label());
+			this->TextboxOutputFilePath = (gcnew ::System::Windows::Forms::TextBox());
+			this->ButtonOutputFileStart = (gcnew ::System::Windows::Forms::Button());
+			this->StaticLabelOutputFileSource = (gcnew ::System::Windows::Forms::Label());
+			this->ButtonOutputStreamStart = (gcnew ::System::Windows::Forms::Button());
+			this->groupBox1 = (gcnew ::System::Windows::Forms::GroupBox());
+			this->groupBox2 = (gcnew ::System::Windows::Forms::GroupBox());
+			this->ButtonOpenConfig = (gcnew ::System::Windows::Forms::Button());
+			this->button2 = (gcnew ::System::Windows::Forms::Button());
+			this->ButtonStartProcessing = (gcnew ::System::Windows::Forms::Button());
 			this->RackItem6 = (gcnew RackControls::RackItem());
 			this->RackItem5 = (gcnew RackControls::RackItem());
 			this->RackItem4 = (gcnew RackControls::RackItem());
@@ -140,13 +146,13 @@ namespace AudioAnalyser
 			this->RackItem2 = (gcnew RackControls::RackItem());
 			this->RackItem1 = (gcnew RackControls::RackItem());
 			this->RackItem0 = (gcnew RackControls::RackItem());
-			this->OpenDialogRack = (gcnew System::Windows::Forms::OpenFileDialog());
-			this->OpenDialogFile = (gcnew System::Windows::Forms::OpenFileDialog());
-			this->SaveDialogRack = (gcnew System::Windows::Forms::SaveFileDialog());
-			this->SaveDialogFile = (gcnew System::Windows::Forms::FolderBrowserDialog());
-			this->PlayerUpdateTimer = (gcnew System::Windows::Forms::Timer(this->components));
+			this->OpenDialogRack = (gcnew ::System::Windows::Forms::OpenFileDialog());
+			this->OpenDialogFile = (gcnew ::System::Windows::Forms::OpenFileDialog());
+			this->SaveDialogRack = (gcnew ::System::Windows::Forms::SaveFileDialog());
+			this->SaveDialogFile = (gcnew ::System::Windows::Forms::FolderBrowserDialog());
+			this->PlayerUpdateTimer = (gcnew ::System::Windows::Forms::Timer(this->components));
 			this->GroupInputFile->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->BeginInit();
+			(cli::safe_cast<::System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->BeginInit();
 			this->GroupOutputFile->SuspendLayout();
 			this->groupBox1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
@@ -154,22 +160,22 @@ namespace AudioAnalyser
 			// 
 			// ButtonNewFile
 			// 
-			this->ButtonNewFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonNewFile->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonNewFile->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonNewFile->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonNewFile->ImageIndex = 0;
 			this->ButtonNewFile->ImageList = this->Icons32;
-			this->ButtonNewFile->Location = System::Drawing::Point(12, 12);
+			this->ButtonNewFile->Location = ::System::Drawing::Point(12, 12);
 			this->ButtonNewFile->Name = L"ButtonNewFile";
-			this->ButtonNewFile->Size = System::Drawing::Size(40, 40);
+			this->ButtonNewFile->Size = ::System::Drawing::Size(40, 40);
 			this->ButtonNewFile->TabIndex = 3;
 			this->ButtonNewFile->UseVisualStyleBackColor = true;
-			this->ButtonNewFile->Click += gcnew System::EventHandler(this, &MainWindow::ButtonNewFile_Click);
+			this->ButtonNewFile->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonNewFile_Click);
 			// 
 			// Icons32
 			// 
-			this->Icons32->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"Icons32.ImageStream")));
-			this->Icons32->TransparentColor = System::Drawing::Color::Transparent;
+			this->Icons32->ImageStream = (cli::safe_cast<::System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"Icons32.ImageStream")));
+			this->Icons32->TransparentColor = ::System::Drawing::Color::Transparent;
 			this->Icons32->Images->SetKeyName(0, L"Icons-01.png");
 			this->Icons32->Images->SetKeyName(1, L"Icons-03.png");
 			this->Icons32->Images->SetKeyName(2, L"Icons-05.png");
@@ -184,45 +190,45 @@ namespace AudioAnalyser
 			// 
 			// ButtonInputStreamStart
 			// 
-			this->ButtonInputStreamStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonInputStreamStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonInputStreamStart->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputStreamStart->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular,
+				::System::Drawing::GraphicsUnit::Point, static_cast<::System::Byte>(238)));
 			this->ButtonInputStreamStart->ImageIndex = 3;
 			this->ButtonInputStreamStart->ImageList = this->Icons32;
-			this->ButtonInputStreamStart->Location = System::Drawing::Point(23, 23);
+			this->ButtonInputStreamStart->Location = ::System::Drawing::Point(23, 23);
 			this->ButtonInputStreamStart->Name = L"ButtonInputStreamStart";
-			this->ButtonInputStreamStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonInputStreamStart->Size = ::System::Drawing::Size(48, 46);
 			this->ButtonInputStreamStart->TabIndex = 11;
 			this->ButtonInputStreamStart->UseVisualStyleBackColor = true;
-			this->ButtonInputStreamStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputStreamStart_Click);
+			this->ButtonInputStreamStart->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonInputStreamStart_Click);
 			// 
 			// ButtonOpenFile
 			// 
-			this->ButtonOpenFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonOpenFile->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonOpenFile->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOpenFile->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonOpenFile->ImageIndex = 1;
 			this->ButtonOpenFile->ImageList = this->Icons32;
-			this->ButtonOpenFile->Location = System::Drawing::Point(58, 12);
+			this->ButtonOpenFile->Location = ::System::Drawing::Point(58, 12);
 			this->ButtonOpenFile->Name = L"ButtonOpenFile";
-			this->ButtonOpenFile->Size = System::Drawing::Size(40, 40);
+			this->ButtonOpenFile->Size = ::System::Drawing::Size(40, 40);
 			this->ButtonOpenFile->TabIndex = 9;
 			this->ButtonOpenFile->UseVisualStyleBackColor = true;
-			this->ButtonOpenFile->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOpenFile_Click);
+			this->ButtonOpenFile->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonOpenFile_Click);
 			// 
 			// ButtonSaveFile
 			// 
-			this->ButtonSaveFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonSaveFile->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonSaveFile->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonSaveFile->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonSaveFile->ImageIndex = 2;
 			this->ButtonSaveFile->ImageList = this->Icons32;
-			this->ButtonSaveFile->Location = System::Drawing::Point(104, 12);
+			this->ButtonSaveFile->Location = ::System::Drawing::Point(104, 12);
 			this->ButtonSaveFile->Name = L"ButtonSaveFile";
-			this->ButtonSaveFile->Size = System::Drawing::Size(40, 40);
+			this->ButtonSaveFile->Size = ::System::Drawing::Size(40, 40);
 			this->ButtonSaveFile->TabIndex = 10;
 			this->ButtonSaveFile->UseVisualStyleBackColor = true;
-			this->ButtonSaveFile->Click += gcnew System::EventHandler(this, &MainWindow::ButtonSaveFile_Click);
+			this->ButtonSaveFile->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonSaveFile_Click);
 			// 
 			// GroupInputFile
 			// 
@@ -233,93 +239,93 @@ namespace AudioAnalyser
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileBrowse);
 			this->GroupInputFile->Controls->Add(this->ButtonInputFileStart);
 			this->GroupInputFile->Controls->Add(this->StaticLabelInputFileSource);
-			this->GroupInputFile->Location = System::Drawing::Point(111, 64);
+			this->GroupInputFile->Location = ::System::Drawing::Point(111, 64);
 			this->GroupInputFile->Name = L"GroupInputFile";
-			this->GroupInputFile->Size = System::Drawing::Size(317, 96);
+			this->GroupInputFile->Size = ::System::Drawing::Size(317, 96);
 			this->GroupInputFile->TabIndex = 12;
 			this->GroupInputFile->TabStop = false;
 			this->GroupInputFile->Text = L"Input file";
 			// 
 			// ButtonInputFileAbout
 			// 
-			this->ButtonInputFileAbout->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonInputFileAbout->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonInputFileAbout->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputFileAbout->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 6, ::System::Drawing::FontStyle::Bold, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonInputFileAbout->ImageIndex = 6;
-			this->ButtonInputFileAbout->Location = System::Drawing::Point(204, 23);
-			this->ButtonInputFileAbout->Margin = System::Windows::Forms::Padding(0);
+			this->ButtonInputFileAbout->Location = ::System::Drawing::Point(204, 23);
+			this->ButtonInputFileAbout->Margin = ::System::Windows::Forms::Padding(0);
 			this->ButtonInputFileAbout->Name = L"ButtonInputFileAbout";
-			this->ButtonInputFileAbout->Size = System::Drawing::Size(24, 20);
+			this->ButtonInputFileAbout->Size = ::System::Drawing::Size(24, 20);
 			this->ButtonInputFileAbout->TabIndex = 18;
 			this->ButtonInputFileAbout->Text = L"\?";
-			this->ButtonInputFileAbout->TextAlign = System::Drawing::ContentAlignment::BottomCenter;
+			this->ButtonInputFileAbout->TextAlign = ::System::Drawing::ContentAlignment::BottomCenter;
 			this->ButtonInputFileAbout->UseVisualStyleBackColor = true;
-			this->ButtonInputFileAbout->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputFileAbout_Click);
+			this->ButtonInputFileAbout->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonInputFileAbout_Click);
 			// 
 			// DynamicLabelInputFileSource
 			// 
 			this->DynamicLabelInputFileSource->AutoSize = true;
-			this->DynamicLabelInputFileSource->Location = System::Drawing::Point(89, 26);
+			this->DynamicLabelInputFileSource->Location = ::System::Drawing::Point(89, 26);
 			this->DynamicLabelInputFileSource->Name = L"DynamicLabelInputFileSource";
-			this->DynamicLabelInputFileSource->Size = System::Drawing::Size(37, 13);
+			this->DynamicLabelInputFileSource->Size = ::System::Drawing::Size(37, 13);
 			this->DynamicLabelInputFileSource->TabIndex = 17;
 			this->DynamicLabelInputFileSource->Text = L"(none)";
 			// 
 			// DynamicLabelInputFileTime
 			// 
-			this->DynamicLabelInputFileTime->Location = System::Drawing::Point(261, 72);
+			this->DynamicLabelInputFileTime->Location = ::System::Drawing::Point(261, 72);
 			this->DynamicLabelInputFileTime->Name = L"DynamicLabelInputFileTime";
-			this->DynamicLabelInputFileTime->Size = System::Drawing::Size(48, 13);
+			this->DynamicLabelInputFileTime->Size = ::System::Drawing::Size(48, 13);
 			this->DynamicLabelInputFileTime->TabIndex = 12;
 			this->DynamicLabelInputFileTime->Text = L"00:00";
-			this->DynamicLabelInputFileTime->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->DynamicLabelInputFileTime->TextAlign = ::System::Drawing::ContentAlignment::TopCenter;
 			// 
 			// SeekbarInputFile
 			// 
-			this->SeekbarInputFile->Location = System::Drawing::Point(9, 49);
+			this->SeekbarInputFile->Location = ::System::Drawing::Point(9, 49);
 			this->SeekbarInputFile->Name = L"SeekbarInputFile";
-			this->SeekbarInputFile->Size = System::Drawing::Size(248, 45);
+			this->SeekbarInputFile->Size = ::System::Drawing::Size(248, 45);
 			this->SeekbarInputFile->TabIndex = 15;
-			this->SeekbarInputFile->Scroll += gcnew System::EventHandler(this, &MainWindow::SeekbarInputFile_Scroll);
-			this->SeekbarInputFile->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MainWindow::SeekbarInputFile_MouseDown);
-			this->SeekbarInputFile->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MainWindow::SeekbarInputFile_MouseUp);
+			this->SeekbarInputFile->Scroll += gcnew ::System::EventHandler(this, &MainWindow::SeekbarInputFile_Scroll);
+			this->SeekbarInputFile->MouseDown += gcnew ::System::Windows::Forms::MouseEventHandler(this, &MainWindow::SeekbarInputFile_MouseDown);
+			this->SeekbarInputFile->MouseUp += gcnew ::System::Windows::Forms::MouseEventHandler(this, &MainWindow::SeekbarInputFile_MouseUp);
 			// 
 			// ButtonInputFileBrowse
 			// 
-			this->ButtonInputFileBrowse->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonInputFileBrowse->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonInputFileBrowse->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputFileBrowse->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 6, ::System::Drawing::FontStyle::Bold, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonInputFileBrowse->ImageIndex = 6;
-			this->ButtonInputFileBrowse->Location = System::Drawing::Point(227, 23);
-			this->ButtonInputFileBrowse->Margin = System::Windows::Forms::Padding(0);
+			this->ButtonInputFileBrowse->Location = ::System::Drawing::Point(227, 23);
+			this->ButtonInputFileBrowse->Margin = ::System::Windows::Forms::Padding(0);
 			this->ButtonInputFileBrowse->Name = L"ButtonInputFileBrowse";
-			this->ButtonInputFileBrowse->Size = System::Drawing::Size(24, 20);
+			this->ButtonInputFileBrowse->Size = ::System::Drawing::Size(24, 20);
 			this->ButtonInputFileBrowse->TabIndex = 16;
 			this->ButtonInputFileBrowse->Text = L"...";
-			this->ButtonInputFileBrowse->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->ButtonInputFileBrowse->TextAlign = ::System::Drawing::ContentAlignment::TopCenter;
 			this->ButtonInputFileBrowse->UseVisualStyleBackColor = true;
-			this->ButtonInputFileBrowse->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputFileBrowse_Click);
+			this->ButtonInputFileBrowse->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonInputFileBrowse_Click);
 			// 
 			// ButtonInputFileStart
 			// 
-			this->ButtonInputFileStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonInputFileStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonInputFileStart->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonInputFileStart->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular,
+				::System::Drawing::GraphicsUnit::Point, static_cast<::System::Byte>(238)));
 			this->ButtonInputFileStart->ImageIndex = 4;
 			this->ButtonInputFileStart->ImageList = this->Icons32;
-			this->ButtonInputFileStart->Location = System::Drawing::Point(261, 23);
+			this->ButtonInputFileStart->Location = ::System::Drawing::Point(261, 23);
 			this->ButtonInputFileStart->Name = L"ButtonInputFileStart";
-			this->ButtonInputFileStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonInputFileStart->Size = ::System::Drawing::Size(48, 46);
 			this->ButtonInputFileStart->TabIndex = 11;
 			this->ButtonInputFileStart->UseVisualStyleBackColor = true;
-			this->ButtonInputFileStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputFileStart_Click);
+			this->ButtonInputFileStart->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonInputFileStart_Click);
 			// 
 			// StaticLabelInputFileSource
 			// 
 			this->StaticLabelInputFileSource->AutoSize = true;
-			this->StaticLabelInputFileSource->Location = System::Drawing::Point(6, 26);
+			this->StaticLabelInputFileSource->Location = ::System::Drawing::Point(6, 26);
 			this->StaticLabelInputFileSource->Name = L"StaticLabelInputFileSource";
-			this->StaticLabelInputFileSource->Size = System::Drawing::Size(58, 13);
+			this->StaticLabelInputFileSource->Size = ::System::Drawing::Size(58, 13);
 			this->StaticLabelInputFileSource->TabIndex = 0;
 			this->StaticLabelInputFileSource->Text = L"File source";
 			// 
@@ -331,97 +337,97 @@ namespace AudioAnalyser
 			this->GroupOutputFile->Controls->Add(this->TextboxOutputFilePath);
 			this->GroupOutputFile->Controls->Add(this->ButtonOutputFileStart);
 			this->GroupOutputFile->Controls->Add(this->StaticLabelOutputFileSource);
-			this->GroupOutputFile->Location = System::Drawing::Point(111, 592);
+			this->GroupOutputFile->Location = ::System::Drawing::Point(111, 592);
 			this->GroupOutputFile->Name = L"GroupOutputFile";
-			this->GroupOutputFile->Size = System::Drawing::Size(317, 85);
+			this->GroupOutputFile->Size = ::System::Drawing::Size(317, 85);
 			this->GroupOutputFile->TabIndex = 14;
 			this->GroupOutputFile->TabStop = false;
 			this->GroupOutputFile->Text = L"Output file";
 			// 
 			// TextboxFilenamePrefix
 			// 
-			this->TextboxFilenamePrefix->Location = System::Drawing::Point(92, 48);
+			this->TextboxFilenamePrefix->Location = ::System::Drawing::Point(92, 48);
 			this->TextboxFilenamePrefix->Name = L"TextboxFilenamePrefix";
-			this->TextboxFilenamePrefix->Size = System::Drawing::Size(159, 20);
+			this->TextboxFilenamePrefix->Size = ::System::Drawing::Size(159, 20);
 			this->TextboxFilenamePrefix->TabIndex = 17;
 			this->TextboxFilenamePrefix->Text = L"Untitled project";
 			// 
 			// ButtonOutputFileBrowse
 			// 
-			this->ButtonOutputFileBrowse->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonOutputFileBrowse->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 6, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonOutputFileBrowse->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOutputFileBrowse->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 6, ::System::Drawing::FontStyle::Bold, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonOutputFileBrowse->ImageIndex = 6;
-			this->ButtonOutputFileBrowse->Location = System::Drawing::Point(227, 23);
-			this->ButtonOutputFileBrowse->Margin = System::Windows::Forms::Padding(0);
+			this->ButtonOutputFileBrowse->Location = ::System::Drawing::Point(227, 23);
+			this->ButtonOutputFileBrowse->Margin = ::System::Windows::Forms::Padding(0);
 			this->ButtonOutputFileBrowse->Name = L"ButtonOutputFileBrowse";
-			this->ButtonOutputFileBrowse->Size = System::Drawing::Size(24, 20);
+			this->ButtonOutputFileBrowse->Size = ::System::Drawing::Size(24, 20);
 			this->ButtonOutputFileBrowse->TabIndex = 16;
 			this->ButtonOutputFileBrowse->Text = L"...";
-			this->ButtonOutputFileBrowse->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->ButtonOutputFileBrowse->TextAlign = ::System::Drawing::ContentAlignment::TopCenter;
 			this->ButtonOutputFileBrowse->UseVisualStyleBackColor = true;
-			this->ButtonOutputFileBrowse->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputFileBrowse_Click);
+			this->ButtonOutputFileBrowse->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonOutputFileBrowse_Click);
 			// 
 			// StaticLabelOutputFileFormat
 			// 
 			this->StaticLabelOutputFileFormat->AutoSize = true;
-			this->StaticLabelOutputFileFormat->Location = System::Drawing::Point(6, 51);
+			this->StaticLabelOutputFileFormat->Location = ::System::Drawing::Point(6, 51);
 			this->StaticLabelOutputFileFormat->Name = L"StaticLabelOutputFileFormat";
-			this->StaticLabelOutputFileFormat->Size = System::Drawing::Size(80, 13);
+			this->StaticLabelOutputFileFormat->Size = ::System::Drawing::Size(80, 13);
 			this->StaticLabelOutputFileFormat->TabIndex = 12;
 			this->StaticLabelOutputFileFormat->Text = L"File name prefix";
 			// 
 			// TextboxOutputFilePath
 			// 
-			this->TextboxOutputFilePath->Location = System::Drawing::Point(92, 23);
+			this->TextboxOutputFilePath->Location = ::System::Drawing::Point(92, 23);
 			this->TextboxOutputFilePath->Name = L"TextboxOutputFilePath";
 			this->TextboxOutputFilePath->ReadOnly = true;
-			this->TextboxOutputFilePath->Size = System::Drawing::Size(132, 20);
+			this->TextboxOutputFilePath->Size = ::System::Drawing::Size(132, 20);
 			this->TextboxOutputFilePath->TabIndex = 16;
 			// 
 			// ButtonOutputFileStart
 			// 
-			this->ButtonOutputFileStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonOutputFileStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonOutputFileStart->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOutputFileStart->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular,
+				::System::Drawing::GraphicsUnit::Point, static_cast<::System::Byte>(238)));
 			this->ButtonOutputFileStart->ImageIndex = 6;
 			this->ButtonOutputFileStart->ImageList = this->Icons32;
-			this->ButtonOutputFileStart->Location = System::Drawing::Point(261, 23);
+			this->ButtonOutputFileStart->Location = ::System::Drawing::Point(261, 23);
 			this->ButtonOutputFileStart->Name = L"ButtonOutputFileStart";
-			this->ButtonOutputFileStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonOutputFileStart->Size = ::System::Drawing::Size(48, 46);
 			this->ButtonOutputFileStart->TabIndex = 11;
 			this->ButtonOutputFileStart->UseVisualStyleBackColor = true;
-			this->ButtonOutputFileStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputFileStart_Click);
+			this->ButtonOutputFileStart->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonOutputFileStart_Click);
 			// 
 			// StaticLabelOutputFileSource
 			// 
 			this->StaticLabelOutputFileSource->AutoSize = true;
-			this->StaticLabelOutputFileSource->Location = System::Drawing::Point(6, 26);
+			this->StaticLabelOutputFileSource->Location = ::System::Drawing::Point(6, 26);
 			this->StaticLabelOutputFileSource->Name = L"StaticLabelOutputFileSource";
-			this->StaticLabelOutputFileSource->Size = System::Drawing::Size(44, 13);
+			this->StaticLabelOutputFileSource->Size = ::System::Drawing::Size(44, 13);
 			this->StaticLabelOutputFileSource->TabIndex = 0;
 			this->StaticLabelOutputFileSource->Text = L"Save at";
 			// 
 			// ButtonOutputStreamStart
 			// 
-			this->ButtonOutputStreamStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonOutputStreamStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonOutputStreamStart->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOutputStreamStart->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular,
+				::System::Drawing::GraphicsUnit::Point, static_cast<::System::Byte>(238)));
 			this->ButtonOutputStreamStart->ImageIndex = 8;
 			this->ButtonOutputStreamStart->ImageList = this->Icons32;
-			this->ButtonOutputStreamStart->Location = System::Drawing::Point(21, 23);
+			this->ButtonOutputStreamStart->Location = ::System::Drawing::Point(21, 23);
 			this->ButtonOutputStreamStart->Name = L"ButtonOutputStreamStart";
-			this->ButtonOutputStreamStart->Size = System::Drawing::Size(48, 46);
+			this->ButtonOutputStreamStart->Size = ::System::Drawing::Size(48, 46);
 			this->ButtonOutputStreamStart->TabIndex = 11;
 			this->ButtonOutputStreamStart->UseVisualStyleBackColor = true;
-			this->ButtonOutputStreamStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputStreamStart_Click);
+			this->ButtonOutputStreamStart->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonOutputStreamStart_Click);
 			// 
 			// groupBox1
 			// 
 			this->groupBox1->Controls->Add(this->ButtonInputStreamStart);
-			this->groupBox1->Location = System::Drawing::Point(12, 64);
+			this->groupBox1->Location = ::System::Drawing::Point(12, 64);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(93, 96);
+			this->groupBox1->Size = ::System::Drawing::Size(93, 96);
 			this->groupBox1->TabIndex = 22;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Input stream";
@@ -429,62 +435,62 @@ namespace AudioAnalyser
 			// groupBox2
 			// 
 			this->groupBox2->Controls->Add(this->ButtonOutputStreamStart);
-			this->groupBox2->Location = System::Drawing::Point(14, 592);
+			this->groupBox2->Location = ::System::Drawing::Point(14, 592);
 			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(91, 85);
+			this->groupBox2->Size = ::System::Drawing::Size(91, 85);
 			this->groupBox2->TabIndex = 23;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Output stream";
 			// 
 			// ButtonOpenConfig
 			// 
-			this->ButtonOpenConfig->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonOpenConfig->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->ButtonOpenConfig->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonOpenConfig->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->ButtonOpenConfig->ImageIndex = 9;
 			this->ButtonOpenConfig->ImageList = this->Icons32;
-			this->ButtonOpenConfig->Location = System::Drawing::Point(342, 12);
+			this->ButtonOpenConfig->Location = ::System::Drawing::Point(342, 12);
 			this->ButtonOpenConfig->Name = L"ButtonOpenConfig";
-			this->ButtonOpenConfig->Size = System::Drawing::Size(40, 40);
+			this->ButtonOpenConfig->Size = ::System::Drawing::Size(40, 40);
 			this->ButtonOpenConfig->TabIndex = 24;
 			this->ButtonOpenConfig->UseVisualStyleBackColor = true;
-			this->ButtonOpenConfig->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOpenConfig_Click);
+			this->ButtonOpenConfig->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonOpenConfig_Click);
 			// 
 			// button2
 			// 
-			this->button2->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(238)));
+			this->button2->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->button2->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular, ::System::Drawing::GraphicsUnit::Point,
+				static_cast<::System::Byte>(238)));
 			this->button2->ImageIndex = 10;
 			this->button2->ImageList = this->Icons32;
-			this->button2->Location = System::Drawing::Point(388, 12);
+			this->button2->Location = ::System::Drawing::Point(388, 12);
 			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(40, 40);
+			this->button2->Size = ::System::Drawing::Size(40, 40);
 			this->button2->TabIndex = 25;
 			this->button2->UseVisualStyleBackColor = true;
 			// 
 			// ButtonStartProcessing
 			// 
-			this->ButtonStartProcessing->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->ButtonStartProcessing->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
+			this->ButtonStartProcessing->FlatStyle = ::System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonStartProcessing->Font = (gcnew ::System::Drawing::Font(L"Microsoft Sans Serif", 10, ::System::Drawing::FontStyle::Regular,
+				::System::Drawing::GraphicsUnit::Point, static_cast<::System::Byte>(238)));
 			this->ButtonStartProcessing->ImageIndex = 9;
 			this->ButtonStartProcessing->ImageList = this->Icons32;
-			this->ButtonStartProcessing->Location = System::Drawing::Point(150, 12);
+			this->ButtonStartProcessing->Location = ::System::Drawing::Point(150, 12);
 			this->ButtonStartProcessing->Name = L"ButtonStartProcessing";
-			this->ButtonStartProcessing->Size = System::Drawing::Size(40, 40);
+			this->ButtonStartProcessing->Size = ::System::Drawing::Size(40, 40);
 			this->ButtonStartProcessing->TabIndex = 26;
 			this->ButtonStartProcessing->UseVisualStyleBackColor = true;
-			this->ButtonStartProcessing->Click += gcnew System::EventHandler(this, &MainWindow::ButtonStartProcessing_Click);
+			this->ButtonStartProcessing->Click += gcnew ::System::EventHandler(this, &MainWindow::ButtonStartProcessing_Click);
 			// 
 			// RackItem6
 			// 
 			this->RackItem6->LastRackItem = true;
-			this->RackItem6->Location = System::Drawing::Point(18, 525);
+			this->RackItem6->Location = ::System::Drawing::Point(18, 525);
 			this->RackItem6->MixVolume = 100;
 			this->RackItem6->Name = L"RackItem6";
 			this->RackItem6->RackItemId = 6;
-			this->RackItem6->Size = System::Drawing::Size(407, 61);
+			this->RackItem6->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem6->TabIndex = 21;
 			this->RackItem6->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem6->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -497,11 +503,11 @@ namespace AudioAnalyser
 			// RackItem5
 			// 
 			this->RackItem5->LastRackItem = false;
-			this->RackItem5->Location = System::Drawing::Point(18, 464);
+			this->RackItem5->Location = ::System::Drawing::Point(18, 464);
 			this->RackItem5->MixVolume = 100;
 			this->RackItem5->Name = L"RackItem5";
 			this->RackItem5->RackItemId = 5;
-			this->RackItem5->Size = System::Drawing::Size(407, 61);
+			this->RackItem5->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem5->TabIndex = 20;
 			this->RackItem5->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem5->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -514,11 +520,11 @@ namespace AudioAnalyser
 			// RackItem4
 			// 
 			this->RackItem4->LastRackItem = false;
-			this->RackItem4->Location = System::Drawing::Point(18, 403);
+			this->RackItem4->Location = ::System::Drawing::Point(18, 403);
 			this->RackItem4->MixVolume = 100;
 			this->RackItem4->Name = L"RackItem4";
 			this->RackItem4->RackItemId = 4;
-			this->RackItem4->Size = System::Drawing::Size(407, 61);
+			this->RackItem4->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem4->TabIndex = 19;
 			this->RackItem4->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem4->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -531,11 +537,11 @@ namespace AudioAnalyser
 			// RackItem3
 			// 
 			this->RackItem3->LastRackItem = false;
-			this->RackItem3->Location = System::Drawing::Point(18, 342);
+			this->RackItem3->Location = ::System::Drawing::Point(18, 342);
 			this->RackItem3->MixVolume = 100;
 			this->RackItem3->Name = L"RackItem3";
 			this->RackItem3->RackItemId = 3;
-			this->RackItem3->Size = System::Drawing::Size(407, 61);
+			this->RackItem3->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem3->TabIndex = 18;
 			this->RackItem3->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem3->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -548,11 +554,11 @@ namespace AudioAnalyser
 			// RackItem2
 			// 
 			this->RackItem2->LastRackItem = false;
-			this->RackItem2->Location = System::Drawing::Point(18, 281);
+			this->RackItem2->Location = ::System::Drawing::Point(18, 281);
 			this->RackItem2->MixVolume = 100;
 			this->RackItem2->Name = L"RackItem2";
 			this->RackItem2->RackItemId = 2;
-			this->RackItem2->Size = System::Drawing::Size(407, 61);
+			this->RackItem2->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem2->TabIndex = 17;
 			this->RackItem2->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem2->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -565,11 +571,11 @@ namespace AudioAnalyser
 			// RackItem1
 			// 
 			this->RackItem1->LastRackItem = false;
-			this->RackItem1->Location = System::Drawing::Point(18, 220);
+			this->RackItem1->Location = ::System::Drawing::Point(18, 220);
 			this->RackItem1->MixVolume = 100;
 			this->RackItem1->Name = L"RackItem1";
 			this->RackItem1->RackItemId = 1;
-			this->RackItem1->Size = System::Drawing::Size(407, 61);
+			this->RackItem1->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem1->TabIndex = 16;
 			this->RackItem1->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem1->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -582,11 +588,11 @@ namespace AudioAnalyser
 			// RackItem0
 			// 
 			this->RackItem0->LastRackItem = false;
-			this->RackItem0->Location = System::Drawing::Point(18, 159);
+			this->RackItem0->Location = ::System::Drawing::Point(18, 159);
 			this->RackItem0->MixVolume = 100;
 			this->RackItem0->Name = L"RackItem0";
 			this->RackItem0->RackItemId = 0;
-			this->RackItem0->Size = System::Drawing::Size(407, 61);
+			this->RackItem0->Size = ::System::Drawing::Size(407, 61);
 			this->RackItem0->TabIndex = 15;
 			this->RackItem0->SwapRequested += gcnew RackControls::OnSwapRequested(this, &MainWindow::RackItem_SwapRequested);
 			this->RackItem0->SoloRequested += gcnew RackControls::OnSoloRequested(this, &MainWindow::RackItem_SoloRequested);
@@ -602,28 +608,28 @@ namespace AudioAnalyser
 			this->OpenDialogRack->FileName = L"openFileDialog1";
 			this->OpenDialogRack->Filter = L"Audio Analyser Project|*.aap";
 			this->OpenDialogRack->Title = L"Open rack configuration";
-			this->OpenDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogRack_FileOk);
+			this->OpenDialogRack->FileOk += gcnew ::System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogRack_FileOk);
 			// 
 			// OpenDialogFile
 			// 
 			this->OpenDialogFile->FileName = L"openFileDialog1";
-			this->OpenDialogFile->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogFile_FileOk);
+			this->OpenDialogFile->FileOk += gcnew ::System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogFile_FileOk);
 			// 
 			// SaveDialogRack
 			// 
 			this->SaveDialogRack->DefaultExt = L"aap";
 			this->SaveDialogRack->Filter = L"Audio Analyser Project|*.aap";
-			this->SaveDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogRack_FileOk);
+			this->SaveDialogRack->FileOk += gcnew ::System::ComponentModel::CancelEventHandler(this, &MainWindow::SaveDialogRack_FileOk);
 			// 
 			// PlayerUpdateTimer
 			// 
-			this->PlayerUpdateTimer->Tick += gcnew System::EventHandler(this, &MainWindow::PlayerUpdateTimer_Tick);
+			this->PlayerUpdateTimer->Tick += gcnew ::System::EventHandler(this, &MainWindow::PlayerUpdateTimer_Tick);
 			// 
 			// MainWindow
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
-			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(438, 685);
+			this->AutoScaleDimensions = ::System::Drawing::SizeF(6, 13);
+			this->AutoScaleMode = ::System::Windows::Forms::AutoScaleMode::Font;
+			this->ClientSize = ::System::Drawing::Size(438, 685);
 			this->Controls->Add(this->ButtonStartProcessing);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->ButtonOpenConfig);
@@ -641,14 +647,14 @@ namespace AudioAnalyser
 			this->Controls->Add(this->ButtonSaveFile);
 			this->Controls->Add(this->ButtonOpenFile);
 			this->Controls->Add(this->ButtonNewFile);
-			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
-			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+			this->FormBorderStyle = ::System::Windows::Forms::FormBorderStyle::FixedSingle;
+			this->Icon = (cli::safe_cast<::System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximizeBox = false;
 			this->Name = L"MainWindow";
 			this->Text = L"Audio Analyser";
 			this->GroupInputFile->ResumeLayout(false);
 			this->GroupInputFile->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->EndInit();
+			(cli::safe_cast<::System::ComponentModel::ISupportInitialize^>(this->SeekbarInputFile))->EndInit();
 			this->GroupOutputFile->ResumeLayout(false);
 			this->GroupOutputFile->PerformLayout();
 			this->groupBox1->ResumeLayout(false);
@@ -695,8 +701,8 @@ namespace AudioAnalyser
 		}
 		Void ButtonOutputFileBrowse_Click(Object^  sender, EventArgs^  e)
 		{
-			System::Windows::Forms::DialogResult Result = SaveDialogFile->ShowDialog();
-			if (Result == System::Windows::Forms::DialogResult::OK)
+			::System::Windows::Forms::DialogResult Result = SaveDialogFile->ShowDialog();
+			if (Result == ::System::Windows::Forms::DialogResult::OK)
 			{
 				IoManager::GetInstance()->SetOutFilesWorkingFolder(
 					Utilities::WideFromSystemString(SaveDialogFile->SelectedPath));
@@ -812,7 +818,7 @@ namespace AudioAnalyser
 		}
 
 		//Interfejs MainWindow - obs³uga plików projektu (aap)
-		Void OpenDialogRack_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void OpenDialogRack_FileOk(Object^  sender, ::System::ComponentModel::CancelEventArgs^  e)
 		{
 			String^ TargetPath = OpenDialogRack->FileName;
 			XmlTextReader^ XmlReader = gcnew XmlTextReader(TargetPath);
@@ -820,16 +826,16 @@ namespace AudioAnalyser
 			PerformFullRackRefresh(true);
 			XmlReader->Close();
 		}
-		Void SaveDialogRack_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void SaveDialogRack_FileOk(Object^  sender, ::System::ComponentModel::CancelEventArgs^  e)
 		{
 			String^ TargetPath = SaveDialogRack->FileName;
-			XmlTextWriter^ XmlWriter = gcnew XmlTextWriter(TargetPath, System::Text::Encoding::UTF8);
+			XmlTextWriter^ XmlWriter = gcnew XmlTextWriter(TargetPath, ::System::Text::Encoding::UTF8);
 			FileSerializer::SerializeRack(XmlWriter);
 			XmlWriter->Close();
 		}
 
 		//Interfejs MainWindow - obs³uga plików audio
-		Void OpenDialogFile_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void OpenDialogFile_FileOk(Object^  sender, ::System::ComponentModel::CancelEventArgs^  e)
 		{
 			IsInputFileOpened = IoManager::GetInstance()->OpenNewInputFile(Utilities::WideFromSystemString(OpenDialogFile->FileName));
 			 String^ Filename = IsInputFileOpened
@@ -841,7 +847,7 @@ namespace AudioAnalyser
 			SetProcessButtonsEnabled();
 			UpdateProcessButtonsIcons();
 		}
-		Void SaveDialogFile_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		Void SaveDialogFile_FileOk(Object^  sender, ::System::ComponentModel::CancelEventArgs^  e)
 		{
 		}
 
@@ -888,7 +894,7 @@ namespace AudioAnalyser
 			//Jeœli stare okno konfiguracji istnieje, zamknij je
 			DynamicPluginConfigWindow^ Window = PluginConfigWindows[AtIndex];
 			bool WasWindowOpenedBeforeShutdown = Window->IsOpened;
-			System::Drawing::Point WindowLocation;
+			::System::Drawing::Point WindowLocation;
 			if (WasWindowOpenedBeforeShutdown)
 			{
 				WindowLocation = Window->DesktopLocation;
@@ -938,7 +944,7 @@ namespace AudioAnalyser
 			//Zaktualizuj parametery RackItemu
 			UpdateRackItemContents(AtIndex);
 		}
-		Void RackItem_SwapRequested(Int32 AtIndex, System::Boolean IsDownwards)
+		Void RackItem_SwapRequested(Int32 AtIndex, ::System::Boolean IsDownwards)
 		{
 			AudioProcessor::GetInstance()->SwapPlugins(AtIndex, IsDownwards ? MoveDownInRack : MoveUpInRack);
 			
@@ -978,11 +984,11 @@ namespace AudioAnalyser
 		{
 			IoManager::GetInstance()->SetInputFilePosition(SeekbarInputFile->Value);
 		}
-		Void SeekbarInputFile_MouseDown(Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+		Void SeekbarInputFile_MouseDown(Object^  sender, ::System::Windows::Forms::MouseEventArgs^  e)
 		{
 			IsSeekbarClicked = true;
 		}
-		Void SeekbarInputFile_MouseUp(Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+		Void SeekbarInputFile_MouseUp(Object^  sender, ::System::Windows::Forms::MouseEventArgs^  e)
 		{
 			IsSeekbarClicked = false;
 		}

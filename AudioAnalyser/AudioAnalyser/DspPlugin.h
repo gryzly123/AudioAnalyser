@@ -61,14 +61,18 @@ typedef DspPluginParameter Param;
 class DspPlugin
 {
 protected:
+	DspPlugin(const std::wstring PluginName, bool HasVisualization = false)
+		: PluginName(PluginName),
+		HasVisualization(HasVisualization) { }
+
 	std::vector<DspPluginParameter*> ParameterRefsForUi;
-	DspPlugin(const std::wstring PluginName) : PluginName(PluginName) { }
+	int VisWindowIndex = -1;
 
 public:
 	const std::wstring PluginName;
 	bool Bypass = false;
 	float DryWetMix = 1.0f;
-	bool HasVisualization = false;
+	const bool HasVisualization = false;
 
 	std::vector<DspPluginParameter*> GetParameters() { return ParameterRefsForUi; }
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) = 0;
@@ -82,6 +86,7 @@ public:
 };
 
 #ifndef FROM_RACK_CONTROLS
+#define HAS_VIZ true
 
 class SineWaveGenerator : public DspPlugin
 {
@@ -118,6 +123,14 @@ public:
 		}
 	}
 };
+
+class Oscilloscope : public DspPlugin
+{
+public:
+	Oscilloscope() : DspPlugin(L"Oscilloscope", HAS_VIZ) { }
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override;
+};
+
 class LinearAmplifier : public DspPlugin
 {
 	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);
