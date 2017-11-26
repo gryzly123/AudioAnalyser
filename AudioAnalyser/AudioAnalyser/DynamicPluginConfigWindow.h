@@ -10,8 +10,6 @@ namespace AudioAnalyser {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	public delegate System::Void WindowShutdown(Int32);
-
 	/// <summary>
 	/// Summary for DynamicPluginConfigWindow
 	/// </summary>

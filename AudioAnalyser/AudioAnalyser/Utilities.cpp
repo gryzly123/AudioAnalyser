@@ -31,7 +31,6 @@ std::string Utilities::MultibyteCharFromWide(std::wstring In)
 	return Result;
 }
 
-
 #undef MAX_SIZE
 
 std::wstring Utilities::WideFromSystemString(System::String^ In)
@@ -50,4 +49,34 @@ void Utilities::ShowMessagebox(std::wstring Message, std::wstring WindowName)
 void Utilities::ShowMessageboxDebugonly(std::wstring Message, std::wstring WindowName)
 {
 	ShowMessagebox(Message, WindowName);
+}
+
+void Utilities::LinearInterpolateArrays(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength)
+{
+	Out->Array->Clear();
+	int InSize = In->Size();
+	int OutSize = OutLength;
+
+	if (InSize > OutSize)
+	{
+		for (int i = 0; i < OutSize; ++i)
+		{
+			float Pt = (float)i / (float)OutSize;
+			Pt *= InSize;
+
+			int FirstIndex = (int)Pt;
+			float InterVal = Pt - (float)FirstIndex;
+			if (FirstIndex >= InSize) --FirstIndex;
+
+			float NewVal = (InterVal * In[FirstIndex]) + ((1.0f - InterVal) * In[FirstIndex + 1]);
+			Out->PushLast(NewVal);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < OutSize; ++i)
+		{
+			Out->PushLast(0);
+		}
+	}
 }

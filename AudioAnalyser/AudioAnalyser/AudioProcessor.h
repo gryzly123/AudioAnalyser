@@ -1,8 +1,9 @@
 #pragma once
 #include "PCH.h"
-#include "DspPlugin.h"
 
-typedef void(__stdcall *PluginDataCallback)(float*, int);
+class DspPlugin;
+struct DspPluginParameter;
+struct PaStreamCallbackTimeInfo;
 
 enum PluginSwapDirection
 {
@@ -22,9 +23,11 @@ private:
 	bool IsBusy = false;
 
 public:
-	PluginDataCallback FeedData;
 	static AudioProcessor* GetInstance();
-	int ProcessAudio(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
+	int ProcessAudio(
+		const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
+		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags,
+		void *userData);
 	bool GetIsBusy() { return IsBusy; }
 	
 	void ChangePlugin(int AtIndex, const std::wstring NewPluginName);
@@ -35,6 +38,7 @@ public:
 	void GetPluginWindowCapabilities(int AtIndex, bool& HasConfig, bool& HasVis);
 	void SetPluginVolumeMix(int AtIndex, float Value);
 	float GetPluginVolumeMix(int AtIndex);
+	void AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame);
 	std::vector<DspPluginParameter*> GetPluginParameters(int AtIndex);
 	void UpdatePluginParameterByIndex(int PluginIndex, int AtIndex, float NewValue);
 	void UpdatePluginParameterByName(int PluginIndex, std::wstring AtName, float NewValue);

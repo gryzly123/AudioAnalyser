@@ -1,6 +1,6 @@
 #pragma once
 #define FROM_RACK_CONTROLS
-#include "../AudioAnalyser/DspPlugin.h"
+#include "../AudioAnalyser/DspPluginParameter.h"
 #undef FROM_RACK_CONTROLS
 
 using namespace System;

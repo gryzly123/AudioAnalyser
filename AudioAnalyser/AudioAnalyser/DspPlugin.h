@@ -1,59 +1,10 @@
 #pragma once
 #include "PCH.h"
+#include "DspPluginParameter.h"
+#include "DynamicPluginVizWindow.h"
 
-enum DspPluginParameterType
-{
-	PT_Boolean,
-	PT_Float,
-	PT_Enum
-};
-
-public struct DspPluginParameter
-{
-	const DspPluginParameterType Type;
-	const std::wstring Name;
-	const std::wstring* EnumNames;
-	const float MinimumValue = 0.0f;
-	const float MaximumValue = 1.0f;
-	float CurrentValue = 0.0f;
-	float FloatValueStep = 0.1f;
-
-	DspPluginParameter(DspPluginParameterType Type, std::wstring Name, float MinimumValue = 0.0f, float MaximumValue = 1.0f, float CurrentValue = 0.0f, std::wstring* EnumNames = nullptr)
-		: Type(Type), Name(Name), MinimumValue(MinimumValue), MaximumValue(MaximumValue), CurrentValue(CurrentValue), EnumNames(EnumNames) { }
-
-	~DspPluginParameter()
-	{
-		if (EnumNames) delete[] EnumNames;
-	}
-
-	void UpdateParameterUnsafe(float NewValue)
-	{
-		if (NewValue < MinimumValue) NewValue = MinimumValue;
-		if (NewValue > MaximumValue) NewValue = MaximumValue;
-		switch (Type)
-		{
-		//Upewniamy siê, ¿e nowa wartoœæ parameteru znajduje siê na wartoœciach krokowych FloatValueStep
-		case PT_Float:
-			{
-				float TempVal = (NewValue - MinimumValue) / FloatValueStep;
-				int TempStep = (int)(TempVal + 1.0f);
-				NewValue = (float)TempStep * FloatValueStep;
-				NewValue += MinimumValue;
-				CurrentValue = NewValue;
-			}
-			break;
-
-		//Upewniamy siê, ¿e nowa wartoœæ parameteru ma zerow¹ czêœæ przecinkow¹
-		case PT_Boolean:
-		case PT_Enum:
-			CurrentValue = (int)NewValue;
-			break;
-		}
-	}
-
-private:
-	DspPluginParameter() : Type(PT_Float), Name(L"null"), MinimumValue(0), MaximumValue(0), CurrentValue(0), EnumNames(nullptr) { }
-};
+using namespace AudioAnalyser;
+using namespace System;
 
 typedef DspPluginParameter Param;
 #define Val CurrentValue
@@ -62,16 +13,19 @@ class DspPlugin
 {
 protected:
 	std::vector<DspPluginParameter*> ParameterRefsForUi;
-	DspPlugin(const std::wstring PluginName) : PluginName(PluginName) { }
+	DspPlugin(const std::wstring PluginName, const bool HasVisualization = false)
+		: PluginName(PluginName),
+		HasVisualization(HasVisualization) { }
 
 public:
 	const std::wstring PluginName;
 	bool Bypass = false;
 	float DryWetMix = 1.0f;
-	bool HasVisualization = false;
+	const bool HasVisualization = false;
 
 	std::vector<DspPluginParameter*> GetParameters() { return ParameterRefsForUi; }
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) = 0;
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) { }
 };
 
 class NullPlugin : public DspPlugin
@@ -82,6 +36,8 @@ public:
 };
 
 #ifndef FROM_RACK_CONTROLS
+#include "DynamicPluginVizWindow.h"
+#define HAS_VIZ true
 
 class SineWaveGenerator : public DspPlugin
 {
@@ -141,6 +97,96 @@ public:
 		}
 	}
 };
+
+class Oscilloscope : public DspPlugin
+{
+	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
+	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 4.0f, 1.0f);
+	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
+
+	gcroot<MonitoredArray<float>^> DataL, DataR;
+
+public:
+	Oscilloscope() : DspPlugin(L"Oscilloscope", HAS_VIZ)
+	{
+		std::wstring* ChannelNames = new std::wstring[4];
+		ChannelNames[0] = L"Left";
+		ChannelNames[1] = L"Right";
+		ChannelNames[2] = L"Mixdown";
+		ChannelNames[3] = L"Both";
+		Channels.EnumNames = ChannelNames;
+
+		ImgPadding.FloatValueStep = 1.0f;
+
+		ParameterRefsForUi.push_back(&Channels);
+		ParameterRefsForUi.push_back(&CurveDuration);
+		ParameterRefsForUi.push_back(&ImgPadding);
+
+		DataL = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataR = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+
+		DataL->Lock();
+		for (int i = 0; i < Length; ++i) DataL->PushLast(BufferL[i]);
+		int ExcessData = DataL->Size() - CurvePointsSize;
+		while (--ExcessData > 0) DataL->PopFirst();
+		DataL->Unlock();
+
+		DataR->Lock();
+		for (int i = 0; i < Length; ++i) DataR->PushLast(BufferL[i]);
+		ExcessData = DataR->Size() - CurvePointsSize;
+		while (--ExcessData > 0) DataR->PopFirst();
+		DataR->Unlock();
+	}
+
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	{
+		const int Padding = ImgPadding.Val;
+		const int HelperLineCount = 10;
+		int MaxPoints = Width;
+		int Range = Height;
+		
+		Image->Clear(Color::White);
+		Pen^ DataPencil = gcnew Pen(Color::Black, 2);
+		Pen^ HelperPencil1 = gcnew Pen(Color::Gray, 1);
+		Pen^ HelperPencil2 = gcnew Pen(Color::Gray, 1);
+		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
+
+		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
+		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
+
+		int WorkAreaHorizontal = Width - (2 * Padding);
+		int WorkAreaVertical = Height - (2 * Padding);
+
+		for (int i = 1; i < HelperLineCount + 1; i++)
+		{
+			Image->DrawLine(HelperPencil2, Padding + (WorkAreaHorizontal / HelperLineCount) * i, Padding, Padding + (WorkAreaHorizontal / HelperLineCount) * i, Height - Padding);
+		}
+
+		MonitoredArray<float>^ InterpolatedData = gcnew MonitoredArray<float>();
+		DataL->Lock();
+		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)DataL, InterpolatedData, WorkAreaHorizontal);
+		DataL->Unlock();
+
+
+		for (int i = 1; i < WorkAreaHorizontal; ++i)
+		{
+			int HorizontalVal = i + Padding;
+			int y1 = (int)(Range / 2 + ((Single)WorkAreaVertical / 2 * (Single)InterpolatedData->operator[](i - 1)));
+			int y2 = (int)(Range / 2 + ((Single)WorkAreaVertical / 2 * (Single)InterpolatedData->operator[](i)));
+			if (y1 == y2) y2++;
+			Image->DrawLine(DataPencil, HorizontalVal, y1, HorizontalVal, y2);
+		}
+
+		Image->DrawLine(gcnew Pen(Color::Green), 1, 1, DataL->Size() + 2, 1);
+
+	}
+};
+
 class Clip : public DspPlugin
 {
 	Param PreGain = Param(PT_Float, L"Pre Gain", 0.0f, 2.0f, 1.0f);
