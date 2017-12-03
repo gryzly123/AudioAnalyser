@@ -74,7 +74,6 @@ public:
 		}
 	}
 };
-
 class SawWaveGenerator : public DspPlugin
 {
 private:
@@ -86,7 +85,7 @@ private:
 	Param Frequency = Param(PT_Float, L"Saw frequency", 20.0f, 22500.0f, 100.0f);
 	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
 	Param UseEquation = Param(PT_Boolean, L"Use additive synthesis", 0.0f, 1.0f, 0.0f);
-	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 200.0f, 30.0f);
+	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 100.0f, 30.0f);
 
 public:
 	SawWaveGenerator() : DspPlugin(L"Saw Wave")
@@ -140,7 +139,7 @@ private:
 	Param Frequency = Param(PT_Float, L"Saw frequency", 20.0f, 22500.0f, 100.0f);
 	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
 	Param UseEquation = Param(PT_Boolean, L"Use additive synthesis", 0.0f, 1.0f, 0.0f);
-	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 200.0f, 30.0f);
+	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 100.0f, 30.0f);
 
 public:
 	SquareWaveGenerator() : DspPlugin(L"Square Wave")
@@ -218,7 +217,6 @@ public:
 		}
 	}
 };
-
 class LinearAmplifier : public DspPlugin
 {
 	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);
@@ -242,7 +240,6 @@ public:
 		}
 	}
 };
-
 class Oscilloscope : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
@@ -351,7 +348,153 @@ public:
 		}
 	}
 };
+class SignalParameters : public DspPlugin
+{
+	Param CurveDuration = Param(PT_Float, L"Peak duration [ms]", 1.0f, 200.0f, 20.0f);
+	Param CurveFalloff = Param(PT_Float, L"Peak falloff [ms]", 1.0f, 200.0f, 20.0f);
 
+	float	PeakL = 0.0f,
+			PeakR = 0.0f,
+			AvgL = 0.0f,
+			AvgR = 0.0f,
+			DeviationL = 0.0f,
+			DeviationR = 0.0f,
+			VisiblePeakL = 0.0f,
+			VisiblePeakR = 0.0f,
+			VisibleAvgL = 0.0f,
+			VisibleAvgR = 0.0f,
+			VisibleDeviationL = 0.0f,
+			VisibleDeviationR = 0.0f;
+
+	gcroot<MonitoredArray<float>^> DataL;
+	gcroot<MonitoredArray<float>^> DataR;
+	gcroot<Pen^>                   DataPencil;
+	gcroot<Pen^>                   HelperPencil1;
+	gcroot<Pen^>                   HelperPencil2;
+	gcroot<Font^>                  Text;
+	gcroot<StringFormat^>          Format;
+	gcroot<Brush^>                 TextColor;
+	gcroot<Brush^>                 SignalValue;
+
+public:
+	SignalParameters() : DspPlugin(L"Signal Parameters", HAS_VIZ)
+	{
+		ParameterRefsForUi.push_back(&CurveDuration);
+		ParameterRefsForUi.push_back(&CurveFalloff);
+
+		DataL = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataR = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataPencil = gcroot<Pen^>(gcnew Pen(Color::Black, 1));
+		HelperPencil1 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
+		HelperPencil2 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
+		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
+
+		Text = gcroot<Font^>(gcnew Font("Microsoft Sans Serif", 8.0f, FontStyle::Regular));
+		Format = gcroot<StringFormat^>(gcnew StringFormat());
+		TextColor = gcroot<Brush^>(gcnew SolidBrush(Color::Black));
+		SignalValue = gcroot<Brush^>(gcnew SolidBrush(Color::Black));
+		Format->Alignment = StringAlignment::Center;
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+
+		for (int i = 0; i < Length; ++i)
+		{
+			DataL->PushLast(BufferL[i]);
+			DataR->PushLast(BufferR[i]);
+		}
+		
+		int ExcessData = DataL->Size() - CurvePointsSize;
+		while (--ExcessData > 0) 
+		{
+			DataL->PopFirst();
+			DataR->PopFirst();
+		}
+
+		PeakL = 0.0f;
+		PeakR = 0.0f;
+		AvgL = 0.0f;
+		AvgR = 0.0f;
+		DeviationL = 0.0f;
+		DeviationR = 0.0f;
+
+		int Size = DataL->Size();
+		for (int i = 0; i < Size; ++i)
+		{
+			float L = DataL->Get(i), R = DataR->Get(i);
+			if (L > PeakL) PeakL = L;
+			if (R > PeakR) PeakR = R;
+			AvgL += L;
+			AvgR += R;
+		}
+
+		AvgL /= (float)Size;
+		AvgR /= (float)Size;
+
+		for (int i = 0; i < Size; ++i)
+		{
+			float L = DataL->Get(i), R = DataR->Get(i);
+			DeviationL += L - AvgL;
+			DeviationR += R - AvgR;
+		}
+
+		DeviationL /= (float)Size;
+		DeviationR /= (float)Size;
+	}
+
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	{
+		const float Padding = 20.0f;
+		const float HelperLineCount = 11.0f;
+		const float WorkAreaHorizontal = Width - (2 * Padding);
+		const float WorkAreaVertical = Height - (2 * Padding);
+		const int MaxPoints = Width;
+		const int Range = Height;
+
+		Image->Clear(Color::White);
+
+		for (int i = 0; i < HelperLineCount + 1; i++)
+		{
+			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1);
+			Image->DrawLine(HelperPencil2,
+				Padding,
+				VerticalY,
+				(float)((float)Width - Padding),
+				VerticalY);
+		}
+
+		float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * 10.0f;
+		float VerticalYHalved = Padding + (WorkAreaVertical / HelperLineCount) * 5.0f;
+		
+		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, VerticalY);
+		Image->DrawLine(HelperPencil1, Padding, VerticalYHalved, Width - Padding, VerticalYHalved);
+
+
+
+		float VertSeparator = (float)Width / 4.0f;
+		float FirstRowHeight = VerticalY + 10.0f;
+		float SecondRowHeight = FirstRowHeight + 16.0f;
+
+		Image->DrawString(L"Signal peak"     , Text, TextColor, VertSeparator * 1, FirstRowHeight, Format);
+		Image->DrawString(L"Signal average"  , Text, TextColor, VertSeparator * 2, FirstRowHeight, Format);
+		Image->DrawString(L"Signal deviation", Text, TextColor, VertSeparator * 3, FirstRowHeight, Format);
+
+		Image->DrawString(PeakL		.ToString("N3"), Text, TextColor, VertSeparator * 1 - 20, SecondRowHeight, Format);
+		Image->DrawString(AvgL		.ToString("N3"), Text, TextColor, VertSeparator * 2 - 20, SecondRowHeight, Format);
+		Image->DrawString(DeviationL.ToString("N3"), Text, TextColor, VertSeparator * 3 - 20, SecondRowHeight, Format);
+
+		Image->DrawString(PeakR		.ToString("N3"), Text, TextColor, VertSeparator * 1 + 20, SecondRowHeight, Format);
+		Image->DrawString(AvgR		.ToString("N3"), Text, TextColor, VertSeparator * 2 + 20, SecondRowHeight, Format);
+		Image->DrawString(DeviationR.ToString("N3"), Text, TextColor, VertSeparator * 3 + 20, SecondRowHeight, Format);
+
+		int TempH;
+		TempH = PeakL * WorkAreaVertical;
+		Image->FillRectangle(SignalValue, (int)VertSeparator, (int)VerticalY - TempH, 10, TempH);
+
+	}
+};
 class Clip : public DspPlugin
 {
 	Param PreGain = Param(PT_Float, L"Pre Gain", 0.0f, 2.0f, 1.0f);
@@ -425,41 +568,34 @@ class Bitcrusher : public DspPlugin
 	Param Resolution = Param(PT_Float, L"New resolution", 1.0f, 16.0f, 16.0f);
 
 #define MAX_SAMPLE_VALUE_HALVED 32768 //po³owa maksymalnej iloœci próbek w sygnale szesnastobitowym
-#define BIT_DEPTH 16
-
-	inline void ProcessSample(float& Sample)
+	inline void ProcessSample(float& Sample, int Mod)
 	{
-		int S = Sample * (float)MAX_SAMPLE_VALUE_HALVED; 
-		int Mod = std::pow(2, BIT_DEPTH + 1 - Resolution.Val);
-		
-		S += MAX_SAMPLE_VALUE_HALVED;
+		int S = (Sample + 1.0f) * (float)MAX_SAMPLE_VALUE_HALVED; 
+		S += Mod / 2;
 		S /= Mod;
 		S *= Mod;
-		S -= MAX_SAMPLE_VALUE_HALVED;
-
-		Sample = (float)S / MAX_SAMPLE_VALUE_HALVED;
+		Sample = ((float)S / MAX_SAMPLE_VALUE_HALVED) - 1.0f;
 	}
-
 #undef MAX_SAMPLE_VALUE_HALVED
-#undef BIT_DEPTH
 
 public:
 	Bitcrusher() : DspPlugin(L"Bitcrusher")
 	{
 		Resolution.FloatValueStep = 1.0f;
-
 		ParameterRefsForUi.push_back(&Resolution);
 	}
 
-
+#define BIT_DEPTH 16
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
+		int Mod = std::pow(2, BIT_DEPTH - Resolution.Val);
 		for (int i = 0; i < Length; i++)
 		{
-			ProcessSample(BufferL[i]);
-			ProcessSample(BufferR[i]);
+			ProcessSample(BufferL[i], Mod);
+			ProcessSample(BufferR[i], Mod);
 		}
 	}
+#undef BIT_DEPTH
 };
 class Decimator : public DspPlugin
 {
@@ -718,23 +854,12 @@ private:
 public:
 	RetriggerSimple() : DspPlugin(L"Retrigger (Simple)")
 	{
-		//std::wstring* ModuloEnum = new std::wstring[6];
-		//ModuloEnum[0] = L"256";
-		//ModuloEnum[1] = L"512";
-		//ModuloEnum[2] = L"1024";
-		//ModuloEnum[3] = L"2048";
-		//ModuloEnum[4] = L"4096";
-		//ModuloEnum[5] = L"8192";
-		//Modulo.EnumNames = ModuloEnum;
-
 		Modulo.FloatValueStep = 1.0f;
 		ParameterRefsForUi.push_back(&Modulo);
 	}
-
-
+	
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		//int ModuloVal = std::pow(2, (Modulo.Val + 8));
 		int ModuloVal = Length / std::pow(2, Modulo.Val);
 
 		for (int i = 0; i < Length; i++)
@@ -744,9 +869,67 @@ public:
 		}
 	}
 };
+class Retrigger : public DspPlugin
+{
+private:
+	Param SampleLength = Param(PT_Float, L"Sample length [ms]", 0.1f, 500.0f, 100.0f);
+	Param Modulo = Param(PT_Float, L"Repeat count", 1.0f, 20.0f, 1.0f);
+	
+	gcroot<MonitoredArray<float>^> DataL;
+	gcroot<MonitoredArray<float>^> DataR;
+	int RepeatState = 1;
+	int RepeatSample = 0;
+
+public:
+	Retrigger() : DspPlugin(L"Retrigger")
+	{
+		Modulo.FloatValueStep = 1.0f;
+		ParameterRefsForUi.push_back(&SampleLength);
+		ParameterRefsForUi.push_back(&Modulo);
+
+		DataL = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataR = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int PointsSize = (float)AUDIO_SAMPLERATE * (float)SampleLength.Val / 1000.0f;
+		int ArrSize = DataL->Size();
+		for (int i = 0; i < Length; ++i)
+		{
+			if (Modulo.Val == 1.0f)
+			{
+				DataL->Empty();
+				DataR->Empty();
+				break;
+			}
+
+			if (ArrSize < PointsSize)
+			{
+				DataL->PushLast(BufferL[i]);
+				DataR->PushLast(BufferR[i]);
+				++ArrSize;
+				continue;
+			}
+
+			BufferL[i] = DataL->Get(RepeatSample);
+			BufferR[i] = DataR->Get(RepeatSample);
+			++RepeatSample;
+			if (RepeatSample < PointsSize) continue;
+
+			RepeatSample = 0;
+			++RepeatState;
+			if (RepeatState < Modulo.Val) continue;
+
+			RepeatState = 1;
+			DataL->Empty();
+			DataR->Empty();
+			ArrSize = 0;
+		}
+	}
+};
 class ReverserSimple : public DspPlugin
 {
-
 public:
 	ReverserSimple() : DspPlugin(L"Reverser (Simple)") { }
 
@@ -757,6 +940,96 @@ public:
 		{
 			Utilities::Swap(BufferL[i], BufferL[Length - i - 1]);
 			Utilities::Swap(BufferR[i], BufferR[Length - i - 1]);
+		}
+	}
+};
+class Reverser : public DspPlugin
+{
+private:
+	Param SampleLength = Param(PT_Float, L"Sample length [ms]", 0.1f, 500.0f, 100.0f);
+
+	gcroot<MonitoredArray<float>^> DataL1;
+	gcroot<MonitoredArray<float>^> DataR1;
+	gcroot<MonitoredArray<float>^> DataL2;
+	gcroot<MonitoredArray<float>^> DataR2;
+	int State = 0; //0 - nagrywanie wstêpne do pierwszego bufora
+	               //1 - nagrywa drugi, odtwarza pierwszy
+	               //2 - nagrywa pierwszy, odtwarza drugi
+
+	int OldPointsize = 0;
+
+	inline void NextState()
+	{
+		switch (State)
+		{
+		case 1:
+			State = 2;
+			DataL1->Empty();
+			DataR1->Empty();
+			break;
+		
+		case 0:
+		case 2:
+			State = 1;
+			DataL2->Empty();
+			DataR2->Empty();
+			break;
+		}
+	}
+
+public:
+	Reverser() : DspPlugin(L"Reverser")
+	{
+		ParameterRefsForUi.push_back(&SampleLength);
+
+		DataL1 = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataR1 = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataL2 = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataR2 = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int PointsSize = (float)AUDIO_SAMPLERATE * (float)SampleLength.Val / 1000.0f;
+		if (OldPointsize != PointsSize)
+		{
+			DataL1->Empty();
+			DataR1->Empty();
+			DataL2->Empty();
+			DataR2->Empty();
+			State = 0;
+		}
+		OldPointsize = PointsSize;
+
+		for (int i = 0; i < Length; ++i)
+		{
+			int ArrSize = (State != 1) ? DataL1->Size() : DataL2->Size();
+			switch (State)
+			{
+			case 0:
+				DataL1->PushLast(BufferL[i]);
+				DataR1->PushLast(BufferR[i]);
+				BufferL[i] = 0.0f;
+				BufferR[i] = 0.0f;
+				break;
+
+			case 1:
+				DataL2->PushLast(BufferL[i]);
+				DataR2->PushLast(BufferR[i]);
+				BufferL[i] = DataL1->Get(PointsSize - ArrSize);
+				BufferR[i] = DataR1->Get(PointsSize - ArrSize);
+				break;
+				
+			case 2:
+				DataL1->PushLast(BufferL[i]);
+				DataR1->PushLast(BufferR[i]);
+				BufferL[i] = DataL2->Get(PointsSize - ArrSize);
+				BufferR[i] = DataR2->Get(PointsSize - ArrSize);
+				break;
+			}
+			
+			if (ArrSize < PointsSize) continue;
+			NextState();
 		}
 	}
 };

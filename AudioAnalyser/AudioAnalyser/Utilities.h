@@ -10,13 +10,15 @@ public ref class MonitoredArray
 public:
 	List<A>^ Array;
 	MonitoredArray() { Array = gcnew List<A>(); }
-	Void Lock() { Monitor::Enter(this); }
-	Void Unlock() { Monitor::Exit(this); }
-	Int32 Size() { return Array->Count; }
-	Void PushLast(const A& Element) { Array->Add(Element); }
-	Void PushFirst(const A& Element) { Array->Insert(0, Element); }
-	Void PopFirst() { Array->RemoveAt(0); }
-	A operator[](int Index) { return Array[Index]; }
+	inline Void Lock() { Monitor::Enter(this); }
+	inline Void Unlock() { Monitor::Exit(this); }
+	inline Int32 Size() { return Array->Count; }
+	inline Void Empty() { return Array->Clear(); }
+	inline Void PushLast(const A& Element) { Array->Add(Element); }
+	inline Void PushFirst(const A& Element) { Array->Insert(0, Element); }
+	inline Void PopFirst() { Array->RemoveAt(0); }
+	inline A operator[](int Index) { return Array[Index]; }
+	inline A Get(int Index) { return Array[Index]; }
 };
 
 namespace Utilities

@@ -71,7 +71,17 @@ private:
 	OutputSource CurrentOutput = OS_None;
 
 	//metody abstrakcji portaudio
-	bool ThrowPaError() { return false; }
+	bool ThrowPaError()
+	{
+		Utilities::ShowMessagebox
+		(
+			Utilities::WideFromMultibyteCharArray
+			(
+				Pa_GetErrorText(LastPaErrorCode)
+			)
+		);
+		return false;
+	}
 
 	bool InitializePortAudio()
 	{

@@ -91,7 +91,7 @@ namespace AudioAnalyser
 			this->Controls->Add(this->PictureTarget);
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximumSize = System::Drawing::Size(900, 900);
-			this->MinimumSize = System::Drawing::Size(100, 100);
+			this->MinimumSize = System::Drawing::Size(220, 220);
 			this->Name = L"DynamicPluginVizWindow";
 			this->Text = L"DynamicPluginVizWindow";
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_FormClosed);

@@ -64,7 +64,8 @@ namespace RackControls
 	private: System::Windows::Forms::ToolStripSeparator^  Separator2;
 	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects1;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugGain;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoSeparation;
+	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoMerger;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugDecimation;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugDelay;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugBitcrush;
@@ -148,7 +149,7 @@ namespace RackControls
 			this->PlugDecimation = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->TextboxEffects3 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugPanner = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->PlugStereoSeparation = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->PlugStereoMerger = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugStereoToMs = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->TextboxEffects4 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugLpfAvg = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -342,8 +343,8 @@ namespace RackControls
 					this->PlugSineOscillator, this->PlugSawOscillator, this->PlugSquareOscillator, this->PlugNoise, this->Separator1, this->TextboxAnalysers,
 					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->PlugParameters, this->Separator2, this->TextboxEffects1,
 					this->PlugGain, this->PlugClip, this->PlugPhaseInverter, this->TextboxEffects2, this->PlugBitcrush, this->PlugDecimation, this->TextboxEffects3,
-					this->PlugPanner, this->PlugStereoSeparation, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc,
-					this->PlugHpf, this->PlugBpf, this->TextboxEffects5, this->PlugDelay, this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple,
+					this->PlugPanner, this->PlugStereoMerger, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc, this->PlugHpf,
+					this->PlugBpf, this->TextboxEffects5, this->PlugDelay, this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple,
 					this->PlugReverser
 			});
 			this->PluginList->LayoutStyle = System::Windows::Forms::ToolStripLayoutStyle::HorizontalStackWithOverflow;
@@ -519,16 +520,16 @@ namespace RackControls
 			this->PlugPanner->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
 			this->PlugPanner->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
-			// PlugStereoSeparation
+			// PlugStereoMerger
 			// 
-			this->PlugStereoSeparation->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
-			this->PlugStereoSeparation->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
-			this->PlugStereoSeparation->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
-			this->PlugStereoSeparation->Name = L"PlugStereoSeparation";
-			this->PlugStereoSeparation->Size = System::Drawing::Size(188, 22);
-			this->PlugStereoSeparation->Text = L"Stereo Separator";
-			this->PlugStereoSeparation->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
-			this->PlugStereoSeparation->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
+			this->PlugStereoMerger->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PlugStereoMerger->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->PlugStereoMerger->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
+			this->PlugStereoMerger->Name = L"PlugStereoMerger";
+			this->PlugStereoMerger->Size = System::Drawing::Size(188, 22);
+			this->PlugStereoMerger->Text = L"Stereo Merger";
+			this->PlugStereoMerger->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
+			this->PlugStereoMerger->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugStereoToMs
 			// 
