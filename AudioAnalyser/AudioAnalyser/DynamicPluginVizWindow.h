@@ -63,6 +63,7 @@ namespace AudioAnalyser
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
+			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(DynamicPluginVizWindow::typeid));
 			this->PictureTarget = (gcnew System::Windows::Forms::PictureBox());
 			this->RefreshTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureTarget))->BeginInit();
@@ -79,7 +80,7 @@ namespace AudioAnalyser
 			// RefreshTimer
 			// 
 			this->RefreshTimer->Enabled = true;
-			this->RefreshTimer->Interval = 10;
+			this->RefreshTimer->Interval = 15;
 			this->RefreshTimer->Tick += gcnew System::EventHandler(this, &DynamicPluginVizWindow::ImageTick);
 			// 
 			// DynamicPluginVizWindow
@@ -88,6 +89,7 @@ namespace AudioAnalyser
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(484, 461);
 			this->Controls->Add(this->PictureTarget);
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximumSize = System::Drawing::Size(900, 900);
 			this->MinimumSize = System::Drawing::Size(100, 100);
 			this->Name = L"DynamicPluginVizWindow";

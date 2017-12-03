@@ -101,89 +101,109 @@ public:
 class Oscilloscope : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
-	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 4.0f, 1.0f);
+	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
 	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
 
-	gcroot<MonitoredArray<float>^> DataL, DataR;
+	gcroot<MonitoredArray<float>^> Data         ;
+	gcroot<MonitoredArray<float>^> Interp       ;
+	gcroot<Pen^>                   DataPencil   ;
+	gcroot<SolidBrush^>            DataBrush    ;
+	gcroot<Pen^>                   HelperPencil1;
+	gcroot<Pen^>                   HelperPencil2;
 
 public:
 	Oscilloscope() : DspPlugin(L"Oscilloscope", HAS_VIZ)
 	{
-		std::wstring* ChannelNames = new std::wstring[4];
+		std::wstring* ChannelNames = new std::wstring[3];
 		ChannelNames[0] = L"Left";
 		ChannelNames[1] = L"Right";
 		ChannelNames[2] = L"Mixdown";
-		ChannelNames[3] = L"Both";
+
 		Channels.EnumNames = ChannelNames;
 
 		ImgPadding.FloatValueStep = 1.0f;
-
 		ParameterRefsForUi.push_back(&Channels);
 		ParameterRefsForUi.push_back(&CurveDuration);
 		ParameterRefsForUi.push_back(&ImgPadding);
 
-		DataL = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
-		DataR = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		Data          = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
+		Interp        = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
+		DataPencil    = gcroot<Pen^>                   (gcnew Pen(Color::Black, 1));
+		DataBrush     = gcroot<SolidBrush^>            (gcnew SolidBrush(Color::Black));
+		HelperPencil1 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
+		HelperPencil2 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
+		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
 	}
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
 		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
 
-		DataL->Lock();
-		for (int i = 0; i < Length; ++i) DataL->PushLast(BufferL[i]);
-		int ExcessData = DataL->Size() - CurvePointsSize;
-		while (--ExcessData > 0) DataL->PopFirst();
-		DataL->Unlock();
-
-		DataR->Lock();
-		for (int i = 0; i < Length; ++i) DataR->PushLast(BufferL[i]);
-		ExcessData = DataR->Size() - CurvePointsSize;
-		while (--ExcessData > 0) DataR->PopFirst();
-		DataR->Unlock();
+		Data->Lock();
+		switch ((int)Channels.Val)
+		{
+		case 0:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferL[i]);
+			break;
+		case 1:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferR[i]);
+			break;
+		case 2:
+			for (int i = 0; i < Length; ++i) Data->PushLast((BufferL[i] + BufferR[i]) / 2.0f);
+			break;
+		}
+		int ExcessData = Data->Size() - CurvePointsSize;
+		while (--ExcessData > 0) Data->PopFirst();
+		Data->Unlock();
 	}
 
 	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
 	{
-		const int Padding = ImgPadding.Val;
-		const int HelperLineCount = 10;
-		int MaxPoints = Width;
-		int Range = Height;
+		const float Padding = ImgPadding.Val;
+		const float HelperLineCount = 10.0f;
+		const float WorkAreaHorizontal = Width - (2 * Padding);
+		const float WorkAreaVertical = Height - (2 * Padding);
+		const int MaxPoints = Width;
+		const int Range = Height;
 		
 		Image->Clear(Color::White);
-		Pen^ DataPencil = gcnew Pen(Color::Black, 2);
-		Pen^ HelperPencil1 = gcnew Pen(Color::Gray, 1);
-		Pen^ HelperPencil2 = gcnew Pen(Color::Gray, 1);
-		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
-
 		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
 		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
 
-		int WorkAreaHorizontal = Width - (2 * Padding);
-		int WorkAreaVertical = Height - (2 * Padding);
-
-		for (int i = 1; i < HelperLineCount + 1; i++)
+		for (int i = 0; i < HelperLineCount + 1; i++)
 		{
-			Image->DrawLine(HelperPencil2, Padding + (WorkAreaHorizontal / HelperLineCount) * i, Padding, Padding + (WorkAreaHorizontal / HelperLineCount) * i, Height - Padding);
+			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i;
+			float VerticalY   = Padding + (WorkAreaVertical   / HelperLineCount) * (float)(i - 1);
+
+			Image->DrawLine(HelperPencil2,
+				HorizontalX,
+				Padding,
+				HorizontalX,
+				(float)((float)Height - Padding));
+
+			Image->DrawLine(HelperPencil2,
+				Padding,
+				VerticalY,
+				(float)((float)Width - Padding),
+				VerticalY);
 		}
 
-		MonitoredArray<float>^ InterpolatedData = gcnew MonitoredArray<float>();
-		DataL->Lock();
-		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)DataL, InterpolatedData, WorkAreaHorizontal);
-		DataL->Unlock();
+		Data->Lock();
+		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, WorkAreaHorizontal);
+		Data->Unlock();
 
-
+		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2 * -(Single)Interp->operator[](0));
 		for (int i = 1; i < WorkAreaHorizontal; ++i)
 		{
-			int HorizontalVal = i + Padding;
-			int y1 = (int)(Range / 2 + ((Single)WorkAreaVertical / 2 * (Single)InterpolatedData->operator[](i - 1)));
-			int y2 = (int)(Range / 2 + ((Single)WorkAreaVertical / 2 * (Single)InterpolatedData->operator[](i)));
-			if (y1 == y2) y2++;
-			Image->DrawLine(DataPencil, HorizontalVal, y1, HorizontalVal, y2);
+			int HorizontalVal = (int)(i + Padding);
+			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2 * -(Single)Interp->operator[](i));
+			if(LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1; 
+			
+			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
+			else                  Image->DrawLine(DataPencil, HorizontalVal, LastVal, HorizontalVal, NewPt);
+
+			LastVal = NewPt;
 		}
-
-		Image->DrawLine(gcnew Pen(Color::Green), 1, 1, DataL->Size() + 2, 1);
-
 	}
 };
 
