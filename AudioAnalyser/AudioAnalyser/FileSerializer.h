@@ -1,6 +1,7 @@
 #pragma once
 #include "PCH.h"
 #include "AudioProcessor.h"
+#include "DspPluginParameter.h"
 
 #define CURRENT_VER "0.0.2"
 

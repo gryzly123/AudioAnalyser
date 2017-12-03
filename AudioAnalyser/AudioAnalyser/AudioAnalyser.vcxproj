@@ -155,6 +155,7 @@
     <ClCompile Include="ComplexNumbers.cpp" />
     <ClCompile Include="ConfigWindow.cpp" />
     <ClCompile Include="DynamicPluginConfigWindow.cpp" />
+    <ClCompile Include="DynamicPluginVizWindow.cpp" />
     <ClCompile Include="FileDetailsWindow.cpp" />
     <ClCompile Include="IoManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -168,7 +169,11 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="DspPlugin.h" />
+    <ClInclude Include="DspPluginParameter.h" />
     <ClInclude Include="DynamicPluginConfigWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="DynamicPluginVizWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="FileDetailsWindow.h">
@@ -183,7 +188,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="Utilities.h" />
-    <ClInclude Include="VisWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConfigWindow.resx">
@@ -191,6 +195,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DynamicPluginConfigWindow.resx">
       <DependentUpon>DynamicPluginConfigWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicPluginVizWindow.resx">
+      <DependentUpon>DynamicPluginVizWindow.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FileDetailsWindow.resx">
       <DependentUpon>FileDetailsWindow.h</DependentUpon>

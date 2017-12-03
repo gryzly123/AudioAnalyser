@@ -1,6 +1,7 @@
 #pragma once
 #include "ConfigWindow.h"
 #include "DynamicPluginConfigWindow.h"
+#include "DynamicPluginVizWindow.h"
 #include "FileDetailsWindow.h"
 
 #include "IoManager.h"
@@ -22,11 +23,16 @@ namespace AudioAnalyser
 			InitializeComponent();
 
 			PluginConfigWindows = gcnew System::Collections::Generic::List<DynamicPluginConfigWindow^>();
+			PluginVizWindows = gcnew System::Collections::Generic::List<DynamicPluginVizWindow^>();
+
 			for (int i = 0; i < GUI_RACKITEMS_COUNT; i++)
 			{
 				UpdateRackItemContents(i);
 				PluginConfigWindows->Add(gcnew DynamicPluginConfigWindow());
 				PluginConfigWindows[i]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
+
+				PluginVizWindows->Add(gcnew DynamicPluginVizWindow());
+				PluginVizWindows[i]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginViz);
 			}
 
 			SetProcessButtonsEnabled();
@@ -47,6 +53,7 @@ namespace AudioAnalyser
 		bool IsInputFileOpened = false;
 
 		System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
+		System::Collections::Generic::List<DynamicPluginVizWindow^>^ PluginVizWindows;
 		System::Windows::Forms::ImageList^  Icons32;
 		
 		System::Windows::Forms::GroupBox^  GroupInputFile;
@@ -277,6 +284,7 @@ namespace AudioAnalyser
 			// SeekbarInputFile
 			// 
 			this->SeekbarInputFile->Location = System::Drawing::Point(9, 49);
+			this->SeekbarInputFile->Maximum = 0;
 			this->SeekbarInputFile->Name = L"SeekbarInputFile";
 			this->SeekbarInputFile->Size = System::Drawing::Size(248, 45);
 			this->SeekbarInputFile->TabIndex = 15;
@@ -881,6 +889,12 @@ namespace AudioAnalyser
 			PluginConfigWindows[AtIndex]->PopulateWithParameters(Params, AtIndex);
 			PluginConfigWindows[AtIndex]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginConfig);
 		}
+		Void CreateNewPluginViz(Int32 AtIndex)
+		{
+			PluginVizWindows[AtIndex] = gcnew DynamicPluginVizWindow();
+			PluginVizWindows[AtIndex]->SetIndex(AtIndex);
+			PluginVizWindows[AtIndex]->OnWindowShutdown += gcnew WindowShutdown(this, &MainWindow::CreateNewPluginViz);
+		}
 		Void UpdateConfigWindow(Int32 AtIndex)
 		{
 			bool PluginHasConfigWindow, B;
@@ -902,6 +916,33 @@ namespace AudioAnalyser
 			//Poka¿ nowe okno konfiguracji, jeœli stare by³o otwarte, a nowe je posiada
 			AudioProcessor::GetInstance()->GetPluginWindowCapabilities(AtIndex, PluginHasConfigWindow, B);
 			if (WasWindowOpenedBeforeShutdown && PluginHasConfigWindow)
+			{
+				Window->Show();
+				Window->IsOpened = true;
+				Window->DesktopLocation = WindowLocation;
+			}
+		}
+		Void UpdateVizWindow(Int32 AtIndex)
+		{
+			bool PluginHasVizWindow, B;
+
+			//Jeœli stare okno wizualizacji istnieje, zamknij je
+			DynamicPluginVizWindow^ Window = PluginVizWindows[AtIndex];
+			bool WasWindowOpenedBeforeShutdown = Window->IsOpened;
+			System::Drawing::Point WindowLocation;
+			if (WasWindowOpenedBeforeShutdown)
+			{
+				WindowLocation = Window->DesktopLocation;
+				Window->Close();
+			}
+
+			//Stwórz nowe okno wuizualizacji
+			CreateNewPluginViz(AtIndex);
+			Window = PluginVizWindows[AtIndex];
+
+			//Poka¿ nowe okno wizualizacji, jeœli stare by³o otwarte, a nowe je posiada
+			AudioProcessor::GetInstance()->GetPluginWindowCapabilities(AtIndex, B, PluginHasVizWindow);
+			if (WasWindowOpenedBeforeShutdown && PluginHasVizWindow)
 			{
 				Window->Show();
 				Window->IsOpened = true;
@@ -947,6 +988,9 @@ namespace AudioAnalyser
 
 			UpdateConfigWindow(AtIndex);
 			UpdateConfigWindow(AtIndex + (IsDownwards ? 1 : -1));
+
+			UpdateVizWindow(AtIndex);
+			UpdateVizWindow(AtIndex + (IsDownwards ? 1 : -1));
 		}
 		Void RackItem_ConfigWindowRequested(Int32 AtIndex)
 		{
@@ -957,7 +1001,11 @@ namespace AudioAnalyser
 		}
 		Void RackItem_VisWindowRequested(Int32 AtIndex)
 		{
-
+			DynamicPluginVizWindow^ VizWindow = PluginVizWindows[AtIndex];
+			VizWindow->SetIndex(AtIndex);
+			VizWindow->Show();
+			VizWindow->BringToFront();
+			VizWindow->IsOpened = true;
 		}
 		Void RackItem_BypassRequested(Int32 AtIndex)
 		{
@@ -976,6 +1024,7 @@ namespace AudioAnalyser
 
 		Void SeekbarInputFile_Scroll(Object^  sender, EventArgs^  e)
 		{
+			if (SeekbarInputFile->Maximum == 0) return;
 			IoManager::GetInstance()->SetInputFilePosition(SeekbarInputFile->Value);
 		}
 		Void SeekbarInputFile_MouseDown(Object^  sender, System::Windows::Forms::MouseEventArgs^  e)

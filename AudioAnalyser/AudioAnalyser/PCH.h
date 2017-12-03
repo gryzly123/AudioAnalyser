@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <msclr\marshal.h>
 #include <msclr\marshal_cppstd.h>
+#include <vcclr.h>
 
 //tylko wewn¹trz AudioAnalysera - pomijamy headery AA za³¹czane z RackControls
 #ifndef FROM_RACK_CONTROLS
@@ -33,3 +34,5 @@
 
 #define ToClr(x) gcnew System::String(x.c_str())
 #define Break(x) MessageBox::Show(x)
+
+public delegate System::Void WindowShutdown(System::Int32);

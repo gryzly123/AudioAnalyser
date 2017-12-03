@@ -1,59 +1,10 @@
 #pragma once
 #include "PCH.h"
+#include "DspPluginParameter.h"
+#include "DynamicPluginVizWindow.h"
 
-enum DspPluginParameterType
-{
-	PT_Boolean,
-	PT_Float,
-	PT_Enum
-};
-
-public struct DspPluginParameter
-{
-	const DspPluginParameterType Type;
-	const std::wstring Name;
-	const std::wstring* EnumNames;
-	const float MinimumValue = 0.0f;
-	const float MaximumValue = 1.0f;
-	float CurrentValue = 0.0f;
-	float FloatValueStep = 0.1f;
-
-	DspPluginParameter(DspPluginParameterType Type, std::wstring Name, float MinimumValue = 0.0f, float MaximumValue = 1.0f, float CurrentValue = 0.0f, std::wstring* EnumNames = nullptr)
-		: Type(Type), Name(Name), MinimumValue(MinimumValue), MaximumValue(MaximumValue), CurrentValue(CurrentValue), EnumNames(EnumNames) { }
-
-	~DspPluginParameter()
-	{
-		if (EnumNames) delete[] EnumNames;
-	}
-
-	void UpdateParameterUnsafe(float NewValue)
-	{
-		if (NewValue < MinimumValue) NewValue = MinimumValue;
-		if (NewValue > MaximumValue) NewValue = MaximumValue;
-		switch (Type)
-		{
-		//Upewniamy siê, ¿e nowa wartoœæ parameteru znajduje siê na wartoœciach krokowych FloatValueStep
-		case PT_Float:
-			{
-				float TempVal = (NewValue - MinimumValue) / FloatValueStep;
-				int TempStep = (int)(TempVal + 1.0f);
-				NewValue = (float)TempStep * FloatValueStep;
-				NewValue += MinimumValue;
-				CurrentValue = NewValue;
-			}
-			break;
-
-		//Upewniamy siê, ¿e nowa wartoœæ parameteru ma zerow¹ czêœæ przecinkow¹
-		case PT_Boolean:
-		case PT_Enum:
-			CurrentValue = (int)NewValue;
-			break;
-		}
-	}
-
-private:
-	DspPluginParameter() : Type(PT_Float), Name(L"null"), MinimumValue(0), MaximumValue(0), CurrentValue(0), EnumNames(nullptr) { }
-};
+using namespace AudioAnalyser;
+using namespace System;
 
 typedef DspPluginParameter Param;
 #define Val CurrentValue
@@ -62,16 +13,19 @@ class DspPlugin
 {
 protected:
 	std::vector<DspPluginParameter*> ParameterRefsForUi;
-	DspPlugin(const std::wstring PluginName) : PluginName(PluginName) { }
+	DspPlugin(const std::wstring PluginName, const bool HasVisualization = false)
+		: PluginName(PluginName),
+		HasVisualization(HasVisualization) { }
 
 public:
 	const std::wstring PluginName;
 	bool Bypass = false;
 	float DryWetMix = 1.0f;
-	bool HasVisualization = false;
+	const bool HasVisualization = false;
 
 	std::vector<DspPluginParameter*> GetParameters() { return ParameterRefsForUi; }
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) = 0;
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) { }
 };
 
 class NullPlugin : public DspPlugin
@@ -82,6 +36,8 @@ public:
 };
 
 #ifndef FROM_RACK_CONTROLS
+#include "DynamicPluginVizWindow.h"
+#define HAS_VIZ true
 
 class SineWaveGenerator : public DspPlugin
 {
@@ -141,6 +97,116 @@ public:
 		}
 	}
 };
+
+class Oscilloscope : public DspPlugin
+{
+	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
+	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
+	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
+
+	gcroot<MonitoredArray<float>^> Data         ;
+	gcroot<MonitoredArray<float>^> Interp       ;
+	gcroot<Pen^>                   DataPencil   ;
+	gcroot<SolidBrush^>            DataBrush    ;
+	gcroot<Pen^>                   HelperPencil1;
+	gcroot<Pen^>                   HelperPencil2;
+
+public:
+	Oscilloscope() : DspPlugin(L"Oscilloscope", HAS_VIZ)
+	{
+		std::wstring* ChannelNames = new std::wstring[3];
+		ChannelNames[0] = L"Left";
+		ChannelNames[1] = L"Right";
+		ChannelNames[2] = L"Mixdown";
+
+		Channels.EnumNames = ChannelNames;
+
+		ImgPadding.FloatValueStep = 1.0f;
+		ParameterRefsForUi.push_back(&Channels);
+		ParameterRefsForUi.push_back(&CurveDuration);
+		ParameterRefsForUi.push_back(&ImgPadding);
+
+		Data          = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
+		Interp        = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
+		DataPencil    = gcroot<Pen^>                   (gcnew Pen(Color::Black, 1));
+		DataBrush     = gcroot<SolidBrush^>            (gcnew SolidBrush(Color::Black));
+		HelperPencil1 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
+		HelperPencil2 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
+		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+
+		Data->Lock();
+		switch ((int)Channels.Val)
+		{
+		case 0:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferL[i]);
+			break;
+		case 1:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferR[i]);
+			break;
+		case 2:
+			for (int i = 0; i < Length; ++i) Data->PushLast((BufferL[i] + BufferR[i]) / 2.0f);
+			break;
+		}
+		int ExcessData = Data->Size() - CurvePointsSize;
+		while (--ExcessData > 0) Data->PopFirst();
+		Data->Unlock();
+	}
+
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	{
+		const float Padding = ImgPadding.Val;
+		const float HelperLineCount = 10.0f;
+		const float WorkAreaHorizontal = Width - (2 * Padding);
+		const float WorkAreaVertical = Height - (2 * Padding);
+		const int MaxPoints = Width;
+		const int Range = Height;
+		
+		Image->Clear(Color::White);
+		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
+		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
+
+		for (int i = 0; i < HelperLineCount + 1; i++)
+		{
+			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i;
+			float VerticalY   = Padding + (WorkAreaVertical   / HelperLineCount) * (float)(i - 1);
+
+			Image->DrawLine(HelperPencil2,
+				HorizontalX,
+				Padding,
+				HorizontalX,
+				(float)((float)Height - Padding));
+
+			Image->DrawLine(HelperPencil2,
+				Padding,
+				VerticalY,
+				(float)((float)Width - Padding),
+				VerticalY);
+		}
+
+		Data->Lock();
+		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, WorkAreaHorizontal);
+		Data->Unlock();
+
+		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2 * -(Single)Interp->operator[](0));
+		for (int i = 1; i < WorkAreaHorizontal; ++i)
+		{
+			int HorizontalVal = (int)(i + Padding);
+			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2 * -(Single)Interp->operator[](i));
+			if(LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1; 
+			
+			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
+			else                  Image->DrawLine(DataPencil, HorizontalVal, LastVal, HorizontalVal, NewPt);
+
+			LastVal = NewPt;
+		}
+	}
+};
+
 class Clip : public DspPlugin
 {
 	Param PreGain = Param(PT_Float, L"Pre Gain", 0.0f, 2.0f, 1.0f);

@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "AudioProcessor.h"
+#include "DspPlugin.h"
 #include "IoManager.h"
 
 AudioProcessor* AudioProcessor::Instance = nullptr;
@@ -25,7 +26,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	//if (NewPluginName == (L"Square Wave")) return new ();
 	//if (NewPluginName == (L"White noise")) return new ();
 
-	//if (NewPluginName == (L"Oscilloscope")) return new ();
+	if (NewPluginName == (L"Oscilloscope")) return new Oscilloscope();
 	//if (NewPluginName == (L"Spectrum")) return new ();
 	//if (NewPluginName == (L"Spectrogram")) return new ();
 	//if (NewPluginName == (L"Signal Parameters")) return new ();
@@ -102,6 +103,11 @@ std::vector<DspPluginParameter*> AudioProcessor::GetPluginParameters(int AtIndex
 {
 	return Plugins[AtIndex]->GetParameters();
 }
+void AudioProcessor::AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame)
+{
+	Plugins[AtIndex]->UpdatePictureBox(Image, Width, Height, FirstFrame);
+}
+
 
 void AudioProcessor::UpdatePluginParameterByIndex(int PluginIndex, int AtIndex, float NewValue)
 {
