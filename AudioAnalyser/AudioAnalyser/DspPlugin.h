@@ -68,12 +68,157 @@ public:
 		{
 			SineStatus += SineInc;
 			if (SineStatus > 1) SineStatus -= 1;
-			float Value = SineAmp.Val * sin(SineStatus * 2 * 3.141591);
+			float Value = SineAmp.Val * sin(SineStatus * 2 * M_PI);
 			BufferL[i] = Value;
 			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * Value : Value;
 		}
 	}
 };
+
+class SawWaveGenerator : public DspPlugin
+{
+private:
+	float TimeStatus = 0.0f;
+	float TimeIncrementation = 0.0f;
+	float TempValue = 0.0f;
+
+	Param Amp = Param(PT_Float, L"Saw volume", 0.0f, 1.0f, 0.6f);
+	Param Frequency = Param(PT_Float, L"Saw frequency", 20.0f, 22500.0f, 100.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param UseEquation = Param(PT_Boolean, L"Use additive synthesis", 0.0f, 1.0f, 0.0f);
+	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 200.0f, 30.0f);
+
+public:
+	SawWaveGenerator() : DspPlugin(L"Saw Wave")
+	{
+		Amp.FloatValueStep = 0.01f;
+		Frequency.FloatValueStep = 1.0f;
+		EquationN.FloatValueStep = 1.0f;
+
+		ParameterRefsForUi.push_back(&Amp);
+		ParameterRefsForUi.push_back(&Frequency);
+		ParameterRefsForUi.push_back(&InvertPhase);
+		ParameterRefsForUi.push_back(&UseEquation);
+		ParameterRefsForUi.push_back(&EquationN);
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		TimeIncrementation = Frequency.Val / AUDIO_SAMPLERATE;
+
+		for (int i = 0; i < Length; ++i)
+		{
+			TimeStatus += TimeIncrementation;
+			if (TimeStatus > 1.0f) TimeStatus -= 1.0f;
+
+			if (UseEquation.Val > 0.0f)
+			{
+				TempValue = 0.0f;
+				for (int k = 1; k <= EquationN.Val; ++k)
+				{
+					float T = sin(2.0f * M_PI * (float)k * TimeStatus) / (float)k;
+					if (k % 2 != 0) T *= -1.0f;
+					TempValue += T;
+				}
+				TempValue = (TempValue * 2.0f * Amp.Val / M_PI);
+			}
+			else TempValue = Amp.Val * (TimeStatus * 2.0f - 1.0f);
+
+			BufferL[i] = TempValue;
+			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * TempValue : TempValue;
+		}
+	}
+};
+class SquareWaveGenerator : public DspPlugin
+{
+private:
+	float TimeStatus = 0.0f;
+	float TimeIncrementation = 0.0f;
+	float TempValue = 0.0f;
+
+	Param Amp = Param(PT_Float, L"Saw volume", 0.0f, 1.0f, 0.6f);
+	Param Frequency = Param(PT_Float, L"Saw frequency", 20.0f, 22500.0f, 100.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param UseEquation = Param(PT_Boolean, L"Use additive synthesis", 0.0f, 1.0f, 0.0f);
+	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 200.0f, 30.0f);
+
+public:
+	SquareWaveGenerator() : DspPlugin(L"Square Wave")
+	{
+		Amp.FloatValueStep = 0.01f;
+		Frequency.FloatValueStep = 1.0f;
+		EquationN.FloatValueStep = 1.0f;
+
+		ParameterRefsForUi.push_back(&Amp);
+		ParameterRefsForUi.push_back(&Frequency);
+		ParameterRefsForUi.push_back(&InvertPhase);
+		ParameterRefsForUi.push_back(&UseEquation);
+		ParameterRefsForUi.push_back(&EquationN);
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		TimeIncrementation = Frequency.Val / AUDIO_SAMPLERATE;
+
+		for (int i = 0; i < Length; ++i)
+		{
+			TimeStatus += TimeIncrementation;
+			if (TimeStatus > 1.0f) TimeStatus -= 1.0f;
+
+			if (UseEquation.Val > 0.0f)
+			{
+				TempValue = 0.0f;
+				int DoubleN = EquationN.Val * 2;
+				for (int x = 1; x <= DoubleN; x += 2)
+				{
+					// x = (2k - 1)
+					TempValue += sin(2.0f * M_PI * (float)x * TimeStatus) / (float)x;
+				}
+				TempValue = (TempValue * 4.0f * Amp.Val / M_PI);
+			}
+			else TempValue = Amp.Val * (TimeStatus >= 0.5f ? 1.0f : -1.0f);
+
+			BufferL[i] = TempValue;
+			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * TempValue : TempValue;
+		}
+	}
+};
+class WhiteNoiseGenerator : public DspPlugin
+{
+private:
+	Param Amp = Param(PT_Float, L"Noise volume", 0.0f, 1.0f, 0.2f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param EquationN = Param(PT_Float, L"Random() count", 1.0f, 12.0f, 4.0f);
+	gcroot<Random^> RNG;
+	float TempValue = 0.0f;
+
+public:
+	WhiteNoiseGenerator() : DspPlugin(L"White Noise")
+	{
+		Amp.FloatValueStep = 0.01f;
+		EquationN.FloatValueStep = 1.0f;
+
+		ParameterRefsForUi.push_back(&Amp);
+		ParameterRefsForUi.push_back(&InvertPhase);
+		ParameterRefsForUi.push_back(&EquationN);
+		RNG = gcroot<Random^>(gcnew Random());
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		for (int i = 0; i < Length; ++i)
+		{
+			for (int x = 0; x < EquationN.Val; ++x) TempValue += RNG->NextDouble();
+			TempValue /= EquationN.Val;
+			TempValue -= 0.5f;
+			TempValue *= Amp.Val;
+
+			BufferL[i] = TempValue;
+			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * TempValue : TempValue;
+		}
+	}
+};
+
 class LinearAmplifier : public DspPlugin
 {
 	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);

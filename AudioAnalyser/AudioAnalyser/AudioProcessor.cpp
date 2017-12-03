@@ -22,9 +22,9 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"(none)")) return new NullPlugin();
 
 	if (NewPluginName == (L"Sine Wave")) return new SineWaveGenerator();
-	//if (NewPluginName == (L"Saw Wave")) return new ();
-	//if (NewPluginName == (L"Square Wave")) return new ();
-	//if (NewPluginName == (L"White noise")) return new ();
+	if (NewPluginName == (L"Saw Wave")) return new SawWaveGenerator();
+	if (NewPluginName == (L"Square Wave")) return new SquareWaveGenerator();
+	if (NewPluginName == (L"White noise")) return new WhiteNoiseGenerator();
 
 	if (NewPluginName == (L"Oscilloscope")) return new Oscilloscope();
 	//if (NewPluginName == (L"Spectrum")) return new ();
