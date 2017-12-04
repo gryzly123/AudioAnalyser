@@ -12,7 +12,8 @@ namespace AudioAnalyser
 	using namespace System::Drawing;
 
 	/// <summary>
-	/// Summary for ConfigWindow
+	/// Okno konfiguracji przetwarzania: wybór urz¹dzenia wejœciowego
+	/// i wyjœciowego oraz rozmiar przetwarzanego bloku.
 	/// </summary>
 	public ref class ConfigWindow : public System::Windows::Forms::Form
 	{
@@ -35,8 +36,6 @@ namespace AudioAnalyser
 			}
 		}
 
-	protected:
-
 	private: System::Windows::Forms::ComboBox^  ComboOutputStreamSource;
 	private: System::Windows::Forms::Label^  StaticLabelOutputStreamSource;
 	private: System::Windows::Forms::GroupBox^  GroupStreamConfig;
@@ -47,11 +46,7 @@ namespace AudioAnalyser
 	private: System::Windows::Forms::Label^  StaticLabelBlocksize;
 	private: System::Windows::Forms::Button^  ButtonOk;
 	private: System::Windows::Forms::Button^  ButtonCancel;
-
-
-
 	private: System::Windows::Forms::CheckBox^  CheckboxStartOnApply;
-
 	private:
 		/// <summary>
 		/// Required designer variable.

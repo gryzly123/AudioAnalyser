@@ -16,12 +16,11 @@ namespace AudioAnalyser
 	public delegate void InterthreadDelegate();
 
 	/// <summary>
-	/// Summary for DynamicPluginVizWindow
+	/// Dynamiczne okno wizualizacji dla pluginów z jej obs³ug¹
+	/// (flaga DspPlugin::HasVisualization ustawiona na HAS_VIZ).
 	/// </summary>
 	public ref class DynamicPluginVizWindow : public System::Windows::Forms::Form
 	{
-
-
 	public:
 		event WindowShutdown^ OnWindowShutdown;
 
@@ -42,18 +41,14 @@ namespace AudioAnalyser
 				delete components;
 			}
 		}
+
 	private: System::Windows::Forms::PictureBox^  PictureTarget;
-	protected:
-
 	private: System::Windows::Forms::Timer^  RefreshTimer;
-	private: System::ComponentModel::IContainer^  components;
-	protected:
-
 	private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-
+	/// <summary>
+	/// Required designer variable.
+	/// </summary>
+	System::ComponentModel::IContainer^  components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -93,6 +88,7 @@ namespace AudioAnalyser
 			this->MaximumSize = System::Drawing::Size(900, 900);
 			this->MinimumSize = System::Drawing::Size(220, 220);
 			this->Name = L"DynamicPluginVizWindow";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"DynamicPluginVizWindow";
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_FormClosed);
 			this->Resize += gcnew System::EventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_Resize);
@@ -115,36 +111,6 @@ namespace AudioAnalyser
 			Img->Clear(Color::White);
 			PictureTarget->Refresh();
 			IsFirstFrameDrawn = false;
-		}
-
-		Void UiConvertSoundDataToImage()
-		{
-			////Monitor::Enter(Img);
-			////Monitor::Enter(PictureTarget);
-			//
-			//int MaxPoints = PictureTarget->Width;
-			//int Range = PictureTarget->Height;
-			//
-			//Img->Clear(Color::White);
-			//Pen^ Pencil = gcnew Pen(Color::Black, 1);
-			//
-			//System::Threading::Monitor::Enter(Ls);
-			//for (int i = 1; i < Ls->arr.Count && i < MaxPoints; ++i)
-			//{
-			//	//System::String^ Dbg = "Attempting to draw line from (" + i.ToString() + ", " + ((int)(Range / 2)).ToString()
-			//	//	+ ") to (" + i.ToString() + ", " + ((int)(Range / 2 + (Single)Ls[i])).ToString() + ")";
-			//	//MessageBox::Show(Dbg);
-			//
-			//	int y1 = (int)(Range / 2 + (200.f * (Single)Ls->arr[i - 1]));
-			//	int y2 = (int)(Range / 2 + (200.f * (Single)Ls->arr[i]));
-			//	if (y1 == y2) y2++;
-			//	Img->DrawLine(Pencil, i, y1, i, y2);
-			//}
-			//System::Threading::Monitor::Exit(Ls);
-			//
-			//PictureTarget->Refresh();
-			////Monitor::Exit(Img);
-			////Monitor::Exit(PictureTarget);
 		}
 
 		System::Void ImageTick(System::Object^  sender, System::EventArgs^  e)

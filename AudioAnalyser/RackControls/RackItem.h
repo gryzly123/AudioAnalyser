@@ -645,6 +645,7 @@ namespace RackControls
 		System::Void UpdateForm()
 		{
 			CurrentPluginName->Text = gcnew System::String(Content->CurrentPluginName);
+			TrackbarMixdown->Value = Content->DryWetMix * 100.0f;
 			ButtonConfig->Enabled = Content->HasConfigWindow;
 			ButtonVis->Enabled = Content->HasVisWindow;
 			ButtonSolo->Enabled = !Content->IsNullPlugin;

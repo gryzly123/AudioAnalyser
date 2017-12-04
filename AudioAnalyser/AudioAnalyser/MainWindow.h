@@ -3,6 +3,7 @@
 #include "DynamicPluginConfigWindow.h"
 #include "DynamicPluginVizWindow.h"
 #include "FileDetailsWindow.h"
+#include "AboutWindow.h"
 
 #include "IoManager.h"
 #include "Utilities.h"
@@ -20,6 +21,11 @@ namespace AudioAnalyser
 	public:
 		MainWindow(void)
 		{
+			LightGreen = System::Drawing::Color::FromArgb(
+				static_cast<System::Int32>(static_cast<System::Byte>(210)),
+				static_cast<System::Int32>(static_cast<System::Byte>(255)),
+				static_cast<System::Int32>(static_cast<System::Byte>(200)));
+
 			InitializeComponent();
 
 			PluginConfigWindows = gcnew System::Collections::Generic::List<DynamicPluginConfigWindow^>();
@@ -51,59 +57,60 @@ namespace AudioAnalyser
 	private:
 		bool IsSeekbarClicked = false;
 		bool IsInputFileOpened = false;
+		Color LightGreen;
 
-		System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
-		System::Collections::Generic::List<DynamicPluginVizWindow^>^ PluginVizWindows;
-		System::Windows::Forms::ImageList^  Icons32;
-		
-		System::Windows::Forms::GroupBox^  GroupInputFile;
-		System::Windows::Forms::GroupBox^  GroupOutputFile;
 
-		
-		System::Windows::Forms::Button^  ButtonNewFile;
-		System::Windows::Forms::Button^  ButtonOpenFile;
-		System::Windows::Forms::Button^  ButtonSaveFile;
-		System::Windows::Forms::Button^  ButtonInputStreamStart;
-		System::Windows::Forms::Button^  ButtonInputFileBrowse;
-		System::Windows::Forms::Button^  ButtonInputFileStart;
-		System::Windows::Forms::Button^  ButtonOutputStreamStart;
-		System::Windows::Forms::Button^  ButtonOutputFileBrowse;
-		System::Windows::Forms::Button^  ButtonOutputFileStart;
-		System::Windows::Forms::Button^  ButtonStartProcessing;
-		
-		System::Windows::Forms::Label^  StaticLabelInputFileSource;
-		System::Windows::Forms::Label^  DynamicLabelInputFileTime;
+		private: System::Collections::Generic::List<DynamicPluginConfigWindow^>^ PluginConfigWindows;
+		private: System::Collections::Generic::List<DynamicPluginVizWindow^>^ PluginVizWindows;
+		private: System::Windows::Forms::ImageList^  Icons32;
 
-		System::Windows::Forms::Label^  StaticLabelOutputFileSource;
-		System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
-		
-		System::Windows::Forms::TrackBar^ SeekbarInputFile;
-		System::Windows::Forms::TextBox^  TextboxOutputFilePath;
-		
-		RackControls::RackItem^  RackItem0;
-		RackControls::RackItem^  RackItem1;
-		RackControls::RackItem^  RackItem2;
-		RackControls::RackItem^  RackItem3;
-		RackControls::RackItem^  RackItem4;
-		RackControls::RackItem^  RackItem5;
-		RackControls::RackItem^  RackItem6;
+		private: System::Windows::Forms::GroupBox^  GroupInputFile;
+		private: System::Windows::Forms::GroupBox^  GroupOutputFile;
 
-		System::Windows::Forms::GroupBox^  groupBox1;
-		System::Windows::Forms::GroupBox^  groupBox2;
-		System::Windows::Forms::Button^  ButtonOpenConfig;
+		private: System::Windows::Forms::Button^  ButtonNewFile;
+		private: System::Windows::Forms::Button^  ButtonOpenFile;
+		private: System::Windows::Forms::Button^  ButtonSaveFile;
+		private: System::Windows::Forms::Button^  ButtonOpenConfig;
+		private: System::Windows::Forms::Button^  ButtonInputStreamStart;
+		private: System::Windows::Forms::Button^  ButtonInputFileBrowse;
+		private: System::Windows::Forms::Button^  ButtonInputFileStart;
+		private: System::Windows::Forms::Button^  ButtonInputFileAbout;
+		private: System::Windows::Forms::Button^  ButtonOutputStreamStart;
+		private: System::Windows::Forms::Button^  ButtonOutputFileBrowse;
+		private: System::Windows::Forms::Button^  ButtonOutputFileStart;
+		private: System::Windows::Forms::Button^  ButtonStartProcessing;
+		private: System::Windows::Forms::Button^  ButtonAbout;
 
-		System::Windows::Forms::Button^  button2;
-		System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
-		System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
-		System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
+		private: System::Windows::Forms::Label^  StaticLabelInputFileSource;
+		private: System::Windows::Forms::Label^  StaticLabelOutputFileSource;
+		private: System::Windows::Forms::Label^  StaticLabelOutputFileFormat;
+		private: System::Windows::Forms::Label^  DynamicLabelInputFileTime;
+		private: System::Windows::Forms::Label^  DynamicLabelInputFileSource;
 
-		System::Windows::Forms::Button^  ButtonInputFileAbout;
-		System::Windows::Forms::Label^  DynamicLabelInputFileSource;
-		System::Windows::Forms::FolderBrowserDialog^  SaveDialogFile;
-		System::Windows::Forms::Timer^  PlayerUpdateTimer;
-	private: System::Windows::Forms::TextBox^  TextboxFilenamePrefix;
+		private: System::Windows::Forms::TrackBar^ SeekbarInputFile;
 
-		System::ComponentModel::IContainer^  components;
+		private: System::Windows::Forms::TextBox^  TextboxOutputFilePath;
+		private: System::Windows::Forms::TextBox^  TextboxFilenamePrefix;
+
+		private: RackControls::RackItem^  RackItem0;
+		private: RackControls::RackItem^  RackItem1;
+		private: RackControls::RackItem^  RackItem2;
+		private: RackControls::RackItem^  RackItem3;
+		private: RackControls::RackItem^  RackItem4;
+		private: RackControls::RackItem^  RackItem5;
+		private: RackControls::RackItem^  RackItem6;
+
+		private: System::Windows::Forms::GroupBox^  groupBox1;
+		private: System::Windows::Forms::GroupBox^  groupBox2;
+
+		private: System::Windows::Forms::OpenFileDialog^  OpenDialogRack;
+		private: System::Windows::Forms::OpenFileDialog^  OpenDialogFile;
+		private: System::Windows::Forms::SaveFileDialog^  SaveDialogRack;
+
+		private: System::Windows::Forms::FolderBrowserDialog^  SaveDialogFile;
+		private: System::Windows::Forms::Timer^  PlayerUpdateTimer;
+
+		private: System::ComponentModel::IContainer^  components;
 		
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -138,7 +145,7 @@ namespace AudioAnalyser
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->ButtonOpenConfig = (gcnew System::Windows::Forms::Button());
-			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->ButtonAbout = (gcnew System::Windows::Forms::Button());
 			this->ButtonStartProcessing = (gcnew System::Windows::Forms::Button());
 			this->RackItem6 = (gcnew RackControls::RackItem());
 			this->RackItem5 = (gcnew RackControls::RackItem());
@@ -191,6 +198,7 @@ namespace AudioAnalyser
 			// 
 			// ButtonInputStreamStart
 			// 
+			this->ButtonInputStreamStart->BackColor = System::Drawing::SystemColors::Control;
 			this->ButtonInputStreamStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
 			this->ButtonInputStreamStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
@@ -200,7 +208,7 @@ namespace AudioAnalyser
 			this->ButtonInputStreamStart->Name = L"ButtonInputStreamStart";
 			this->ButtonInputStreamStart->Size = System::Drawing::Size(48, 46);
 			this->ButtonInputStreamStart->TabIndex = 11;
-			this->ButtonInputStreamStart->UseVisualStyleBackColor = true;
+			this->ButtonInputStreamStart->UseVisualStyleBackColor = false;
 			this->ButtonInputStreamStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonInputStreamStart_Click);
 			// 
 			// ButtonOpenFile
@@ -389,6 +397,7 @@ namespace AudioAnalyser
 			// 
 			// ButtonOutputFileStart
 			// 
+			this->ButtonOutputFileStart->BackColor = System::Drawing::SystemColors::Control;
 			this->ButtonOutputFileStart->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
 			this->ButtonOutputFileStart->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
@@ -398,7 +407,7 @@ namespace AudioAnalyser
 			this->ButtonOutputFileStart->Name = L"ButtonOutputFileStart";
 			this->ButtonOutputFileStart->Size = System::Drawing::Size(48, 46);
 			this->ButtonOutputFileStart->TabIndex = 11;
-			this->ButtonOutputFileStart->UseVisualStyleBackColor = true;
+			this->ButtonOutputFileStart->UseVisualStyleBackColor = false;
 			this->ButtonOutputFileStart->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOutputFileStart_Click);
 			// 
 			// StaticLabelOutputFileSource
@@ -458,18 +467,19 @@ namespace AudioAnalyser
 			this->ButtonOpenConfig->UseVisualStyleBackColor = true;
 			this->ButtonOpenConfig->Click += gcnew System::EventHandler(this, &MainWindow::ButtonOpenConfig_Click);
 			// 
-			// button2
+			// ButtonAbout
 			// 
-			this->button2->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->ButtonAbout->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->ButtonAbout->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->button2->ImageIndex = 10;
-			this->button2->ImageList = this->Icons32;
-			this->button2->Location = System::Drawing::Point(388, 12);
-			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(40, 40);
-			this->button2->TabIndex = 25;
-			this->button2->UseVisualStyleBackColor = true;
+			this->ButtonAbout->ImageIndex = 10;
+			this->ButtonAbout->ImageList = this->Icons32;
+			this->ButtonAbout->Location = System::Drawing::Point(388, 12);
+			this->ButtonAbout->Name = L"ButtonAbout";
+			this->ButtonAbout->Size = System::Drawing::Size(40, 40);
+			this->ButtonAbout->TabIndex = 25;
+			this->ButtonAbout->UseVisualStyleBackColor = true;
+			this->ButtonAbout->Click += gcnew System::EventHandler(this, &MainWindow::ButtonAbout_Click);
 			// 
 			// ButtonStartProcessing
 			// 
@@ -633,7 +643,7 @@ namespace AudioAnalyser
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(438, 685);
 			this->Controls->Add(this->ButtonStartProcessing);
-			this->Controls->Add(this->button2);
+			this->Controls->Add(this->ButtonAbout);
 			this->Controls->Add(this->ButtonOpenConfig);
 			this->Controls->Add(this->groupBox2);
 			this->Controls->Add(this->groupBox1);
@@ -672,6 +682,7 @@ namespace AudioAnalyser
 		{
 			AudioProcessor::GetInstance()->ResetPlugins();
 			PerformFullRackRefresh(true);
+			TextboxFilenamePrefix->Text = L"Untitled project";
 		}
 		Void ButtonOpenFile_Click(Object^  sender, EventArgs^  e)
 		{
@@ -679,12 +690,15 @@ namespace AudioAnalyser
 		}
 		Void ButtonSaveFile_Click(Object^  sender, EventArgs^  e)
 		{
+			SaveDialogRack->FileName = TextboxFilenamePrefix->Text + ".aap";
 			SaveDialogRack->ShowDialog();
 		}
 		Void ButtonStartProcessing_Click(Object^  sender, EventArgs^  e)
 		{
-			if (IoManager::GetInstance()->IsProcessing()) IoManager::GetInstance()->StopProcessing();
-			else IoManager::GetInstance()->StartProcessing();
+			if (IoManager::GetInstance()->IsProcessing())
+				IoManager::GetInstance()->StopProcessing();
+			else
+				IoManager::GetInstance()->StartProcessing();
 
 			SetProcessButtonsEnabled();
 			UpdateProcessButtonsIcons();
@@ -741,15 +755,24 @@ namespace AudioAnalyser
 			{
 			case IS_None:
 				ButtonInputStreamStart->ImageIndex = InStreamOff;
+				ButtonInputStreamStart->BackColor = SystemColors::Control;
+
 				ButtonInputFileStart->ImageIndex = InFileOff;
+				ButtonInputFileStart->BackColor = SystemColors::Control;
 				break;
 			case IS_Stream:
 				ButtonInputStreamStart->ImageIndex = On;
+				ButtonInputStreamStart->BackColor = LightGreen;
+
 				ButtonInputFileStart->ImageIndex = InFileOff;
+				ButtonInputFileStart->BackColor = SystemColors::Control;
 				break;
 			case IS_File:
 				ButtonInputStreamStart->ImageIndex = InStreamOff;
+				ButtonInputStreamStart->BackColor = SystemColors::Control;
+
 				ButtonInputFileStart->ImageIndex = On;
+				ButtonInputFileStart->BackColor = LightGreen;
 				break;
 			}
 
@@ -757,21 +780,37 @@ namespace AudioAnalyser
 			{
 			case OS_None:
 				ButtonOutputStreamStart->ImageIndex = OutStreamOff;
+				ButtonOutputStreamStart->BackColor = SystemColors::Control;
+
 				ButtonOutputFileStart->ImageIndex = OutFileOff;
+				ButtonOutputFileStart->BackColor = SystemColors::Control;
 				break;
 			case OS_File:
 				ButtonOutputStreamStart->ImageIndex = OutStreamOff;
+				ButtonOutputStreamStart->BackColor = SystemColors::Control;
+
 				ButtonOutputFileStart->ImageIndex = On;
+				ButtonOutputFileStart->BackColor = Color::Pink;
 				break;
 			case OS_Stream:
 				ButtonOutputStreamStart->ImageIndex = OutStreamOn;
+				ButtonOutputStreamStart->BackColor = Color::Pink;
+
 				ButtonOutputFileStart->ImageIndex = OutFileOff;
+				ButtonOutputFileStart->BackColor = SystemColors::Control;
 				break;
 			case OS_Both:
 				ButtonOutputStreamStart->ImageIndex = OutStreamOn;
+				ButtonOutputStreamStart->BackColor = Color::Pink;
+
 				ButtonOutputFileStart->ImageIndex = On;
+				ButtonOutputFileStart->BackColor = Color::Pink;
 				break;
 			}
+
+			ButtonStartProcessing->BackColor =
+				(IoManager::GetInstance()->IsProcessing())
+				? LightGreen : SystemColors::Control;
 		}
 
 
@@ -827,6 +866,8 @@ namespace AudioAnalyser
 			FileSerializer::DeserializeRack(XmlReader);
 			PerformFullRackRefresh(true);
 			XmlReader->Close();
+
+			TextboxFilenamePrefix->Text = IO::Path::GetFileNameWithoutExtension(TargetPath);
 		}
 		Void SaveDialogRack_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
@@ -840,11 +881,13 @@ namespace AudioAnalyser
 		Void OpenDialogFile_FileOk(Object^  sender, System::ComponentModel::CancelEventArgs^  e)
 		{
 			IsInputFileOpened = IoManager::GetInstance()->OpenNewInputFile(Utilities::WideFromSystemString(OpenDialogFile->FileName));
-			 String^ Filename = IsInputFileOpened
-				? ToClr(IoManager::GetInstance()->GetInputFileDetails().Filename)
-				: "-";
-			 if (Filename->Length > 20) Filename = Filename->Substring(0, 20);
-			 DynamicLabelInputFileSource->Text = Filename;
+			
+			String^ Filename = IsInputFileOpened ?
+				ToClr(IoManager::GetInstance()->GetInputFileDetails().Filename)
+				: "(none)";
+			Filename = Filename->Substring(1);
+			if (Filename->Length > 20) Filename = Filename->Substring(0, 20);
+			DynamicLabelInputFileSource->Text = Filename;
 
 			SetProcessButtonsEnabled();
 			UpdateProcessButtonsIcons();
@@ -957,6 +1000,7 @@ namespace AudioAnalyser
 			Ap->GetPluginWindowCapabilities(AtIndex, ConfigWindow, VisWindow);
 
 			NewContents->CurrentPluginName = gcnew String(ToClr(Ap->GetPluginName(AtIndex)));
+			NewContents->DryWetMix = Ap->GetPluginVolumeMix(AtIndex);
 			NewContents->IsBypassed = Ap->IsPluginBypassed(AtIndex);
 			NewContents->IsNullPlugin = (Ap->GetPluginName(AtIndex) == L"(none)");
 			NewContents->HasConfigWindow = ConfigWindow;
@@ -988,7 +1032,7 @@ namespace AudioAnalyser
 
 			UpdateConfigWindow(AtIndex);
 			UpdateConfigWindow(AtIndex + (IsDownwards ? 1 : -1));
-
+			
 			UpdateVizWindow(AtIndex);
 			UpdateVizWindow(AtIndex + (IsDownwards ? 1 : -1));
 		}
@@ -1035,5 +1079,11 @@ namespace AudioAnalyser
 		{
 			IsSeekbarClicked = false;
 		}
-	};
+		
+		Void ButtonAbout_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			AboutWindow^ Window = gcnew AboutWindow();
+			Window->ShowDialog();
+		}
+};
 }

@@ -163,6 +163,9 @@
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AboutWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="AudioProcessor.h" />
     <ClInclude Include="ComplexNumbers.h" />
     <ClInclude Include="ConfigWindow.h">
@@ -190,6 +193,9 @@
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AboutWindow.resx">
+      <DependentUpon>AboutWindow.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ConfigWindow.resx">
       <DependentUpon>ConfigWindow.h</DependentUpon>
     </EmbeddedResource>

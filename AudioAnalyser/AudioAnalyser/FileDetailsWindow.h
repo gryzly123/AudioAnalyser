@@ -14,7 +14,7 @@ namespace AudioAnalyser
 
 
 	/// <summary>
-	/// Summary for FileDetailsWindow
+	/// Okno ze szczegó³ami obecnie uruchomionego pliku.
 	/// </summary>
 	public ref class FileDetailsWindow : public System::Windows::Forms::Form
 	{
@@ -36,20 +36,17 @@ namespace AudioAnalyser
 				delete components;
 			}
 		}
+
 	private: System::Windows::Forms::Label^  StaticLabelFilename;
-	private: System::Windows::Forms::Label^  StaticLabelFileFormat;
 	private: System::Windows::Forms::Label^  StaticLabelChannels;
 	private: System::Windows::Forms::Label^  StaticLabelSamplerate;
 	private: System::Windows::Forms::Label^  StaticLabelFilesize;
 	private: System::Windows::Forms::Label^  StaticLabelLength;
-
 	private: System::Windows::Forms::Label^  DynamicLabelFilename;
-	private: System::Windows::Forms::Label^  DynamicLabelFileformat;
 	private: System::Windows::Forms::Label^  DynamicLabelChannels;
 	private: System::Windows::Forms::Label^  DynamicLabelSamplerate;
 	private: System::Windows::Forms::Label^  DynamicLabelFilesize;
 	private: System::Windows::Forms::Label^  DynamicLabelLength;
-
 	private: System::Windows::Forms::Button^  ButtonClose;
 
 			 /// <summary>
@@ -67,8 +64,6 @@ namespace AudioAnalyser
 				 System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(FileDetailsWindow::typeid));
 				 this->StaticLabelFilename = (gcnew System::Windows::Forms::Label());
 				 this->DynamicLabelFilename = (gcnew System::Windows::Forms::Label());
-				 this->DynamicLabelFileformat = (gcnew System::Windows::Forms::Label());
-				 this->StaticLabelFileFormat = (gcnew System::Windows::Forms::Label());
 				 this->DynamicLabelChannels = (gcnew System::Windows::Forms::Label());
 				 this->StaticLabelChannels = (gcnew System::Windows::Forms::Label());
 				 this->DynamicLabelSamplerate = (gcnew System::Windows::Forms::Label());
@@ -98,28 +93,10 @@ namespace AudioAnalyser
 				 this->DynamicLabelFilename->TabIndex = 1;
 				 this->DynamicLabelFilename->Text = L"-";
 				 // 
-				 // DynamicLabelFileformat
-				 // 
-				 this->DynamicLabelFileformat->AutoSize = true;
-				 this->DynamicLabelFileformat->Location = System::Drawing::Point(106, 35);
-				 this->DynamicLabelFileformat->Name = L"DynamicLabelFileformat";
-				 this->DynamicLabelFileformat->Size = System::Drawing::Size(10, 13);
-				 this->DynamicLabelFileformat->TabIndex = 3;
-				 this->DynamicLabelFileformat->Text = L"-";
-				 // 
-				 // StaticLabelFileFormat
-				 // 
-				 this->StaticLabelFileFormat->AutoSize = true;
-				 this->StaticLabelFileFormat->Location = System::Drawing::Point(12, 35);
-				 this->StaticLabelFileFormat->Name = L"StaticLabelFileFormat";
-				 this->StaticLabelFileFormat->Size = System::Drawing::Size(55, 13);
-				 this->StaticLabelFileFormat->TabIndex = 2;
-				 this->StaticLabelFileFormat->Text = L"File format";
-				 // 
 				 // DynamicLabelChannels
 				 // 
 				 this->DynamicLabelChannels->AutoSize = true;
-				 this->DynamicLabelChannels->Location = System::Drawing::Point(106, 79);
+				 this->DynamicLabelChannels->Location = System::Drawing::Point(106, 57);
 				 this->DynamicLabelChannels->Name = L"DynamicLabelChannels";
 				 this->DynamicLabelChannels->Size = System::Drawing::Size(10, 13);
 				 this->DynamicLabelChannels->TabIndex = 5;
@@ -128,7 +105,7 @@ namespace AudioAnalyser
 				 // StaticLabelChannels
 				 // 
 				 this->StaticLabelChannels->AutoSize = true;
-				 this->StaticLabelChannels->Location = System::Drawing::Point(12, 79);
+				 this->StaticLabelChannels->Location = System::Drawing::Point(12, 57);
 				 this->StaticLabelChannels->Name = L"StaticLabelChannels";
 				 this->StaticLabelChannels->Size = System::Drawing::Size(51, 13);
 				 this->StaticLabelChannels->TabIndex = 4;
@@ -137,7 +114,7 @@ namespace AudioAnalyser
 				 // DynamicLabelSamplerate
 				 // 
 				 this->DynamicLabelSamplerate->AutoSize = true;
-				 this->DynamicLabelSamplerate->Location = System::Drawing::Point(106, 101);
+				 this->DynamicLabelSamplerate->Location = System::Drawing::Point(106, 79);
 				 this->DynamicLabelSamplerate->Name = L"DynamicLabelSamplerate";
 				 this->DynamicLabelSamplerate->Size = System::Drawing::Size(10, 13);
 				 this->DynamicLabelSamplerate->TabIndex = 7;
@@ -146,7 +123,7 @@ namespace AudioAnalyser
 				 // StaticLabelSamplerate
 				 // 
 				 this->StaticLabelSamplerate->AutoSize = true;
-				 this->StaticLabelSamplerate->Location = System::Drawing::Point(12, 101);
+				 this->StaticLabelSamplerate->Location = System::Drawing::Point(12, 79);
 				 this->StaticLabelSamplerate->Name = L"StaticLabelSamplerate";
 				 this->StaticLabelSamplerate->Size = System::Drawing::Size(63, 13);
 				 this->StaticLabelSamplerate->TabIndex = 6;
@@ -155,7 +132,7 @@ namespace AudioAnalyser
 				 // DynamicLabelFilesize
 				 // 
 				 this->DynamicLabelFilesize->AutoSize = true;
-				 this->DynamicLabelFilesize->Location = System::Drawing::Point(106, 57);
+				 this->DynamicLabelFilesize->Location = System::Drawing::Point(106, 35);
 				 this->DynamicLabelFilesize->Name = L"DynamicLabelFilesize";
 				 this->DynamicLabelFilesize->Size = System::Drawing::Size(10, 13);
 				 this->DynamicLabelFilesize->TabIndex = 9;
@@ -164,7 +141,7 @@ namespace AudioAnalyser
 				 // StaticLabelFilesize
 				 // 
 				 this->StaticLabelFilesize->AutoSize = true;
-				 this->StaticLabelFilesize->Location = System::Drawing::Point(12, 57);
+				 this->StaticLabelFilesize->Location = System::Drawing::Point(12, 35);
 				 this->StaticLabelFilesize->Name = L"StaticLabelFilesize";
 				 this->StaticLabelFilesize->Size = System::Drawing::Size(44, 13);
 				 this->StaticLabelFilesize->TabIndex = 8;
@@ -173,7 +150,7 @@ namespace AudioAnalyser
 				 // DynamicLabelLength
 				 // 
 				 this->DynamicLabelLength->AutoSize = true;
-				 this->DynamicLabelLength->Location = System::Drawing::Point(106, 123);
+				 this->DynamicLabelLength->Location = System::Drawing::Point(106, 101);
 				 this->DynamicLabelLength->Name = L"DynamicLabelLength";
 				 this->DynamicLabelLength->Size = System::Drawing::Size(10, 13);
 				 this->DynamicLabelLength->TabIndex = 11;
@@ -182,7 +159,7 @@ namespace AudioAnalyser
 				 // StaticLabelLength
 				 // 
 				 this->StaticLabelLength->AutoSize = true;
-				 this->StaticLabelLength->Location = System::Drawing::Point(12, 123);
+				 this->StaticLabelLength->Location = System::Drawing::Point(12, 101);
 				 this->StaticLabelLength->Name = L"StaticLabelLength";
 				 this->StaticLabelLength->Size = System::Drawing::Size(40, 13);
 				 this->StaticLabelLength->TabIndex = 10;
@@ -191,7 +168,7 @@ namespace AudioAnalyser
 				 // ButtonClose
 				 // 
 				 this->ButtonClose->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-				 this->ButtonClose->Location = System::Drawing::Point(258, 137);
+				 this->ButtonClose->Location = System::Drawing::Point(325, 127);
 				 this->ButtonClose->Name = L"ButtonClose";
 				 this->ButtonClose->Size = System::Drawing::Size(75, 23);
 				 this->ButtonClose->TabIndex = 12;
@@ -203,7 +180,7 @@ namespace AudioAnalyser
 				 this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 				 this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 				 this->CancelButton = this->ButtonClose;
-				 this->ClientSize = System::Drawing::Size(345, 172);
+				 this->ClientSize = System::Drawing::Size(412, 162);
 				 this->Controls->Add(this->ButtonClose);
 				 this->Controls->Add(this->DynamicLabelLength);
 				 this->Controls->Add(this->StaticLabelLength);
@@ -213,8 +190,6 @@ namespace AudioAnalyser
 				 this->Controls->Add(this->StaticLabelSamplerate);
 				 this->Controls->Add(this->DynamicLabelChannels);
 				 this->Controls->Add(this->StaticLabelChannels);
-				 this->Controls->Add(this->DynamicLabelFileformat);
-				 this->Controls->Add(this->StaticLabelFileFormat);
 				 this->Controls->Add(this->DynamicLabelFilename);
 				 this->Controls->Add(this->StaticLabelFilename);
 				 this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
@@ -236,7 +211,6 @@ namespace AudioAnalyser
 			if (Data.FileOk)
 			{
 				DynamicLabelFilename->Text = ToClr((Data.Filepath + Data.Filename));
-				DynamicLabelFileformat->Text = ToClr(Data.Fileformat);
 				DynamicLabelChannels->Text = Data.IsStereo ? "2" : "1";
 				DynamicLabelSamplerate->Text = Data.SampleRate.ToString() + " samples per second";
 				DynamicLabelFilesize->Text = (gcnew System::IO::FileInfo(DynamicLabelFilename->Text))->Length.ToString() + " bytes";
@@ -247,7 +221,6 @@ namespace AudioAnalyser
 			else
 			{
 				DynamicLabelFilename->Text = "-";
-				DynamicLabelFileformat->Text = "-";
 				DynamicLabelChannels->Text = "-";
 				DynamicLabelSamplerate->Text = "-";
 				DynamicLabelFilesize->Text = "-";

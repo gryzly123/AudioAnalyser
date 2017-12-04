@@ -81,11 +81,6 @@ void AudioProcessor::SwapPlugins(int AtIndex, PluginSwapDirection Direction)
 	int Id2 = Direction ? AtIndex + 1 : AtIndex - 1;
 
 	DspPlugin* SwapHelper = Plugins[Id1];
-	float DryWetMixHelper = Plugins[Id1]->DryWetMix;
-
-	Plugins[Id1]->DryWetMix = Plugins[Id2]->DryWetMix;
-	Plugins[Id2]->DryWetMix = DryWetMixHelper;
-
 	Plugins[Id1] = Plugins[Id2];
 	Plugins[Id2] = SwapHelper;
 }

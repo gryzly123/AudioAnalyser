@@ -75,6 +75,7 @@ namespace AudioAnalyser
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximizeBox = false;
 			this->Name = L"DynamicPluginConfigWindow";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"DynamicPluginConfigWindow";
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginConfigWindow::DynamicPluginConfigWindow_FormClosed);
 			this->ResumeLayout(false);
