@@ -40,7 +40,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"Decimator")) return new Decimator();
 
 	if (NewPluginName == (L"Panner")) return new Panner();
-	//if (NewPluginName == (L"Stereo Merger")) return new StereoMerger();
+	if (NewPluginName == (L"Stereo Merger")) return new StereoMerger();
 	if (NewPluginName == (L"Stereo to Mid-Side")) return new StereoToMidside();
 	if (NewPluginName == (L"Low Pass Filter (avg)")) return new LowpassFilterAvg();
 	//if (NewPluginName == (L"Low Pass Filter (sinc)")) return new ();

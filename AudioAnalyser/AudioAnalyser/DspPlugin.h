@@ -217,29 +217,6 @@ public:
 		}
 	}
 };
-class LinearAmplifier : public DspPlugin
-{
-	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);
-	Param LeftChannelAmp =  Param(PT_Float, L"Left channel amp" , 0.0f, 2.0f, 1.0f);
-	Param RightChannelAmp = Param(PT_Float, L"Right channel amp", 0.0f, 2.0f, 1.0f);
-
-public:
-	LinearAmplifier() : DspPlugin(L"Gain")
-	{
-		ParameterRefsForUi.push_back(&UniformAmp);
-		ParameterRefsForUi.push_back(&LeftChannelAmp);
-		ParameterRefsForUi.push_back(&RightChannelAmp);
-	}
-
-	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
-	{
-		for (int i = 0; i < Length; ++i)
-		{
-			*(BufferL++) *= LeftChannelAmp.Val  * UniformAmp.Val;
-			*(BufferR++) *= RightChannelAmp.Val * UniformAmp.Val;
-		}
-	}
-};
 class Oscilloscope : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
@@ -495,6 +472,29 @@ public:
 
 	}
 };
+class LinearAmplifier : public DspPlugin
+{
+	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);
+	Param LeftChannelAmp =  Param(PT_Float, L"Left channel amp" , 0.0f, 2.0f, 1.0f);
+	Param RightChannelAmp = Param(PT_Float, L"Right channel amp", 0.0f, 2.0f, 1.0f);
+
+public:
+	LinearAmplifier() : DspPlugin(L"Gain")
+	{
+		ParameterRefsForUi.push_back(&UniformAmp);
+		ParameterRefsForUi.push_back(&LeftChannelAmp);
+		ParameterRefsForUi.push_back(&RightChannelAmp);
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		for (int i = 0; i < Length; ++i)
+		{
+			*(BufferL++) *= LeftChannelAmp.Val  * UniformAmp.Val;
+			*(BufferR++) *= RightChannelAmp.Val * UniformAmp.Val;
+		}
+	}
+};
 class Clip : public DspPlugin
 {
 	Param PreGain = Param(PT_Float, L"Pre Gain", 0.0f, 2.0f, 1.0f);
@@ -682,6 +682,55 @@ public:
 		}
 	}
 };
+class StereoMerger : public DspPlugin
+{
+	Param Type = Param(PT_Enum, L"Effect type", 0.0f, 2.0f, 0.0f);
+	Param Power = Param(PT_Float, L"Power [%]", 0.0f, 1.0f, 0.0f);
+	Param Clip = Param(PT_Boolean, L"Clip output", 0.0f, 1.0f, 1.0f);
+
+public:
+	StereoMerger() : DspPlugin(L"Stereo Merger")
+	{
+		std::wstring* TypeEnum = new std::wstring[2];
+		TypeEnum[0] = L"Merge (cramp)";
+		TypeEnum[1] = L"Separate (widen)";
+		Type.EnumNames = TypeEnum;
+
+		Type.FloatValueStep = 0.01f;
+
+		ParameterRefsForUi.push_back(&Type);
+		ParameterRefsForUi.push_back(&Power);
+		ParameterRefsForUi.push_back(&Clip);
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		for (int i = 0; i < Length; i++)
+		{
+			float Mid = (BufferL[i] + BufferR[i]) / 2.0f;
+			
+			//merge
+			if (Type.Val == 0.0f)
+			{
+				BufferL[i] = Utilities::WeightedAvg(BufferL[i], Mid, Power.Val);
+				BufferR[i] = Utilities::WeightedAvg(BufferR[i], Mid, Power.Val);
+			}
+			//separate
+			else
+			{
+				float Side = Mid - BufferL[i];
+				BufferL[i] = BufferL[i] - (Side * Power.Val);
+				BufferR[i] = BufferR[i] + (Side * Power.Val);
+			}
+			if (Clip.Val == 1.0f)
+			{
+				BufferL[i] = Utilities::Clamp(BufferL[i], -1.0f, 1.0f);
+				BufferR[i] = Utilities::Clamp(BufferR[i], -1.0f, 1.0f);
+			}
+		}
+	}
+};
+
 class StereoToMidside : public DspPlugin
 {
 	Param InputType = Param(PT_Enum, L"Input signal", 0.0f, 3.0f, 0.0f);

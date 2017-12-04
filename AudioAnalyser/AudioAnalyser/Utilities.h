@@ -32,10 +32,13 @@ namespace Utilities
 	void ShowMessageboxDebugonly(std::wstring Message, std::wstring WindowName = L"Debug window");
 
 	template<typename T>
-	inline const T& Clamp(const T& Val, const T& Min, const T& Max) { return (Val < Min) ? Min : ((Val > Max) ? Max : Val); }
+	inline const T Clamp(const T& Val, const T& Min, const T& Max) { return (Val < Min) ? Min : ((Val > Max) ? Max : Val); }
 
 	template<typename T>
 	inline void Swap(T& A, T& B) { T Helper = A; A = B; B = Helper; }
 
 	void LinearInterpolateArrays(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength);
+	
+	template<typename T>
+	inline const T WeightedAvg(const T& A, const T& B, float W) { return (A * (1.0f - W)) + (B * W); }
 }
