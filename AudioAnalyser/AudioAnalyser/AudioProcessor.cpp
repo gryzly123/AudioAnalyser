@@ -45,7 +45,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"Low Pass Filter (avg)")) return new LowpassFilterAvg();
 	//if (NewPluginName == (L"Low Pass Filter (sinc)")) return new ();
 	//if (NewPluginName == (L"High Pass Filter (sinc)")) return new ();
-	//if (NewPluginName == (L"Band Pass Filter (sinc)")) return new ();
+	if (NewPluginName == (L"Band Pass Filter (sinc)")) return new BandpassFilterSinc();
 
 	//if (NewPluginName == (L"Delay")) return new ();
 	if (NewPluginName == (L"Retrigger (Simple)")) return new RetriggerSimple();

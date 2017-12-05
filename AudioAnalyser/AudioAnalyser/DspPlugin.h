@@ -814,6 +814,78 @@ public:
 		}
 	}
 };
+class BandpassFilterSinc : public DspPlugin
+{
+private:
+	Param ResponseLength = Param(PT_Float, L"Impulse response length", 1, 128, 5);
+	Param MuxPointCount = Param(PT_Float, L"Points to average", 0.0f, 1.0f, 1.0f);
+	Param PostAmp = Param(PT_Float, L"Post amp log base", 1.0f, 10.0f, 5.0f);
+	float* LastPointsL;
+	float* LastPointsR;
+	int CurrentAllocatedPointsize = 0;
+
+public:
+
+	BandpassFilterSinc() : DspPlugin(L"Band Pass Filter(sinc)")
+	{
+		MuxPointCount.FloatValueStep = 1.0f;
+		MuxPointCount.FloatValueStep = 0.01f;
+		ParameterRefsForUi.push_back(&ResponseLength);
+		ParameterRefsForUi.push_back(&MuxPointCount);
+		ParameterRefsForUi.push_back(&PostAmp);
+	}
+
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		const float FrequencyCutoff = MuxPointCount.Val;
+		int FilterLength = 101;
+		const int FilterHalfLength = FilterLength / 2;
+
+		float* Response = new float[FilterLength];
+		float* OutL = new float[Length];
+		float* OutR = new float[Length];
+		for (int i = 0; i < Length; i++)
+		{
+			OutL[i] = 0.0f;
+			OutR[i] = 0.0f;
+		}
+		
+		float ResponseSum = 0.0f;
+
+		for (int i = 0; i < FilterLength; ++i)
+		{
+			int Condition = i - FilterHalfLength;
+
+			if (Condition == 0) Response[i] = 2.0f * M_PI * FrequencyCutoff;
+			else Response[i] = sin(2.0f * M_PI * FrequencyCutoff * (float)Condition) / (float)Condition;
+			Response[i] *= 0.54f - (0.46f * cos(2.0f * M_PI * (float)i / (float)FilterLength));
+			ResponseSum += Response[i];
+		}
+		for (int i = 0; i < FilterLength; ++i) Response[i] /= ResponseSum;
+		
+		for (int i = FilterLength - 1; i < Length; ++i)
+		{
+			for (int j = 0; j < FilterLength; ++j)
+			{
+				OutL[i] += BufferL[i - j] * Response[j];
+				OutR[i] += BufferR[i - j] * Response[j];
+			}
+		}
+
+		float PostAmpValue = pow(2, (int)PostAmp.Val - 4);
+
+		for (int i = 0; i < Length; ++i)
+		{
+			BufferL[i] = (i >= FilterLength) ? Utilities::Clamp(OutL[i] * PostAmpValue, -1.0f, 1.0f) : 0.0f;
+			BufferR[i] = (i >= FilterLength) ? Utilities::Clamp(OutR[i] * PostAmpValue, -1.0f, 1.0f) : 0.0f;
+		}
+
+		delete[] OutL;
+		delete[] OutR;
+		delete[] Response;
+	}
+};
 class LowpassFilterAvg : public DspPlugin
 {
 private:
@@ -891,8 +963,8 @@ public:
 			LastPointsR[i] = RCopy[Length + i];
 		}
 
-		delete LCopy;
-		delete RCopy;
+		delete[] LCopy;
+		delete[] RCopy;
 	}
 };
 class RetriggerSimple : public DspPlugin
