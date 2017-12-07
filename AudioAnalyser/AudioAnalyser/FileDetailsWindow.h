@@ -210,7 +210,7 @@ namespace AudioAnalyser
 
 			if (Data.FileOk)
 			{
-				DynamicLabelFilename->Text = ToClr((Data.Filepath + Data.Filename));
+				DynamicLabelFilename->Text = Utilities::SystemStringFromWide((Data.Filepath + Data.Filename));
 				DynamicLabelChannels->Text = Data.IsStereo ? "2" : "1";
 				DynamicLabelSamplerate->Text = Data.SampleRate.ToString() + " samples per second";
 				DynamicLabelFilesize->Text = (gcnew System::IO::FileInfo(DynamicLabelFilename->Text))->Length.ToString() + " bytes";

@@ -373,7 +373,7 @@ public:
 	{
 		System::DateTime^ Now = System::DateTime::Now;
 		System::String^ FileFormat = L"wav";
-		System::String^ FileName = System::String::Format("{0} at {1}-{2}-{3}--{4}-{5}-{6}.{7}", ToClr(OutFilesPrefix), Now->Year, Now->Month, Now->Day, Now->Hour, Now->Minute, Now->Second, FileFormat);
+		System::String^ FileName = System::String::Format("{0} at {1}-{2}-{3}--{4}-{5}-{6}.{7}", Utilities::SystemStringFromWide(OutFilesPrefix), Now->Year, Now->Month, Now->Day, Now->Hour, Now->Minute, Now->Second, FileFormat);
 		std::wstring FullPath = OutFilesWorkingFolder + L"\\" + Utilities::WideFromSystemString(FileName);
 		CurrentOutFile = new OutSoundFile(FullPath, SFF_WAV);
 	}

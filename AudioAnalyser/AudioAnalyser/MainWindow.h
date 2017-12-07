@@ -883,7 +883,7 @@ namespace AudioAnalyser
 			IsInputFileOpened = IoManager::GetInstance()->OpenNewInputFile(Utilities::WideFromSystemString(OpenDialogFile->FileName));
 			
 			String^ Filename = IsInputFileOpened ?
-				ToClr(IoManager::GetInstance()->GetInputFileDetails().Filename)
+				Utilities::SystemStringFromWide(IoManager::GetInstance()->GetInputFileDetails().Filename)
 				: "(none)";
 			Filename = Filename->Substring(1);
 			if (Filename->Length > 20) Filename = Filename->Substring(0, 20);
@@ -999,7 +999,7 @@ namespace AudioAnalyser
 			bool ConfigWindow, VisWindow;
 			Ap->GetPluginWindowCapabilities(AtIndex, ConfigWindow, VisWindow);
 
-			NewContents->CurrentPluginName = gcnew String(ToClr(Ap->GetPluginName(AtIndex)));
+			NewContents->CurrentPluginName = gcnew String(Utilities::SystemStringFromWide(Ap->GetPluginName(AtIndex)));
 			NewContents->DryWetMix = Ap->GetPluginVolumeMix(AtIndex);
 			NewContents->IsBypassed = Ap->IsPluginBypassed(AtIndex);
 			NewContents->IsNullPlugin = (Ap->GetPluginName(AtIndex) == L"(none)");

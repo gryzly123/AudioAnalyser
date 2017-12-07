@@ -28,14 +28,12 @@
 
 #endif
 
-//ustawienia staï¿½e AudioAnalysera
+//ustawienia sta³e AudioAnalysera
 #define GUI_RACKITEMS_COUNT 7
 #define AUDIO_SAMPLERATE 44100.f
 #define AUDIO_CHANNELCOUNT 2
 #define AUDIO_FORMAT (SF_FORMAT_WAV | SF_FORMAT_PCM_16)
 
-#define ToClr(x) gcnew System::String(x.c_str())
-#define Break(x) MessageBox::Show(x)
 //definicje matematyczne
 #define M_PI 3.14159265359f
 

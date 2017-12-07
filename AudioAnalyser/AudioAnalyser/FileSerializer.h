@@ -31,7 +31,7 @@ namespace AudioAnalyser
 			for (int i = 0; i < GUI_RACKITEMS_COUNT; i++)
 			{
 				DW->WriteStartElement(L"RackItem");
-				DW->WriteAttributeString(L"name", ToClr(Ap->GetPluginName(i)));
+				DW->WriteAttributeString(L"name", Utilities::SystemStringFromWide(Ap->GetPluginName(i)));
 				DW->WriteAttributeString(L"bypassed", Ap->IsPluginBypassed(i).ToString());
 				DW->WriteAttributeString(L"drywetmix", Ap->GetPluginVolumeMix(i).ToString());
 
@@ -40,7 +40,7 @@ namespace AudioAnalyser
 				for (int j = 0; j < ParametersCount; j++)
 				{
 					DW->WriteStartElement(L"Parameter");
-					DW->WriteAttributeString(L"name", ToClr(Parameters[j]->Name));
+					DW->WriteAttributeString(L"name", Utilities::SystemStringFromWide(Parameters[j]->Name));
 					DW->WriteAttributeString(L"value", Parameters[j]->CurrentValue.ToString());
 					DW->WriteEndElement();
 				}
@@ -95,7 +95,7 @@ namespace AudioAnalyser
 				for (int i = 0; i < GUI_RACKITEMS_COUNT; i++)
 				{
 					DW->WriteStartElement(L"RackItem");
-					DW->WriteAttributeString(L"name", ToClr(Ap->GetPluginName(i)));
+					DW->WriteAttributeString(L"name", UtilitiesSystemStringFromWide(Ap->GetPluginName(i)));
 					DW->WriteAttributeString(L"bypassed", Ap->IsPluginBypassed(i).ToString());
 					DW->WriteAttributeString(L"drywetmix", Ap->GetPluginVolumeMix(i).ToString());
 
@@ -104,7 +104,7 @@ namespace AudioAnalyser
 					for (int j = 0; j < ParametersCount; j++)
 					{
 						DW->WriteStartElement(L"Parameter");
-						DW->WriteAttributeString(L"name", ToClr(Parameters[j]->Name));
+						DW->WriteAttributeString(L"name", UtilitiesSystemStringFromWide(Parameters[j]->Name));
 						DW->WriteAttributeString(L"value", Parameters[j]->CurrentValue.ToString());
 						DW->WriteEndElement();
 					}
