@@ -223,10 +223,10 @@ class Oscilloscope : public DspPlugin
 	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
 	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
 
-	gcroot<MonitoredArray<float>^> Data         ;
-	gcroot<MonitoredArray<float>^> Interp       ;
-	gcroot<Pen^>                   DataPencil   ;
-	gcroot<SolidBrush^>            DataBrush    ;
+	gcroot<MonitoredArray<float>^> Data;
+	gcroot<MonitoredArray<float>^> Interp;
+	gcroot<Pen^>                   DataPencil;
+	gcroot<SolidBrush^>            DataBrush;
 	gcroot<Pen^>                   HelperPencil1;
 	gcroot<Pen^>                   HelperPencil2;
 
@@ -245,8 +245,123 @@ public:
 		ParameterRefsForUi.push_back(&CurveDuration);
 		ParameterRefsForUi.push_back(&ImgPadding);
 
+		Data = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		Interp = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataPencil = gcroot<Pen^>(gcnew Pen(Color::Black, 1));
+		DataBrush = gcroot<SolidBrush^>(gcnew SolidBrush(Color::Black));
+		HelperPencil1 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
+		HelperPencil2 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
+		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+
+		Data->Lock();
+		switch ((int)Channels.Val)
+		{
+		case 0:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferL[i]);
+			break;
+		case 1:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferR[i]);
+			break;
+		case 2:
+			for (int i = 0; i < Length; ++i) Data->PushLast((BufferL[i] + BufferR[i]) / 2.0f);
+			break;
+		}
+		int ExcessData = Data->Size() - CurvePointsSize;
+		while (--ExcessData > 0) Data->PopFirst();
+		Data->Unlock();
+	}
+
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	{
+		const float Padding = ImgPadding.Val;
+		const float HelperLineCount = 10.0f;
+		const float WorkAreaHorizontal = Width - (2 * Padding);
+		const float WorkAreaVertical = Height - (2 * Padding);
+		const int MaxPoints = Width;
+		const int Range = Height;
+
+		Image->Clear(Color::White);
+		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
+		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
+
+		for (int i = 0; i < HelperLineCount + 1; i++)
+		{
+			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i;
+			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1);
+
+			Image->DrawLine(HelperPencil2,
+				HorizontalX,
+				Padding,
+				HorizontalX,
+				(float)((float)Height - Padding));
+
+			Image->DrawLine(HelperPencil2,
+				Padding,
+				VerticalY,
+				(float)((float)Width - Padding),
+				VerticalY);
+		}
+
+		Data->Lock();
+		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, WorkAreaHorizontal);
+		Data->Unlock();
+
+		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2.0f * -Utilities::Clamp((Single)Interp->operator[](0), -1.0f, 1.0f));
+		for (int i = 1; i < WorkAreaHorizontal; ++i)
+		{
+			int HorizontalVal = (int)(i + Padding);
+			float Vall = Utilities::Clamp((Single)Interp->operator[](i), -1.0f, 1.0f);
+			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2.0f * -Vall);
+			if (LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1;
+
+			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
+			else                  Image->DrawLine(DataPencil, HorizontalVal, LastVal, HorizontalVal, NewPt);
+
+			LastVal = NewPt;
+		}
+	}
+};
+class Spectrum : public DspPlugin
+{
+	Param CurveDuration = Param(PT_Enum, L"Samples", 0.0f, 6.0f, 1.0f);
+	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
+	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
+
+	gcroot<MonitoredArray<float>^> Data         ;
+	gcroot<Pen^>                   DataPencil   ;
+	gcroot<SolidBrush^>            DataBrush    ;
+	gcroot<Pen^>                   HelperPencil1;
+	gcroot<Pen^>                   HelperPencil2;
+
+public:
+	Spectrum() : DspPlugin(L"Spectrum", HAS_VIZ)
+	{
+		std::wstring* SampleCounts = new std::wstring[6];
+		SampleCounts[0] = L"128";
+		SampleCounts[1] = L"256";
+		SampleCounts[2] = L"512";
+		SampleCounts[3] = L"1024";
+		SampleCounts[4] = L"2048";
+		SampleCounts[5] = L"4096";
+		CurveDuration.EnumNames = SampleCounts;
+
+		std::wstring* ChannelNames = new std::wstring[3];
+		ChannelNames[0] = L"Left";
+		ChannelNames[1] = L"Right";
+		ChannelNames[2] = L"Mixdown";
+		Channels.EnumNames = ChannelNames;
+
+		ImgPadding.FloatValueStep = 1.0f;
+		ParameterRefsForUi.push_back(&Channels);
+		ParameterRefsForUi.push_back(&CurveDuration);
+		ParameterRefsForUi.push_back(&ImgPadding);
+
 		Data          = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
-		Interp        = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
 		DataPencil    = gcroot<Pen^>                   (gcnew Pen(Color::Black, 1));
 		DataBrush     = gcroot<SolidBrush^>            (gcnew SolidBrush(Color::Black));
 		HelperPencil1 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
@@ -256,7 +371,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+		int CurvePointsSize = std::pow(2, 7 + CurveDuration.Val);
 
 		Data->Lock();
 		switch ((int)Channels.Val)
@@ -308,14 +423,26 @@ public:
 		}
 
 		Data->Lock();
-		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, WorkAreaHorizontal);
+		int ArrSize = std::pow(2, 7 + CurveDuration.Val);
+		if (Data->Size() < ArrSize)
+		{
+			Data->Unlock();
+			return;
+		}
+
+		ComplexF* FftResult = new ComplexF[ArrSize];
+		for (int i = 0; i < ArrSize; ++i) FftResult[i] = ComplexF(Data->operator[](i), 0.0f);
 		Data->Unlock();
 
-		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2 * -(Single)Interp->operator[](0));
-		for (int i = 1; i < WorkAreaHorizontal; ++i)
+		Utilities::Fft(FftResult, ArrSize);
+		Utilities::FftProcessResult(FftResult, ArrSize);
+
+		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2.0f * - Utilities::Clamp((Single)FftResult[0].real(), -1.0f, 1.0f));
+		for (int i = 1; i < ArrSize / 2; ++i)
 		{
 			int HorizontalVal = (int)(i + Padding);
-			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2 * -(Single)Interp->operator[](i));
+			float Vall = Utilities::Clamp((Single)FftResult[i].real(), -1.0f, 1.0f);
+			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2.0f * - Vall);
 			if(LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1; 
 			
 			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
@@ -730,7 +857,6 @@ public:
 		}
 	}
 };
-
 class StereoToMidside : public DspPlugin
 {
 	Param InputType = Param(PT_Enum, L"Input signal", 0.0f, 3.0f, 0.0f);

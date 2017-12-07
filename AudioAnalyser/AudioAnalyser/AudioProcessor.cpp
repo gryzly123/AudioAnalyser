@@ -28,7 +28,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"White noise")) return new WhiteNoiseGenerator();
 
 	if (NewPluginName == (L"Oscilloscope")) return new Oscilloscope();
-	//if (NewPluginName == (L"Spectrum")) return new ();
+	if (NewPluginName == (L"Spectrum")) return new Spectrum();
 	//if (NewPluginName == (L"Spectrogram")) return new ();
 	if (NewPluginName == (L"Signal Parameters")) return new SignalParameters();
 	
