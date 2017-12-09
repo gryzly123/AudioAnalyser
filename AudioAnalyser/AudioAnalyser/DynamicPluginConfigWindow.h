@@ -71,19 +71,20 @@ namespace AudioAnalyser
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(365, 65);
 			this->Controls->Add(this->DynamicControlObject);
-			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximizeBox = false;
 			this->Name = L"DynamicPluginConfigWindow";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"DynamicPluginConfigWindow";
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginConfigWindow::DynamicPluginConfigWindow_FormClosed);
+			this->Resize += gcnew System::EventHandler(this, &DynamicPluginConfigWindow::DynamicPluginConfigWindow_Resize);
 			this->ResumeLayout(false);
 
 		}
 #pragma endregion
 
 		Int32 PluginIndex = -1;
+
 	public:
 		System::Void PopulateWithParameters(std::vector<DspPluginParameter*> Parameters, System::Int32 PluginIndex)
 		{
@@ -92,6 +93,9 @@ namespace AudioAnalyser
 			System::Int32 ParametersCount = Parameters.size();
 
 			this->ClientSize = System::Drawing::Size(365, (ParametersCount * 40) + 6);
+			this->MinimumSize = System::Drawing::Size(365, (ParametersCount * 40) + 6);
+			this->MaximumSize = System::Drawing::Size(900, (ParametersCount * 40) + 6);
+
 			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
 			WindowName += L" at Slot #";
 			WindowName += (PluginIndex + 1).ToString();
@@ -113,18 +117,37 @@ namespace AudioAnalyser
 				this->ControlObjects->Add(TempObj);
 			}
 
+			ForceResizeDynamicControls();
 			this->ResumeLayout(false);
 		}
-	
-	private:
-	
+
 		System::Void DynamicControlObject_UpdateParameter(System::Int32 AtIndex, System::Single NewValue)
 		{
 			AudioProcessor::GetInstance()->UpdatePluginParameterByIndex(PluginIndex, AtIndex, NewValue);
 		}
+
 		System::Void DynamicPluginConfigWindow_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e)
 		{
 			OnWindowShutdown(PluginIndex);
+		}
+
+		System::Void DynamicPluginConfigWindow_Resize(System::Object^  sender, System::EventArgs^  e)
+		{
+			ForceResizeDynamicControls();
+		}
+
+		System::Void ForceResizeDynamicControls()
+		{
+			int ControlCount = this->Controls->Count;
+			for (int i = 0; i < ControlCount; ++i)
+			{
+				if (Controls[i]->GetType() != RackControls::DynamicControlObject::typeid) continue;
+				RackControls::DynamicControlObject^ Obj = cli::safe_cast<RackControls::DynamicControlObject^>(Controls[i]);
+
+				System::Drawing::Size NewSize = System::Drawing::Size(ClientSize.Width - 20, Obj->Size.Height);
+				Obj->Size = NewSize;
+				Obj->UpdateScale(NewSize);
+			}
 		}
 	};
 }
