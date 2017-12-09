@@ -42,7 +42,7 @@ private:
 
 	//portaudio
 	PaStreamParameters InputParameters, OutputParameters;
-	PaStream *CurrentStream;
+	PaStream* CurrentStream;
 	PaError LastPaErrorCode;
 	bool PaInitialized = false, PaStarted = false;
 
@@ -139,7 +139,7 @@ private:
 	}
 	bool DeinitializePortAudio()
 	{
-		Pa_Terminate();
+		return Pa_Terminate() == paNoError;
 	}
 	bool StartPortAudio()
 	{
@@ -190,7 +190,13 @@ private:
 	}
 	
 	IoManager() { InitializePortAudio(); }
-	~IoManager() { DeinitializePortAudio(); Instance = nullptr; }
+	~IoManager()
+	{
+		DeinitializePortAudio();
+		if (CurrentInFile) delete CurrentInFile;
+		if (CurrentOutFile) delete CurrentOutFile;
+		Instance = nullptr;
+	}
 
 public:
 	static IoManager* GetInstance()
@@ -198,6 +204,7 @@ public:
 		if (!Instance) Instance = new IoManager();
 		return Instance;
 	}
+	static void Shutdown() { delete GetInstance(); }
 
 	//konfiguracja PortAudio
 	void GetCurrentConfig(int& CurrentInput, int& DefaultInput, int& CurrentOutput, int& DefaultOutput, std::vector<AudioDevice>& InputDevices, std::vector<AudioDevice>& OutputDevices, int& Blocksize)
@@ -272,7 +279,7 @@ public:
 
 		case 23: //Stream->File
 			CurrentOutput = OS_Both;
-			if (CreateNewOutputFile()) CurrentOutput = OS_File;
+			if (CreateNewOutputFile()) CurrentOutput = OS_Both;
 			else Utilities::ShowMessagebox("Output file could not be created.");
 			break;
 
