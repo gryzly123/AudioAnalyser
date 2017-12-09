@@ -198,7 +198,8 @@ namespace AudioAnalyser
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"DynamicPluginVizWindow";
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_FormClosed);
-			this->Resize += gcnew System::EventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_Resize);
+			this->ResizeBegin += gcnew System::EventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_ResizeBegin);
+			this->ResizeEnd += gcnew System::EventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_ResizeEnd);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureTarget))->EndInit();
 			this->SettingsContext->ResumeLayout(false);
 			this->ResumeLayout(false);
@@ -208,6 +209,7 @@ namespace AudioAnalyser
 
 	public:
 		bool IsOpened = false;
+		bool ActiveBeforeResizing = false;
 		Void SetIndex(Int32 NewIndex)
 		{
 			PluginIndex = NewIndex;
@@ -250,14 +252,6 @@ namespace AudioAnalyser
 			PictureTarget->Refresh();
 			IsFirstFrameDrawn = true;
 		}
-		System::Void DynamicPluginVizWindow_Resize(System::Object^  sender, System::EventArgs^  e)
-		{
-			System::Drawing::Size NewPictureSize = this->Size;
-			NewPictureSize.Width -= 16;
-			NewPictureSize.Height -= 39;
-			PictureTarget->Size = NewPictureSize;
-			ReinitializePicture();
-		}
 		System::Void DynamicPluginVizWindow_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e)
 		{
 			OnWindowShutdown(PluginIndex);
@@ -298,6 +292,21 @@ namespace AudioAnalyser
 			{
 				Utilities::ShowMessagebox("Could not save file. Error: " + e->ToString());
 			}
+		}
+		System::Void DynamicPluginVizWindow_ResizeBegin(System::Object^  sender, System::EventArgs^  e)
+		{
+			ActiveBeforeResizing = RefreshTimer->Enabled;
+			RefreshTimer->Stop();
+		}
+		System::Void DynamicPluginVizWindow_ResizeEnd(System::Object^  sender, System::EventArgs^  e)
+		{
+			System::Drawing::Size NewPictureSize = this->Size;
+			NewPictureSize.Width -= 16;
+			NewPictureSize.Height -= 39;
+			PictureTarget->Size = NewPictureSize;
+			ReinitializePicture();
+
+			if (ActiveBeforeResizing) RefreshTimer->Start();
 		}
 	};
 }
