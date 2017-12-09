@@ -84,7 +84,7 @@ namespace AudioAnalyser {
 			this->StaticLabelProductName->AutoSize = true;
 			this->StaticLabelProductName->Font = (gcnew System::Drawing::Font(L"Segoe UI", 22, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(238)));
-			this->StaticLabelProductName->Location = System::Drawing::Point(159, 16);
+			this->StaticLabelProductName->Location = System::Drawing::Point(159, 9);
 			this->StaticLabelProductName->Name = L"StaticLabelProductName";
 			this->StaticLabelProductName->Size = System::Drawing::Size(209, 41);
 			this->StaticLabelProductName->TabIndex = 1;
@@ -93,7 +93,7 @@ namespace AudioAnalyser {
 			// StaticLabelProductVersion
 			// 
 			this->StaticLabelProductVersion->AutoSize = true;
-			this->StaticLabelProductVersion->Location = System::Drawing::Point(363, 37);
+			this->StaticLabelProductVersion->Location = System::Drawing::Point(363, 30);
 			this->StaticLabelProductVersion->Name = L"StaticLabelProductVersion";
 			this->StaticLabelProductVersion->Size = System::Drawing::Size(31, 13);
 			this->StaticLabelProductVersion->TabIndex = 2;
@@ -102,7 +102,7 @@ namespace AudioAnalyser {
 			// StaticLabelProductAuthor1
 			// 
 			this->StaticLabelProductAuthor1->AutoSize = true;
-			this->StaticLabelProductAuthor1->Location = System::Drawing::Point(163, 62);
+			this->StaticLabelProductAuthor1->Location = System::Drawing::Point(163, 55);
 			this->StaticLabelProductAuthor1->Name = L"StaticLabelProductAuthor1";
 			this->StaticLabelProductAuthor1->Size = System::Drawing::Size(109, 13);
 			this->StaticLabelProductAuthor1->TabIndex = 3;
@@ -111,7 +111,7 @@ namespace AudioAnalyser {
 			// StaticLabelProductAuthor2
 			// 
 			this->StaticLabelProductAuthor2->AutoSize = true;
-			this->StaticLabelProductAuthor2->Location = System::Drawing::Point(164, 78);
+			this->StaticLabelProductAuthor2->Location = System::Drawing::Point(164, 71);
 			this->StaticLabelProductAuthor2->Name = L"StaticLabelProductAuthor2";
 			this->StaticLabelProductAuthor2->Size = System::Drawing::Size(138, 13);
 			this->StaticLabelProductAuthor2->TabIndex = 4;
@@ -120,7 +120,7 @@ namespace AudioAnalyser {
 			// StaticLabelProductAuthor3
 			// 
 			this->StaticLabelProductAuthor3->AutoSize = true;
-			this->StaticLabelProductAuthor3->Location = System::Drawing::Point(163, 100);
+			this->StaticLabelProductAuthor3->Location = System::Drawing::Point(163, 93);
 			this->StaticLabelProductAuthor3->Name = L"StaticLabelProductAuthor3";
 			this->StaticLabelProductAuthor3->Size = System::Drawing::Size(153, 13);
 			this->StaticLabelProductAuthor3->TabIndex = 5;
@@ -129,7 +129,7 @@ namespace AudioAnalyser {
 			// StaticLabelProductRelease
 			// 
 			this->StaticLabelProductRelease->AutoSize = true;
-			this->StaticLabelProductRelease->Location = System::Drawing::Point(163, 116);
+			this->StaticLabelProductRelease->Location = System::Drawing::Point(163, 109);
 			this->StaticLabelProductRelease->Name = L"StaticLabelProductRelease";
 			this->StaticLabelProductRelease->Size = System::Drawing::Size(64, 13);
 			this->StaticLabelProductRelease->TabIndex = 6;
