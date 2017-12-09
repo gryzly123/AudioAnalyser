@@ -38,7 +38,7 @@ public:
 	void GetPluginWindowCapabilities(int AtIndex, bool& HasConfig, bool& HasVis);
 	void SetPluginVolumeMix(int AtIndex, float Value);
 	float GetPluginVolumeMix(int AtIndex);
-	void AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame);
+	void AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImgPtr, int Width, int Height, bool FirstFrame);
 	std::vector<DspPluginParameter*> GetPluginParameters(int AtIndex);
 	void UpdatePluginParameterByIndex(int PluginIndex, int AtIndex, float NewValue);
 	void UpdatePluginParameterByName(int PluginIndex, std::wstring AtName, float NewValue);
