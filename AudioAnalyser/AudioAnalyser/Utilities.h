@@ -34,6 +34,7 @@ namespace Utilities
 
 	//messageboxy
 	void ShowMessagebox(std::wstring Message, std::wstring WindowName = L"Alert");
+	void ShowMessagebox(System::String^ Message, System::String^ WindowName = L"Alert");
 	void ShowMessageboxDebugonly(std::wstring Message, std::wstring WindowName = L"Debug window");
 
 	//funkcje matematyczne

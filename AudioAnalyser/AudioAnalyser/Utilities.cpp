@@ -52,6 +52,11 @@ void Utilities::ShowMessagebox(std::wstring Message, std::wstring WindowName)
 	System::Windows::Forms::MessageBox::Show(Msg, Window);
 }
 
+void Utilities::ShowMessagebox(System::String^ Message, System::String^ WindowName)
+{
+	System::Windows::Forms::MessageBox::Show(Message, WindowName);
+}
+
 void Utilities::ShowMessageboxDebugonly(std::wstring Message, std::wstring WindowName)
 {
 	ShowMessagebox(Message, WindowName);

@@ -261,8 +261,8 @@ public:
 			break;
 
 		case 13: //None->File
-			CurrentOutput = OS_File;
-			CreateNewOutputFile();
+			if(CreateNewOutputFile()) CurrentOutput = OS_File;
+			else Utilities::ShowMessagebox("Output file could not be created.");
 			break;
 
 		case 21: //Stream->None
@@ -272,7 +272,8 @@ public:
 
 		case 23: //Stream->File
 			CurrentOutput = OS_Both;
-			CreateNewOutputFile();
+			if (CreateNewOutputFile()) CurrentOutput = OS_File;
+			else Utilities::ShowMessagebox("Output file could not be created.");
 			break;
 
 		case 32: //File->Stream
@@ -369,13 +370,23 @@ public:
 	//obs³uga plików wyjœciowych Libsndfile
 	void SetOutFilesWorkingFolder(std::wstring Folder) { OutFilesWorkingFolder = Folder; }
 	void SetOutFilesPrefix(std::wstring Prefix) { OutFilesPrefix = Prefix; }
-	void CreateNewOutputFile()
+	bool CreateNewOutputFile()
 	{
 		System::DateTime^ Now = System::DateTime::Now;
 		System::String^ FileFormat = L"wav";
-		System::String^ FileName = System::String::Format("{0} at {1}-{2}-{3}--{4}-{5}-{6}.{7}", Utilities::SystemStringFromWide(OutFilesPrefix), Now->Year, Now->Month, Now->Day, Now->Hour, Now->Minute, Now->Second, FileFormat);
+		System::String^ FileName =
+			Utilities::SystemStringFromWide(OutFilesPrefix) + " ("
+			+ Now->Year.ToString("0000") + "."
+			+ Now->Month.ToString("00")  + "."
+			+ Now->Day.ToString("00")    + " "
+			+ Now->Hour.ToString("00")   + "-"
+			+ Now->Minute.ToString("00") + "-"
+			+ Now->Second.ToString("00") + ")."
+			+ FileFormat;
+
 		std::wstring FullPath = OutFilesWorkingFolder + L"\\" + Utilities::WideFromSystemString(FileName);
 		CurrentOutFile = new OutSoundFile(FullPath, SFF_WAV);
+		return CurrentOutFile->IsFileValid();
 	}
 	bool AppendSamplesToOutputFile(float* Samples)
 	{

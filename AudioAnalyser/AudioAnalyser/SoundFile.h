@@ -50,12 +50,12 @@ protected:
 		this->BufferLength = BufferLength;
 		ConstructFileInfo();
 
-		if (!sf_format_check(&Metadata)) System::Windows::Forms::MessageBox::Show(L"Invalid encoding" + FormatInit.ToString());
+		if (!sf_format_check(&Metadata)) Utilities::ShowMessagebox(L"Invalid encoding" + FormatInit.ToString());
 	}
 
 	~SoundFile()
 	{
-		sf_close(Data);
+		if(OpenSuccess) sf_close(Data);
 	}
 
 	void ConstructFileInfo()
@@ -78,6 +78,7 @@ protected:
 public:
 	virtual void ProcessData(float* NewData, int& Samplecount) = 0;
 	const AudioFileInfo& GetFileInfo() { return FileInfo; }
+	bool IsFileValid() { return OpenSuccess; }
 };
 
 class InSoundFile : public SoundFile
