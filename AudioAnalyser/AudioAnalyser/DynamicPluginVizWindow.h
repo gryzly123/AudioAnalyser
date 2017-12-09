@@ -44,11 +44,21 @@ namespace AudioAnalyser
 
 	private: System::Windows::Forms::PictureBox^  PictureTarget;
 	private: System::Windows::Forms::Timer^  RefreshTimer;
+	private: System::Windows::Forms::ContextMenuStrip^  SettingsContext;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemToggleMuted;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefreshRateList;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh10;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh16;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh25;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh33;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh50;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh100;
+
 	private:
-	/// <summary>
-	/// Required designer variable.
-	/// </summary>
-	System::ComponentModel::IContainer^  components;
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
+		System::ComponentModel::IContainer^  components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -61,7 +71,17 @@ namespace AudioAnalyser
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(DynamicPluginVizWindow::typeid));
 			this->PictureTarget = (gcnew System::Windows::Forms::PictureBox());
 			this->RefreshTimer = (gcnew System::Windows::Forms::Timer(this->components));
+			this->SettingsContext = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->MenuItemToggleMuted = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefreshRateList = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefresh10 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefresh16 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefresh25 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefresh33 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefresh50 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemRefresh100 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureTarget))->BeginInit();
+			this->SettingsContext->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// PictureTarget
@@ -71,12 +91,81 @@ namespace AudioAnalyser
 			this->PictureTarget->Size = System::Drawing::Size(484, 461);
 			this->PictureTarget->TabIndex = 0;
 			this->PictureTarget->TabStop = false;
+			this->PictureTarget->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &DynamicPluginVizWindow::PictureTarget_Click);
 			// 
 			// RefreshTimer
 			// 
 			this->RefreshTimer->Enabled = true;
-			this->RefreshTimer->Interval = 15;
+			this->RefreshTimer->Interval = 16;
 			this->RefreshTimer->Tick += gcnew System::EventHandler(this, &DynamicPluginVizWindow::ImageTick);
+			// 
+			// SettingsContext
+			// 
+			this->SettingsContext->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->MenuItemToggleMuted,
+					this->MenuItemRefreshRateList
+			});
+			this->SettingsContext->Name = L"SettingsContext";
+			this->SettingsContext->Size = System::Drawing::Size(153, 48);
+			// 
+			// MenuItemToggleMuted
+			// 
+			this->MenuItemToggleMuted->Name = L"MenuItemToggleMuted";
+			this->MenuItemToggleMuted->Size = System::Drawing::Size(152, 22);
+			this->MenuItemToggleMuted->Text = L"Pause/Resume";
+			this->MenuItemToggleMuted->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::MenuItemToggleMuted_Click);
+			// 
+			// MenuItemRefreshRateList
+			// 
+			this->MenuItemRefreshRateList->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(6) {
+				this->MenuItemRefresh10,
+					this->MenuItemRefresh16, this->MenuItemRefresh25, this->MenuItemRefresh33, this->MenuItemRefresh50, this->MenuItemRefresh100
+			});
+			this->MenuItemRefreshRateList->Name = L"MenuItemRefreshRateList";
+			this->MenuItemRefreshRateList->Size = System::Drawing::Size(152, 22);
+			this->MenuItemRefreshRateList->Text = L"Refresh rate";
+			// 
+			// MenuItemRefresh10
+			// 
+			this->MenuItemRefresh10->Name = L"MenuItemRefresh10";
+			this->MenuItemRefresh10->Size = System::Drawing::Size(108, 22);
+			this->MenuItemRefresh10->Text = L"10ms";
+			this->MenuItemRefresh10->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
+			// 
+			// MenuItemRefresh16
+			// 
+			this->MenuItemRefresh16->Name = L"MenuItemRefresh16";
+			this->MenuItemRefresh16->Size = System::Drawing::Size(108, 22);
+			this->MenuItemRefresh16->Text = L"16ms";
+			this->MenuItemRefresh16->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
+			// 
+			// MenuItemRefresh25
+			// 
+			this->MenuItemRefresh25->Name = L"MenuItemRefresh25";
+			this->MenuItemRefresh25->Size = System::Drawing::Size(108, 22);
+			this->MenuItemRefresh25->Text = L"25ms";
+			this->MenuItemRefresh25->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
+			// 
+			// MenuItemRefresh33
+			// 
+			this->MenuItemRefresh33->Name = L"MenuItemRefresh33";
+			this->MenuItemRefresh33->Size = System::Drawing::Size(108, 22);
+			this->MenuItemRefresh33->Text = L"33ms";
+			this->MenuItemRefresh33->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
+			// 
+			// MenuItemRefresh50
+			// 
+			this->MenuItemRefresh50->Name = L"MenuItemRefresh50";
+			this->MenuItemRefresh50->Size = System::Drawing::Size(108, 22);
+			this->MenuItemRefresh50->Text = L"50ms";
+			this->MenuItemRefresh50->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
+			// 
+			// MenuItemRefresh100
+			// 
+			this->MenuItemRefresh100->Name = L"MenuItemRefresh100";
+			this->MenuItemRefresh100->Size = System::Drawing::Size(108, 22);
+			this->MenuItemRefresh100->Text = L"100ms";
+			this->MenuItemRefresh100->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
 			// 
 			// DynamicPluginVizWindow
 			// 
@@ -93,18 +182,26 @@ namespace AudioAnalyser
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_FormClosed);
 			this->Resize += gcnew System::EventHandler(this, &DynamicPluginVizWindow::DynamicPluginVizWindow_Resize);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureTarget))->EndInit();
+			this->SettingsContext->ResumeLayout(false);
 			this->ResumeLayout(false);
 
 		}
 #pragma endregion
 
+	public:
+		bool IsOpened = false;
+		Void SetIndex(Int32 NewIndex) { PluginIndex = NewIndex; }
+
+	private:
 		Int32 PluginIndex = -1;
 		bool IsFirstFrameDrawn = false;
 		Graphics^ Img;
+		Bitmap^ ImgPtr;
 
 		Void ReinitializePicture()
 		{
-			PictureTarget->Image = gcnew Bitmap(PictureTarget->Width, PictureTarget->Height);
+			ImgPtr = gcnew Bitmap(PictureTarget->Width, PictureTarget->Height);
+			PictureTarget->Image = ImgPtr;
 			PictureTarget->SizeMode = PictureBoxSizeMode::Normal;
 			Img = Graphics::FromImage(PictureTarget->Image);
 			Img->SmoothingMode = Drawing2D::SmoothingMode::None;
@@ -116,11 +213,10 @@ namespace AudioAnalyser
 		System::Void ImageTick(System::Object^  sender, System::EventArgs^  e)
 		{
 			if (PluginIndex < 0) return;
-			AudioProcessor::GetInstance()->AskPluginForRedraw(PluginIndex, Img, PictureTarget->Width, PictureTarget->Height, IsFirstFrameDrawn);
+			AudioProcessor::GetInstance()->AskPluginForRedraw(PluginIndex, Img, ImgPtr, PictureTarget->Width, PictureTarget->Height, IsFirstFrameDrawn);
 			PictureTarget->Refresh();
 			IsFirstFrameDrawn = true;
 		}
-
 		System::Void DynamicPluginVizWindow_Resize(System::Object^  sender, System::EventArgs^  e)
 		{
 			System::Drawing::Size NewPictureSize = this->Size;
@@ -133,9 +229,25 @@ namespace AudioAnalyser
 		{
 			OnWindowShutdown(PluginIndex);
 		}
-
-	public:
-		bool IsOpened = false;
-		Void SetIndex(Int32 NewIndex) { PluginIndex = NewIndex; }
-	};
+		System::Void PictureTarget_Click(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+		{
+			SettingsContext->Show();
+			SettingsContext->Location = MousePosition;
+		}
+		System::Void RequestChangeRefreshRate_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			ToolStripMenuItem^ Item = (cli::safe_cast<ToolStripMenuItem^>(sender));
+			if (Item == MenuItemRefresh10 ) { RefreshTimer->Interval = 10;  return; }
+			if (Item == MenuItemRefresh16 ) { RefreshTimer->Interval = 16;  return; }
+			if (Item == MenuItemRefresh25 ) { RefreshTimer->Interval = 25;  return; }
+			if (Item == MenuItemRefresh33 ) { RefreshTimer->Interval = 33;  return; }
+			if (Item == MenuItemRefresh50 ) { RefreshTimer->Interval = 50;  return; }
+			if (Item == MenuItemRefresh100) { RefreshTimer->Interval = 100; return; }
+		}
+		System::Void MenuItemToggleMuted_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			if(RefreshTimer->Enabled) RefreshTimer->Stop();
+			else RefreshTimer->Start();
+		}
+};
 }

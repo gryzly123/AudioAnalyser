@@ -25,7 +25,7 @@ public:
 
 	std::vector<DspPluginParameter*> GetParameters() { return ParameterRefsForUi; }
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) = 0;
-	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) { }
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) { }
 };
 
 class NullPlugin : public DspPlugin
@@ -276,7 +276,7 @@ public:
 		Data->Unlock();
 	}
 
-	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
 		const float Padding = ImgPadding.Val;
 		const float HelperLineCount = 10.0f;
@@ -329,12 +329,12 @@ public:
 class Spectrum : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Enum, L"Samples", 0.0f, 6.0f, 1.0f);
-	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
+	Param Channels = Param(PT_Enum, L"Channel", 2.0f, 3.0f, 1.0f);
 	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
 
-	gcroot<MonitoredArray<float>^> Data         ;
-	gcroot<Pen^>                   DataPencil   ;
-	gcroot<SolidBrush^>            DataBrush    ;
+	gcroot<MonitoredArray<float>^> Data;
+	gcroot<Pen^>                   DataPencil;
+	gcroot<SolidBrush^>            DataBrush;
 	gcroot<Pen^>                   HelperPencil1;
 	gcroot<Pen^>                   HelperPencil2;
 
@@ -361,11 +361,11 @@ public:
 		ParameterRefsForUi.push_back(&CurveDuration);
 		ParameterRefsForUi.push_back(&ImgPadding);
 
-		Data          = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
-		DataPencil    = gcroot<Pen^>                   (gcnew Pen(Color::Black, 1));
-		DataBrush     = gcroot<SolidBrush^>            (gcnew SolidBrush(Color::Black));
-		HelperPencil1 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
-		HelperPencil2 = gcroot<Pen^>                   (gcnew Pen(Color::Gray, 1));
+		Data = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
+		DataPencil = gcroot<Pen^>(gcnew Pen(Color::Black, 1));
+		DataBrush = gcroot<SolidBrush^>(gcnew SolidBrush(Color::Black));
+		HelperPencil1 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
+		HelperPencil2 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
 		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
 	}
 
@@ -391,7 +391,7 @@ public:
 		Data->Unlock();
 	}
 
-	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
 		const float Padding = ImgPadding.Val;
 		const float HelperLineCount = 10.0f;
@@ -399,7 +399,7 @@ public:
 		const float WorkAreaVertical = Height - (2 * Padding);
 		const int MaxPoints = Width;
 		const int Range = Height;
-		
+
 		Image->Clear(Color::White);
 		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
 		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
@@ -407,7 +407,7 @@ public:
 		for (int i = 0; i < HelperLineCount + 1; i++)
 		{
 			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i;
-			float VerticalY   = Padding + (WorkAreaVertical   / HelperLineCount) * (float)(i - 1);
+			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1);
 
 			Image->DrawLine(HelperPencil2,
 				HorizontalX,
@@ -437,19 +437,129 @@ public:
 		Utilities::Fft(FftResult, ArrSize);
 		Utilities::FftProcessResult(FftResult, ArrSize);
 
-		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2.0f * - Utilities::Clamp((Single)FftResult[0].real(), -1.0f, 1.0f));
+		const int ZeroH = Height - (int)Padding;
+		int LastVal = ZeroH - (WorkAreaVertical * FftResult[0].real());
 		for (int i = 1; i < ArrSize / 2; ++i)
 		{
 			int HorizontalVal = (int)(i + Padding);
-			float Vall = Utilities::Clamp((Single)FftResult[i].real(), -1.0f, 1.0f);
-			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2.0f * - Vall);
-			if(LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1; 
-			
+			int NewPt = ZeroH - (WorkAreaVertical * FftResult[i].real());
+			if (LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1;
+
 			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
 			else                  Image->DrawLine(DataPencil, HorizontalVal, LastVal, HorizontalVal, NewPt);
 
 			LastVal = NewPt;
 		}
+	}
+};
+class Spectrogram : public DspPlugin
+{
+	Param CurveDuration = Param(PT_Enum, L"Samples", 0.0f, 6.0f, 1.0f);
+	Param Channels = Param(PT_Enum, L"Channel", 2.0f, 3.0f, 1.0f);
+	Param ContrastBump = Param(PT_Float, L"Contrast Amp", 0.0f, 1.99f, 0.0f);
+	Param ContrastBumpIsLinear = Param(PT_Boolean, L"Non-linear contrast", 0.0f, 1.0f, 0.0f);
+
+	gcroot<MonitoredArray<float>^> Data;
+
+public:
+	Spectrogram() : DspPlugin(L"Spectrogram", HAS_VIZ)
+	{
+		std::wstring* SampleCounts = new std::wstring[6];
+		SampleCounts[0] = L"128";
+		SampleCounts[1] = L"256";
+		SampleCounts[2] = L"512";
+		SampleCounts[3] = L"1024";
+		SampleCounts[4] = L"2048";
+		SampleCounts[5] = L"4096";
+		CurveDuration.EnumNames = SampleCounts;
+
+		std::wstring* ChannelNames = new std::wstring[3];
+		ChannelNames[0] = L"Left";
+		ChannelNames[1] = L"Right";
+		ChannelNames[2] = L"Mixdown";
+		Channels.EnumNames = ChannelNames;
+
+		ContrastBump.FloatValueStep = 0.01f;
+
+		ParameterRefsForUi.push_back(&Channels);
+		ParameterRefsForUi.push_back(&CurveDuration);
+		ParameterRefsForUi.push_back(&ContrastBump);
+		ParameterRefsForUi.push_back(&ContrastBumpIsLinear);
+
+		Data = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
+	}
+
+	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
+	{
+		int CurvePointsSize = std::pow(2, 7 + CurveDuration.Val);
+
+		Data->Lock();
+		switch ((int)Channels.Val)
+		{
+		case 0:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferL[i]);
+			break;
+		case 1:
+			for (int i = 0; i < Length; ++i) Data->PushLast(BufferR[i]);
+			break;
+		case 2:
+			for (int i = 0; i < Length; ++i) Data->PushLast((BufferL[i] + BufferR[i]) / 2.0f);
+			break;
+		}
+		int ExcessData = Data->Size() - CurvePointsSize;
+		while (--ExcessData > 0) Data->PopFirst();
+		Data->Unlock();
+	}
+
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
+	{
+		int ArrSize = std::pow(2, 7 + CurveDuration.Val);
+		ComplexF* FftResult = new ComplexF[ArrSize];
+		//ComplexF* FftResultResized = new ComplexF[ArrSize];
+
+		Data->Lock();
+		if (Data->Size() < ArrSize)
+		{
+			Data->Unlock();
+			delete FftResult;
+			return;
+		}
+
+		for (int i = 0; i < ArrSize; ++i) FftResult[i] = ComplexF(Data->operator[](i), 0.0f);
+		Data->Unlock();
+
+		Utilities::Fft(FftResult, ArrSize);
+		Utilities::FftProcessResult(FftResult, ArrSize);
+		
+		int HalfSize = ArrSize / 2;
+		Bitmap^ FftLineBitmap = gcnew System::Drawing::Bitmap(1, HalfSize);
+
+		if (ContrastBumpIsLinear.Val == 0.0f)
+		{
+			float Buff = ContrastBump.Val + 1.0f;
+			for (int i = 0; i < HalfSize; ++i)
+			{
+				int Val = (FftResult[i].real() * 255) * Buff;
+				Val = Utilities::Clamp(Val, 0, 255);
+				FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
+			}
+		}
+		else
+		{
+			float Buff = 2.0f - ContrastBump.Val;
+			for (int i = 0; i < HalfSize; ++i)
+			{
+				int Val = sqrt(pow(FftResult[i].real(), Buff));
+				Val = Utilities::Clamp(Val, 0, 255);
+				FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
+			}
+		}
+
+		
+		//Image->Clear(Color::Black);
+		Image->DrawImage(ImagePtr, 1, 0, Width, Height);
+		Image->DrawImage(FftLineBitmap, 0, 0, 1, Height);
+		delete[] FftResult;
 	}
 };
 class SignalParameters : public DspPlugin
@@ -548,7 +658,7 @@ public:
 		DeviationR /= (float)Size;
 	}
 
-	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame) override
+	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
 		const float Padding = 20.0f;
 		const float HelperLineCount = 11.0f;

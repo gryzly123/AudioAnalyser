@@ -29,7 +29,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 
 	if (NewPluginName == (L"Oscilloscope")) return new Oscilloscope();
 	if (NewPluginName == (L"Spectrum")) return new Spectrum();
-	//if (NewPluginName == (L"Spectrogram")) return new ();
+	if (NewPluginName == (L"Spectrogram")) return new Spectrogram();
 	if (NewPluginName == (L"Signal Parameters")) return new SignalParameters();
 	
 	if (NewPluginName == (L"Gain")) return new LinearAmplifier();
@@ -53,7 +53,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"Reverser (Simple)")) return new ReverserSimple();
 	if (NewPluginName == (L"Reverser")) return new Reverser();
 
-	Utilities::ShowMessageboxDebugonly(L"No plugins found. Using null");
+	Utilities::ShowMessagebox(NewPluginName + L" was not found. Using null");
 	return new NullPlugin();
 }
 
@@ -102,9 +102,9 @@ std::vector<DspPluginParameter*> AudioProcessor::GetPluginParameters(int AtIndex
 
 #pragma managed pop
 #pragma managed(push, on)
-void AudioProcessor::AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, int Width, int Height, bool FirstFrame)
+void AudioProcessor::AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImgPtr, int Width, int Height, bool FirstFrame)
 {
-	Plugins[AtIndex]->UpdatePictureBox(Image, Width, Height, FirstFrame);
+	Plugins[AtIndex]->UpdatePictureBox(Image, ImgPtr, Width, Height, FirstFrame);
 }
 #pragma managed pop
 #pragma managed(push, off)
@@ -219,7 +219,7 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 	int PluginCount = Plugins.size();
 	for (int i = 0; i < PluginCount; i++)
 	{
-		if (Plugins[i]->Bypass) continue;
+		if (Plugins[i]->Bypass && !Plugins[i]->HasVisualization) continue;
 
 		for (int i = 0; i < framesPerBuffer; ++i)
 		{
