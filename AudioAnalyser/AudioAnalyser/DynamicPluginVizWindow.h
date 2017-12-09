@@ -208,7 +208,13 @@ namespace AudioAnalyser
 
 	public:
 		bool IsOpened = false;
-		Void SetIndex(Int32 NewIndex) { PluginIndex = NewIndex; }
+		Void SetIndex(Int32 NewIndex)
+		{
+			PluginIndex = NewIndex;
+			UpdateTitle();
+			Img->Clear(Color::White);
+			PictureTarget->Refresh();
+		}
 
 	private:
 		Int32 PluginIndex = -1;
@@ -226,6 +232,15 @@ namespace AudioAnalyser
 			Img->Clear(Color::White);
 			PictureTarget->Refresh();
 			IsFirstFrameDrawn = false;
+		}
+
+		System::Void UpdateTitle()
+		{
+			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
+			WindowName += L" at Slot #";
+			WindowName += (PluginIndex + 1).ToString();
+			this->Name = WindowName;
+			this->Text = WindowName;
 		}
 
 		System::Void ImageTick(System::Object^  sender, System::EventArgs^  e)

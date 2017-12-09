@@ -86,10 +86,13 @@ namespace AudioAnalyser
 		Int32 PluginIndex = -1;
 
 	public:
-		System::Void PopulateWithParameters(std::vector<DspPluginParameter*> Parameters, System::Int32 PluginIndex)
+		System::Void PopulateWithParameters(System::Int32 PluginIndex)
 		{
 			this->SuspendLayout();
+			ClearOldItems();
+
 			this->PluginIndex = PluginIndex;
+			std::vector<DspPluginParameter*> Parameters = AudioProcessor::GetInstance()->GetPluginParameters(PluginIndex);
 			System::Int32 ParametersCount = Parameters.size();
 
 			++ParametersCount;
@@ -98,12 +101,7 @@ namespace AudioAnalyser
 			this->MaximumSize = System::Drawing::Size(900, (ParametersCount * 40) + 6);
 			--ParametersCount;
 
-			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
-			WindowName += L" at Slot #";
-			WindowName += (PluginIndex + 1).ToString();
-
-			this->Name = WindowName;
-			this->Text = WindowName;
+			UpdateTitle();
 
 			for (int i = 0; i < ParametersCount; ++i)
 			{
@@ -121,6 +119,15 @@ namespace AudioAnalyser
 
 			ForceResizeDynamicControls();
 			this->ResumeLayout(false);
+		}
+
+		System::Void UpdateTitle()
+		{
+			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
+			WindowName += L" at Slot #";
+			WindowName += (PluginIndex + 1).ToString();
+			this->Name = WindowName;
+			this->Text = WindowName;
 		}
 
 		System::Void DynamicControlObject_UpdateParameter(System::Int32 AtIndex, System::Single NewValue)
@@ -149,6 +156,18 @@ namespace AudioAnalyser
 				System::Drawing::Size NewSize = System::Drawing::Size(ClientSize.Width - 20, Obj->Size.Height);
 				Obj->Size = NewSize;
 				Obj->UpdateScale(NewSize);
+			}
+		}
+
+		System::Void ClearOldItems()
+		{
+			int ControlCount = this->Controls->Count;
+			for (int i = 0; i < ControlCount; ++i)
+			{
+				if (Controls[i]->GetType() != RackControls::DynamicControlObject::typeid) continue;
+				Controls->RemoveAt(i);
+				--i;
+				--ControlCount;
 			}
 		}
 	};
