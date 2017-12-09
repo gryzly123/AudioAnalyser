@@ -17,6 +17,8 @@ protected:
 		: PluginName(PluginName),
 		HasVisualization(HasVisualization) { }
 
+	static PrecomputedSin* PcSin;
+
 public:
 	const std::wstring PluginName;
 	bool Bypass = false;
@@ -68,7 +70,7 @@ public:
 		{
 			SineStatus += SineInc;
 			if (SineStatus > 1) SineStatus -= 1;
-			float Value = SineAmp.Val * sin(SineStatus * 2 * M_PI);
+			float Value = SineAmp.Val * PcSin->Get(SineStatus * 2 * M_PI);
 			BufferL[i] = Value;
 			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * Value : Value;
 		}
@@ -115,7 +117,7 @@ public:
 				TempValue = 0.0f;
 				for (int k = 1; k <= EquationN.Val; ++k)
 				{
-					float T = sin(2.0f * M_PI * (float)k * TimeStatus) / (float)k;
+					float T = PcSin->Get(2.0f * M_PI * (float)k * TimeStatus) / (float)k;
 					if (k % 2 != 0) T *= -1.0f;
 					TempValue += T;
 				}
@@ -171,7 +173,7 @@ public:
 				for (int x = 1; x <= DoubleN; x += 2)
 				{
 					// x = (2k - 1)
-					TempValue += sin(2.0f * M_PI * (float)x * TimeStatus) / (float)x;
+					TempValue += PcSin->Get(2.0f * M_PI * (float)x * TimeStatus) / (float)x;
 				}
 				TempValue = (TempValue * 4.0f * Amp.Val / M_PI);
 			}
@@ -1094,7 +1096,7 @@ public:
 			int Condition = i - FilterHalfLength;
 
 			if (Condition == 0) Response[i] = 2.0f * M_PI * FrequencyCutoff;
-			else Response[i] = sin(2.0f * M_PI * FrequencyCutoff * (float)Condition) / (float)Condition;
+			else Response[i] = PcSin->Get(2.0f * M_PI * FrequencyCutoff * (float)Condition) / (float)Condition;
 			Response[i] *= 0.54f - (0.46f * cos(2.0f * M_PI * (float)i / (float)FilterLength));
 			ResponseSum += Response[i];
 		}

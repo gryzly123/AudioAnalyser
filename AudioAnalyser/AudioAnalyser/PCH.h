@@ -16,6 +16,7 @@
 
 //AudioAnalyser
 #include "Utilities.h"
+#include "LookupTables.h"
 
 //PortAudio
 #include "portaudio.h"

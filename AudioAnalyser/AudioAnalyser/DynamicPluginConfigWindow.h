@@ -92,9 +92,11 @@ namespace AudioAnalyser
 			this->PluginIndex = PluginIndex;
 			System::Int32 ParametersCount = Parameters.size();
 
+			++ParametersCount;
 			this->ClientSize = System::Drawing::Size(365, (ParametersCount * 40) + 6);
 			this->MinimumSize = System::Drawing::Size(365, (ParametersCount * 40) + 6);
 			this->MaximumSize = System::Drawing::Size(900, (ParametersCount * 40) + 6);
+			--ParametersCount;
 
 			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
 			WindowName += L" at Slot #";

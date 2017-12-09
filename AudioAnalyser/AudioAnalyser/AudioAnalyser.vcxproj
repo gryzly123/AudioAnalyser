@@ -154,10 +154,12 @@
     <ClCompile Include="AudioProcessor.cpp" />
     <ClCompile Include="ComplexNumbers.cpp" />
     <ClCompile Include="ConfigWindow.cpp" />
+    <ClCompile Include="DspPlugin.cpp" />
     <ClCompile Include="DynamicPluginConfigWindow.cpp" />
     <ClCompile Include="DynamicPluginVizWindow.cpp" />
     <ClCompile Include="FileDetailsWindow.cpp" />
     <ClCompile Include="IoManager.cpp" />
+    <ClCompile Include="LookupTables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PCH.cpp" />
     <ClCompile Include="Utilities.cpp" />
@@ -184,6 +186,7 @@
     </ClInclude>
     <ClInclude Include="FileSerializer.h" />
     <ClInclude Include="IoManager.h" />
+    <ClInclude Include="LookupTables.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
