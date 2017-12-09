@@ -42,6 +42,7 @@ namespace AudioAnalyser
 			}
 
 			SetProcessButtonsEnabled();
+			UpdateWorkingFolderPath(System::Environment::GetFolderPath(System::Environment::SpecialFolder::Desktop));
 
 			//XmlTextReader^ FileReader = gcnew XmlTextReader(L"C:\\Program Filesl\\bepis.aap");
 			//FileSerializer::DeserializeRack(FileReader);
@@ -617,14 +618,14 @@ namespace AudioAnalyser
 			// OpenDialogRack
 			// 
 			this->OpenDialogRack->DefaultExt = L"aap";
-			this->OpenDialogRack->FileName = L"openFileDialog1";
 			this->OpenDialogRack->Filter = L"Audio Analyser Project|*.aap";
 			this->OpenDialogRack->Title = L"Open rack configuration";
 			this->OpenDialogRack->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogRack_FileOk);
 			// 
 			// OpenDialogFile
 			// 
-			this->OpenDialogFile->FileName = L"openFileDialog1";
+			this->OpenDialogFile->DefaultExt = L"wav";
+			this->OpenDialogFile->Filter = L"WAVE file|*.wav";
 			this->OpenDialogFile->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MainWindow::OpenDialogFile_FileOk);
 			// 
 			// SaveDialogRack
@@ -718,15 +719,17 @@ namespace AudioAnalyser
 		Void ButtonOutputFileBrowse_Click(Object^  sender, EventArgs^  e)
 		{
 			System::Windows::Forms::DialogResult Result = SaveDialogFile->ShowDialog();
-			if (Result == System::Windows::Forms::DialogResult::OK)
-			{
-				IoManager::GetInstance()->SetOutFilesWorkingFolder(
-					Utilities::WideFromSystemString(SaveDialogFile->SelectedPath));
-
-				TextboxOutputFilePath->Text = SaveDialogFile->SelectedPath;
-			}
-
+			if (Result == System::Windows::Forms::DialogResult::OK) UpdateWorkingFolderPath(SaveDialogFile->SelectedPath);
 		}
+
+		Void UpdateWorkingFolderPath(String^ WorkingPath)
+		{
+			IoManager::GetInstance()->SetOutFilesWorkingFolder(
+				Utilities::WideFromSystemString(WorkingPath));
+
+			TextboxOutputFilePath->Text = WorkingPath;
+		}
+
 		Void ButtonInputFileAbout_Click(Object^  sender, EventArgs^  e)
 		{
 			FileDetailsWindow^ Window = gcnew FileDetailsWindow();
