@@ -125,12 +125,13 @@ void Utilities::FftRegroup(ComplexF* In, int Length)
 	delete[] Helper;
 }
 
+//Zmiana danych z FFT na wartoœæ sygna³u dla czêstotliwoœci (Re) i czêstotliwosæ (Im)
 void Utilities::FftProcessResult(ComplexF* In, int Length)
 {
 	int HalfLen = Length / 2;
 	for (int i = 0; i < HalfLen; ++i)
 		In[i] = ComplexF(
-			std::sqrt((In[i].real() * In[i].real()) + (In[i].imag() * In[i].imag())), //Re: wartoœæ
-			(float)i *  AUDIO_SAMPLERATE / (float)Length);                            //Im: czêstotliwoœæ
+			std::sqrt((In[i].real() * In[i].real()) + (In[i].imag() * In[i].imag())) / (float)HalfLen,
+			(float)i *  AUDIO_SAMPLERATE / (float)Length);
 }
 #pragma managed pop
