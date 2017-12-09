@@ -196,6 +196,8 @@ namespace AudioAnalyser
 				 this->Icons32->Images->SetKeyName(8, L"Icons-17.png");
 				 this->Icons32->Images->SetKeyName(9, L"Config.png");
 				 this->Icons32->Images->SetKeyName(10, L"About.png");
+				 this->Icons32->Images->SetKeyName(11, L"ProcessorOff.png");
+				 this->Icons32->Images->SetKeyName(12, L"ProcessorOn.png");
 				 // 
 				 // ButtonInputStreamStart
 				 // 
@@ -487,7 +489,7 @@ namespace AudioAnalyser
 				 this->ButtonStartProcessing->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
 				 this->ButtonStartProcessing->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular,
 					 System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(238)));
-				 this->ButtonStartProcessing->ImageIndex = 9;
+				 this->ButtonStartProcessing->ImageIndex = 11;
 				 this->ButtonStartProcessing->ImageList = this->Icons32;
 				 this->ButtonStartProcessing->Location = System::Drawing::Point(150, 12);
 				 this->ButtonStartProcessing->Name = L"ButtonStartProcessing";
@@ -814,6 +816,10 @@ namespace AudioAnalyser
 			ButtonStartProcessing->BackColor =
 				(IoManager::GetInstance()->IsProcessing())
 				? LightGreen : SystemColors::Control;
+
+			ButtonStartProcessing->ImageIndex =
+				(IoManager::GetInstance()->IsProcessing())
+				? 12 : 11;
 		}
 
 

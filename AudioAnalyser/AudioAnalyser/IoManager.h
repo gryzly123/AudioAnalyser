@@ -383,9 +383,9 @@ public:
 		System::String^ FileFormat = L"wav";
 		System::String^ FileName =
 			Utilities::SystemStringFromWide(OutFilesPrefix) + " ("
-			+ Now->Year.ToString("0000") + "."
+			+ Now->Day.ToString("00")    + "."
 			+ Now->Month.ToString("00")  + "."
-			+ Now->Day.ToString("00")    + " "
+			+ Now->Year.ToString("0000") + "  "
 			+ Now->Hour.ToString("00")   + "-"
 			+ Now->Minute.ToString("00") + "-"
 			+ Now->Second.ToString("00") + ")."
