@@ -53,6 +53,8 @@ namespace AudioAnalyser
 	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh33;
 	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh50;
 	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemRefresh100;
+	private: System::Windows::Forms::ToolStripMenuItem^  MenuItemSaveImage;
+	private: System::Windows::Forms::SaveFileDialog^  SaveImageDialog;
 
 	private:
 		/// <summary>
@@ -80,6 +82,8 @@ namespace AudioAnalyser
 			this->MenuItemRefresh33 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->MenuItemRefresh50 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->MenuItemRefresh100 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->MenuItemSaveImage = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->SaveImageDialog = (gcnew System::Windows::Forms::SaveFileDialog());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureTarget))->BeginInit();
 			this->SettingsContext->SuspendLayout();
 			this->SuspendLayout();
@@ -91,7 +95,7 @@ namespace AudioAnalyser
 			this->PictureTarget->Size = System::Drawing::Size(484, 461);
 			this->PictureTarget->TabIndex = 0;
 			this->PictureTarget->TabStop = false;
-			this->PictureTarget->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &DynamicPluginVizWindow::PictureTarget_Click);
+			this->PictureTarget->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &DynamicPluginVizWindow::PictureTarget_Click);
 			// 
 			// RefreshTimer
 			// 
@@ -101,12 +105,12 @@ namespace AudioAnalyser
 			// 
 			// SettingsContext
 			// 
-			this->SettingsContext->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+			this->SettingsContext->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
 				this->MenuItemToggleMuted,
-					this->MenuItemRefreshRateList
+					this->MenuItemRefreshRateList, this->MenuItemSaveImage
 			});
 			this->SettingsContext->Name = L"SettingsContext";
-			this->SettingsContext->Size = System::Drawing::Size(153, 48);
+			this->SettingsContext->Size = System::Drawing::Size(153, 70);
 			// 
 			// MenuItemToggleMuted
 			// 
@@ -166,6 +170,20 @@ namespace AudioAnalyser
 			this->MenuItemRefresh100->Size = System::Drawing::Size(108, 22);
 			this->MenuItemRefresh100->Text = L"100ms";
 			this->MenuItemRefresh100->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::RequestChangeRefreshRate_Click);
+			// 
+			// MenuItemSaveImage
+			// 
+			this->MenuItemSaveImage->Name = L"MenuItemSaveImage";
+			this->MenuItemSaveImage->Size = System::Drawing::Size(152, 22);
+			this->MenuItemSaveImage->Text = L"Save as BMP";
+			this->MenuItemSaveImage->Click += gcnew System::EventHandler(this, &DynamicPluginVizWindow::MenuItemSaveImage_Click);
+			// 
+			// SaveImageDialog
+			// 
+			this->SaveImageDialog->DefaultExt = L"bmp";
+			this->SaveImageDialog->FileName = L"SavedImage.bmp";
+			this->SaveImageDialog->Filter = L"Bitmap (*.bmp)|*.bmp";
+			this->SaveImageDialog->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &DynamicPluginVizWindow::SaveImageDialog_FileOk);
 			// 
 			// DynamicPluginVizWindow
 			// 
@@ -231,23 +249,40 @@ namespace AudioAnalyser
 		}
 		System::Void PictureTarget_Click(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
 		{
+			if (e->Button != System::Windows::Forms::MouseButtons::Right) return;
 			SettingsContext->Show();
 			SettingsContext->Location = MousePosition;
 		}
 		System::Void RequestChangeRefreshRate_Click(System::Object^  sender, System::EventArgs^  e)
 		{
 			ToolStripMenuItem^ Item = (cli::safe_cast<ToolStripMenuItem^>(sender));
-			if (Item == MenuItemRefresh10 ) { RefreshTimer->Interval = 10;  return; }
-			if (Item == MenuItemRefresh16 ) { RefreshTimer->Interval = 16;  return; }
-			if (Item == MenuItemRefresh25 ) { RefreshTimer->Interval = 25;  return; }
-			if (Item == MenuItemRefresh33 ) { RefreshTimer->Interval = 33;  return; }
-			if (Item == MenuItemRefresh50 ) { RefreshTimer->Interval = 50;  return; }
+			if (Item == MenuItemRefresh10) { RefreshTimer->Interval = 10;  return; }
+			if (Item == MenuItemRefresh16) { RefreshTimer->Interval = 15;  return; }
+			if (Item == MenuItemRefresh25) { RefreshTimer->Interval = 25;  return; }
+			if (Item == MenuItemRefresh33) { RefreshTimer->Interval = 32;  return; }
+			if (Item == MenuItemRefresh50) { RefreshTimer->Interval = 50;  return; }
 			if (Item == MenuItemRefresh100) { RefreshTimer->Interval = 100; return; }
 		}
 		System::Void MenuItemToggleMuted_Click(System::Object^  sender, System::EventArgs^  e)
 		{
-			if(RefreshTimer->Enabled) RefreshTimer->Stop();
+			if (RefreshTimer->Enabled) RefreshTimer->Stop();
 			else RefreshTimer->Start();
 		}
-};
+		System::Void MenuItemSaveImage_Click(System::Object^  sender, System::EventArgs^  e)
+		{
+			SaveImageDialog->ShowDialog();
+		}
+		System::Void SaveImageDialog_FileOk(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e)
+		{
+			try
+			{
+				PictureTarget->Image->Save(SaveImageDialog->FileName, Imaging::ImageFormat::Bmp);
+
+			}
+			catch (Exception^ e)
+			{
+				Utilities::ShowMessagebox("Could not save file. Error: " + e->ToString());
+			}
+		}
+	};
 }
