@@ -169,7 +169,7 @@ public:
 			if (UseEquation.Val > 0.0f)
 			{
 				TempValue = 0.0f;
-				int DoubleN = EquationN.Val * 2;
+				int DoubleN = (int)(EquationN.Val * 2.0f);
 				for (int x = 1; x <= DoubleN; x += 2)
 				{
 					// x = (2k - 1)
@@ -209,7 +209,7 @@ public:
 	{
 		for (int i = 0; i < Length; ++i)
 		{
-			for (int x = 0; x < EquationN.Val; ++x) TempValue += RNG->NextDouble();
+			for (int x = 0; x < EquationN.Val; ++x) TempValue += (Single)RNG->NextDouble();
 			TempValue /= EquationN.Val;
 			TempValue -= 0.5f;
 			TempValue *= Amp.Val;
@@ -258,7 +258,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+		int CurvePointsSize = (int)((float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f);
 
 		Data->Lock();
 		switch ((int)Channels.Val)
@@ -310,15 +310,14 @@ public:
 		}
 
 		Data->Lock();
-		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, WorkAreaHorizontal);
+		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, (int)WorkAreaHorizontal);
 		Data->Unlock();
 
-		int LastVal = Range / 2 + ((Single)WorkAreaVertical / 2.0f * -Utilities::Clamp((Single)Interp->operator[](0), -1.0f, 1.0f));
+		int LastVal = (Range / 2) - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](0));
 		for (int i = 1; i < WorkAreaHorizontal; ++i)
 		{
 			int HorizontalVal = (int)(i + Padding);
-			float Vall = Utilities::Clamp((Single)Interp->operator[](i), -1.0f, 1.0f);
-			int NewPt = Range / 2 + ((Single)WorkAreaVertical / 2.0f * -Vall);
+			int NewPt = (Range / 2) - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](i));
 			if (LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1;
 
 			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
@@ -373,7 +372,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = std::pow(2, 7 + CurveDuration.Val);
+		int CurvePointsSize = (int)std::pow(2, 7 + CurveDuration.Val);
 
 		Data->Lock();
 		switch ((int)Channels.Val)
@@ -425,7 +424,7 @@ public:
 		}
 
 		Data->Lock();
-		int ArrSize = std::pow(2, 7 + CurveDuration.Val);
+		int ArrSize = (int)std::pow(2, 7 + CurveDuration.Val);
 		if (Data->Size() < ArrSize)
 		{
 			Data->Unlock();
@@ -440,11 +439,11 @@ public:
 		Utilities::FftProcessResult(FftResult, ArrSize);
 
 		const int ZeroH = Height - (int)Padding;
-		int LastVal = ZeroH - (WorkAreaVertical * FftResult[0].real());
+		int LastVal = ZeroH - (int)(WorkAreaVertical * FftResult[0].real());
 		for (int i = 1; i < ArrSize / 2; ++i)
 		{
 			int HorizontalVal = (int)(i + Padding);
-			int NewPt = ZeroH - (WorkAreaVertical * FftResult[i].real());
+			int NewPt = ZeroH - (int)(WorkAreaVertical * FftResult[i].real());
 			if (LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1;
 
 			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
@@ -493,7 +492,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = std::pow(2, 7 + CurveDuration.Val);
+		int CurvePointsSize = (int)std::pow(2, 7 + CurveDuration.Val);
 
 		Data->Lock();
 		switch ((int)Channels.Val)
@@ -515,9 +514,8 @@ public:
 
 	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
-		int ArrSize = std::pow(2, 7 + CurveDuration.Val);
+		int ArrSize = (int)std::pow(2, 7 + CurveDuration.Val);
 		ComplexF* FftResult = new ComplexF[ArrSize];
-		//ComplexF* FftResultResized = new ComplexF[ArrSize];
 
 		Data->Lock();
 		if (Data->Size() < ArrSize)
@@ -541,7 +539,7 @@ public:
 			float Buff = ContrastBump.Val + 1.0f;
 			for (int i = 0; i < HalfSize; ++i)
 			{
-				int Val = (FftResult[i].real() * 255) * Buff;
+				int Val = (int)((FftResult[i].real() * 255) * Buff);
 				Val = Utilities::Clamp(Val, 0, 255);
 				FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
 			}
@@ -551,14 +549,12 @@ public:
 			float Buff = 2.0f - ContrastBump.Val;
 			for (int i = 0; i < HalfSize; ++i)
 			{
-				int Val = sqrt(pow(FftResult[i].real(), Buff));
+				int Val = (int)sqrt(pow(FftResult[i].real(), Buff));
 				Val = Utilities::Clamp(Val, 0, 255);
 				FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
 			}
 		}
 
-		
-		//Image->Clear(Color::Black);
 		Image->DrawImage(ImagePtr, 1, 0, Width, Height);
 		Image->DrawImage(FftLineBitmap, 0, 0, 1, Height);
 		delete[] FftResult;
@@ -614,7 +610,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = (float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f;
+		int CurvePointsSize = (int)((float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f);
 
 		for (int i = 0; i < Length; ++i)
 		{
@@ -705,8 +701,7 @@ public:
 		Image->DrawString(AvgR		.ToString("N3"), Text, TextColor, VertSeparator * 2 + 20, SecondRowHeight, Format);
 		Image->DrawString(DeviationR.ToString("N3"), Text, TextColor, VertSeparator * 3 + 20, SecondRowHeight, Format);
 
-		int TempH;
-		TempH = PeakL * WorkAreaVertical;
+		int TempH = (int)(PeakL * WorkAreaVertical);
 		Image->FillRectangle(SignalValue, (int)VertSeparator, (int)VerticalY - TempH, 10, TempH);
 
 	}
@@ -809,7 +804,7 @@ class Bitcrusher : public DspPlugin
 #define MAX_SAMPLE_VALUE_HALVED 32768 //po³owa maksymalnej iloœci próbek w sygnale szesnastobitowym
 	inline void ProcessSample(float& Sample, int Mod)
 	{
-		int S = (Sample + 1.0f) * (float)MAX_SAMPLE_VALUE_HALVED; 
+		int S = (int)((Sample + 1.0f) * (float)MAX_SAMPLE_VALUE_HALVED); 
 		S += Mod / 2;
 		S /= Mod;
 		S *= Mod;
@@ -827,7 +822,7 @@ public:
 #define BIT_DEPTH 16
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int Mod = std::pow(2, BIT_DEPTH - Resolution.Val);
+		int Mod = (int)std::pow(2, BIT_DEPTH - Resolution.Val);
 		for (int i = 0; i < Length; i++)
 		{
 			ProcessSample(BufferL[i], Mod);
@@ -878,7 +873,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int TempPointCount = DecimatorPower.Val;
+		int TempPointCount = (int)DecimatorPower.Val;
 		if (CurrentAllocatedPointsize != TempPointCount) ReallocateMemory(TempPointCount);
 
 		for (int i = 0; i < Length; i++)
@@ -1111,7 +1106,7 @@ public:
 			}
 		}
 
-		float PostAmpValue = pow(2, (int)PostAmp.Val - 4);
+		float PostAmpValue = powf(2.0f, PostAmp.Val - 4.0f);
 
 		for (int i = 0; i < Length; ++i)
 		{
@@ -1161,7 +1156,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int TempMuxPointCount = MuxPointCount.Val;
+		int TempMuxPointCount = (int)MuxPointCount.Val;
 
 		if (CurrentAllocatedPointsize != TempMuxPointCount) ReallocateMemory(TempMuxPointCount);
 
@@ -1219,7 +1214,7 @@ public:
 	
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int ModuloVal = Length / std::pow(2, Modulo.Val);
+		int ModuloVal = (int)((float)Length / std::powf(2.0f, Modulo.Val));
 
 		for (int i = 0; i < Length; i++)
 		{
@@ -1252,7 +1247,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int PointsSize = (float)AUDIO_SAMPLERATE * (float)SampleLength.Val / 1000.0f;
+		int PointsSize = (int)((float)AUDIO_SAMPLERATE * (float)SampleLength.Val / 1000.0f);
 		int ArrSize = DataL->Size();
 		for (int i = 0; i < Length; ++i)
 		{
@@ -1349,7 +1344,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int PointsSize = (float)AUDIO_SAMPLERATE * (float)SampleLength.Val / 1000.0f;
+		int PointsSize = (int)((float)AUDIO_SAMPLERATE * (float)SampleLength.Val / 1000.0f);
 		if (OldPointsize != PointsSize)
 		{
 			DataL1->Empty();

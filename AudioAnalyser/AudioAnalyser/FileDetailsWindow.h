@@ -215,7 +215,7 @@ namespace AudioAnalyser
 				DynamicLabelSamplerate->Text = Data.SampleRate.ToString() + " samples per second";
 				DynamicLabelFilesize->Text = (gcnew System::IO::FileInfo(DynamicLabelFilename->Text))->Length.ToString() + " bytes";
 
-				System::TimeSpan FileLength = System::TimeSpan(0, 0, 0, 0, 1000.f * (float)Data.Length / (float)Data.SampleRate);
+				System::TimeSpan FileLength = System::TimeSpan(0, 0, 0, 0, (int)(1000.f * (float)Data.Length / (float)Data.SampleRate));
 				DynamicLabelLength->Text = Data.Length.ToString() + " samples (" + FileLength.ToString("g") + ")";
 			}
 			else

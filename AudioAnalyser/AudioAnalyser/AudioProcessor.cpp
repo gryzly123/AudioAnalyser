@@ -168,7 +168,7 @@ void AudioProcessor::SetPluginSolo(int AtIndex)
 
 void AudioProcessor::GetPluginWindowCapabilities(int AtIndex, bool& HasConfig, bool& HasVis)
 {
-	HasConfig = Plugins[AtIndex]->GetParameters().size();
+	HasConfig = Plugins[AtIndex]->GetParameters().size() > 0;
 	HasVis = Plugins[AtIndex]->HasVisualization;
 }
 
@@ -185,10 +185,12 @@ void AudioProcessor::ResetPlugins()
 int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
 	IsBusy = true;
-	int Samplecount = 2 * framesPerBuffer;
+	
+	const int Samplecount = 2 * framesPerBuffer;
+	const int FramesPerBuffer = (int)framesPerBuffer;
+	
+	InputSource IS; OutputSource OS;
 	IoManager* IM = IoManager::GetInstance();
-	InputSource IS;
-	OutputSource OS;
 	IM->GetCurrentSources(IS, OS);
 
 	float* InputLPre = new float[framesPerBuffer];
@@ -210,7 +212,7 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 	}
 
 	float* Seek = (float*)inputBuffer;
-	for (int i = 0; i < framesPerBuffer; ++i)
+	for (int  i = 0; i < FramesPerBuffer; ++i)
 	{
 		InputLPre[i] = *(Seek++);
 		InputRPre[i] = *(Seek++);
@@ -221,7 +223,7 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 	{
 		if (Plugins[i]->Bypass && !Plugins[i]->HasVisualization) continue;
 
-		for (int i = 0; i < framesPerBuffer; ++i)
+		for (int i = 0; i < FramesPerBuffer; ++i)
 		{
 			InputLPost[i] = InputLPre[i];
 			InputRPost[i] = InputRPre[i];
@@ -230,7 +232,7 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 		Plugins[i]->ProcessData(InputLPost, InputRPost, framesPerBuffer);
 
 		float DryWetMix = Plugins[i]->DryWetMix;
-		for (int i = 0; i < framesPerBuffer; ++i)
+		for (int i = 0; i < FramesPerBuffer; ++i)
 		{
 			InputLPre[i] = (DryWetMix * InputLPost[i]) + ((1 - DryWetMix) * InputLPre[i]);
 			InputRPre[i] = (DryWetMix * InputRPost[i]) + ((1 - DryWetMix) * InputRPre[i]);
@@ -238,7 +240,7 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 	}
 
 	Seek = (float*)outputBuffer;
-	for (int i = 0; i < framesPerBuffer; ++i)
+	for (int i = 0; i < FramesPerBuffer; ++i)
 	{
 		*(Seek++) = InputLPre[i] > 1.0f ? 1.0f : InputLPre[i];
 		*(Seek++) = InputRPre[i] > 1.0f ? 1.0f : InputRPre[i];

@@ -16,6 +16,7 @@ PrecomputedSin::~PrecomputedSin()
 
 float PrecomputedSin::Get(float x)
 {
+	x -= floorf(x);
 	int Index = x * Precision / ( 2.0f * M_PI);
 	Index %= Precision;
 	return SinArray[Index];

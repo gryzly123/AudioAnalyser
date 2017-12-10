@@ -645,7 +645,7 @@ namespace RackControls
 		System::Void UpdateForm()
 		{
 			CurrentPluginName->Text = gcnew System::String(Content->CurrentPluginName);
-			TrackbarMixdown->Value = Content->DryWetMix * 100.0f;
+			TrackbarMixdown->Value = (int)(Content->DryWetMix * 100.0f);
 			ButtonConfig->Enabled = Content->HasConfigWindow;
 			ButtonVis->Enabled = Content->HasVisWindow;
 			ButtonSolo->Enabled = !Content->IsNullPlugin;
@@ -659,7 +659,7 @@ namespace RackControls
 		System::Void SetContents(RackItemContents^ NewContents) { Content = NewContents; }
 		System::Void UpdateVolumeMixStatus(System::Single NewVolumeMix)
 		{
-			TrackbarMixdown->Value = NewVolumeMix * 100.0f;
+			TrackbarMixdown->Value = (int)(NewVolumeMix * 100.0f);
 		}
 
 	private:

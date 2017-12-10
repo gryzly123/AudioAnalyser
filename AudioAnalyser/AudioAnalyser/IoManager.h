@@ -37,8 +37,7 @@ private:
 	static IoManager* Instance;
 
 	//config
-	public: const int InSampleRate = AUDIO_SAMPLERATE;
-	private: int InSamplesInBlock = 256;
+	int InSamplesInBlock = 256;
 
 	//portaudio
 	PaStreamParameters InputParameters, OutputParameters;
@@ -167,7 +166,7 @@ private:
 			&CurrentStream,
 			NoInputDevices  ? nullptr : &InputParameters,
 			NoOutputDevices ? nullptr : &OutputParameters,
-			InSampleRate,
+			(int)AUDIO_SAMPLERATE,
 			InSamplesInBlock,
 			true,
 			&PaSoundCallback,
@@ -187,6 +186,7 @@ private:
 		LastPaErrorCode = Pa_CloseStream(CurrentStream);
 		PaStarted = false;
 		if (LastPaErrorCode != paNoError) return ThrowPaError();
+		return true;
 	}
 	
 	IoManager() { InitializePortAudio(); }
@@ -363,7 +363,7 @@ public:
 		else
 		{
 			InSamples = CurrentInFile->GetFilePosition();
-			TotalSamples = CurrentInFile->GetFileInfo().Length;
+			TotalSamples = (int)CurrentInFile->GetFileInfo().Length;
 			InSeconds = InSamples / CurrentInFile->GetFileInfo().SampleRate;
 			TotalSeconds = TotalSamples / CurrentInFile->GetFileInfo().SampleRate;
 		}

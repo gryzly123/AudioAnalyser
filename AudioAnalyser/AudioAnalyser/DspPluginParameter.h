@@ -46,7 +46,7 @@ public struct DspPluginParameter
 		//Upewniamy siê, ¿e nowa wartoœæ parameteru ma zerow¹ czêœæ przecinkow¹
 		case PT_Boolean:
 		case PT_Enum:
-			CurrentValue = (int)NewValue;
+			CurrentValue = floorf(NewValue);
 			break;
 		}
 	}

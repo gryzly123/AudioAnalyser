@@ -19,7 +19,7 @@ struct AudioFileInfo
 
 	bool IsStereo = false;
 	int SampleRate = 0;
-	int Length = 0;
+	sf_count_t Length = 0;
 };
 
 class SoundFile
@@ -42,8 +42,8 @@ protected:
 		if (FormatInit)
 		{
 			Metadata.format = FormatInit;
-			Metadata.channels = AUDIO_CHANNELCOUNT;
-			Metadata.samplerate = AUDIO_SAMPLERATE;
+			Metadata.channels = (int)AUDIO_CHANNELCOUNT;
+			Metadata.samplerate = (int)AUDIO_SAMPLERATE;
 		}
 		Data = sf_open(this->FilePath.c_str(), LibsndfileOpenMode, &Metadata);
 		OpenSuccess = Data ? true : false;
@@ -90,9 +90,9 @@ public:
 
 	bool SeekFile(float ToSecond)
 	{
-		int TempPosition = ToSecond * Metadata.samplerate;
-		int Success = sf_seek(Data, TempPosition, SEEK_SET);
-		CurrentPosition = TempPosition * Metadata.channels;
+		sf_count_t TempPosition = (sf_count_t)(ToSecond * (float)Metadata.samplerate);
+		sf_count_t Success = sf_seek(Data, TempPosition, SEEK_SET);
+		CurrentPosition = (int)TempPosition * Metadata.channels;
 		return (Success != -1); //w przypadku b³êdu sf_seek() zwraca -1
 	}
 
@@ -103,7 +103,7 @@ public:
 
 	virtual void ProcessData(float* NewData, int& Samplecount) override
 	{
-		Samplecount = sf_read_float(Data, NewData, Samplecount > 0 ? Samplecount : BufferLength);
+		Samplecount = (int)sf_read_float(Data, NewData, Samplecount > 0 ? Samplecount : BufferLength);
 		CurrentPosition += Samplecount;
 		for (int i = Samplecount; i < BufferLength; ++i) NewData[i] = 0;
 		Samplecount = BufferLength;
@@ -120,7 +120,7 @@ public:
 
 	virtual void ProcessData(float* NewData, int& Samplecount) override
 	{
-		Samplecount = sf_write_float(Data, NewData, Samplecount);
+		Samplecount = (int)sf_write_float(Data, NewData, Samplecount);
 	}
 };
 
