@@ -6,7 +6,7 @@
 PrecomputedSin::PrecomputedSin(int Precision) : Precision(Precision)
 {
 	SinArray = new float[Precision];
-	for (int i = 0; i < Precision; ++i) SinArray[i] = sin(2.0f * M_PI * (float)i / (float)Precision);
+	for (int i = 0; i < Precision; ++i) SinArray[i] = sin(M_TAU * (float)i / (float)Precision);
 }
 
 PrecomputedSin::~PrecomputedSin()
@@ -16,8 +16,17 @@ PrecomputedSin::~PrecomputedSin()
 
 float PrecomputedSin::Get(float x)
 {
+	x /= M_TAU;
 	x -= floorf(x);
-	int Index = x * Precision / ( 2.0f * M_PI);
+	int Index = x * Precision;
+	Index %= Precision;
+	return SinArray[Index];
+}
+
+float PrecomputedSin::GetWithTau(float x)
+{
+	x -= floorf(x);
+	int Index = x * Precision;
 	Index %= Precision;
 	return SinArray[Index];
 }

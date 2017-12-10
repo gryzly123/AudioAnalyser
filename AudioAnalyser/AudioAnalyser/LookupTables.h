@@ -10,4 +10,5 @@ public:
 	PrecomputedSin(int Precision);
 	~PrecomputedSin();
 	float Get(float x);
+	float GetWithTau(float x);
 };

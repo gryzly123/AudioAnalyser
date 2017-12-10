@@ -37,6 +37,7 @@
 
 //definicje matematyczne
 #define M_PI 3.14159265359f
+#define M_TAU 6.28318530718f //tau = 2 * pi
 
 //globalne delegaty
 public delegate System::Void WindowShutdown(System::Int32);

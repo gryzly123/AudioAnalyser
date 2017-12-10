@@ -7,7 +7,6 @@ using namespace AudioAnalyser;
 using namespace System;
 
 typedef DspPluginParameter Param;
-#define Val CurrentValue
 
 class DspPlugin
 {
@@ -40,6 +39,7 @@ public:
 #ifndef FROM_RACK_CONTROLS
 #include "DynamicPluginVizWindow.h"
 #define HAS_VIZ true
+#define Val CurrentValue
 
 class SineWaveGenerator : public DspPlugin
 {
@@ -70,7 +70,7 @@ public:
 		{
 			SineStatus += SineInc;
 			if (SineStatus > 1) SineStatus -= 1;
-			float Value = SineAmp.Val * PcSin->Get(SineStatus * 2 * M_PI);
+			float Value = SineAmp.Val * PcSin->GetWithTau(SineStatus);
 			BufferL[i] = Value;
 			BufferR[i] = (InvertPhase.Val > 0.0f) ? -1.0f * Value : Value;
 		}
@@ -117,7 +117,7 @@ public:
 				TempValue = 0.0f;
 				for (int k = 1; k <= EquationN.Val; ++k)
 				{
-					float T = PcSin->Get(2.0f * M_PI * (float)k * TimeStatus) / (float)k;
+					float T = PcSin->GetWithTau((float)k * TimeStatus) / (float)k;
 					if (k % 2 != 0) T *= -1.0f;
 					TempValue += T;
 				}
@@ -173,7 +173,7 @@ public:
 				for (int x = 1; x <= DoubleN; x += 2)
 				{
 					// x = (2k - 1)
-					TempValue += PcSin->Get(2.0f * M_PI * (float)x * TimeStatus) / (float)x;
+					TempValue += PcSin->GetWithTau((float)x * TimeStatus) / (float)x;
 				}
 				TempValue = (TempValue * 4.0f * Amp.Val / M_PI);
 			}
@@ -458,7 +458,6 @@ class Spectrogram : public DspPlugin
 	Param CurveDuration = Param(PT_Enum, L"Samples", 0.0f, 6.0f, 1.0f);
 	Param Channels = Param(PT_Enum, L"Channel", 2.0f, 3.0f, 1.0f);
 	Param ContrastBump = Param(PT_Float, L"Contrast Amp", 0.0f, 1.99f, 0.0f);
-	Param ContrastBumpIsLinear = Param(PT_Boolean, L"Non-linear contrast", 0.0f, 1.0f, 0.0f);
 
 	gcroot<MonitoredArray<float>^> Data;
 
@@ -485,7 +484,6 @@ public:
 		ParameterRefsForUi.push_back(&Channels);
 		ParameterRefsForUi.push_back(&CurveDuration);
 		ParameterRefsForUi.push_back(&ContrastBump);
-		ParameterRefsForUi.push_back(&ContrastBumpIsLinear);
 
 		Data = gcroot<MonitoredArray<float>^> (gcnew MonitoredArray<float>());
 	}
@@ -530,29 +528,16 @@ public:
 
 		Utilities::Fft(FftResult, ArrSize);
 		Utilities::FftProcessResult(FftResult, ArrSize);
-		
+
 		int HalfSize = ArrSize / 2;
 		Bitmap^ FftLineBitmap = gcnew System::Drawing::Bitmap(1, HalfSize);
 
-		if (ContrastBumpIsLinear.Val == 0.0f)
+		float Buff = ContrastBump.Val + 1.0f;
+		for (int i = 0; i < HalfSize; ++i)
 		{
-			float Buff = ContrastBump.Val + 1.0f;
-			for (int i = 0; i < HalfSize; ++i)
-			{
-				int Val = (int)((FftResult[i].real() * 255) * Buff);
-				Val = Utilities::Clamp(Val, 0, 255);
-				FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
-			}
-		}
-		else
-		{
-			float Buff = 2.0f - ContrastBump.Val;
-			for (int i = 0; i < HalfSize; ++i)
-			{
-				int Val = (int)sqrt(pow(FftResult[i].real(), Buff));
-				Val = Utilities::Clamp(Val, 0, 255);
-				FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
-			}
+			int Val = (int)((FftResult[i].real() * 255.0f) * Buff);
+			Val = Utilities::Clamp(Val, 0, 255);
+			FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
 		}
 
 		Image->DrawImage(ImagePtr, 1, 0, Width, Height);
@@ -1090,9 +1075,9 @@ public:
 		{
 			int Condition = i - FilterHalfLength;
 
-			if (Condition == 0) Response[i] = 2.0f * M_PI * FrequencyCutoff;
-			else Response[i] = PcSin->Get(2.0f * M_PI * FrequencyCutoff * (float)Condition) / (float)Condition;
-			Response[i] *= 0.54f - (0.46f * cos(2.0f * M_PI * (float)i / (float)FilterLength));
+			if (Condition == 0) Response[i] = M_TAU * FrequencyCutoff;
+			else Response[i] = PcSin->GetWithTau(FrequencyCutoff * (float)Condition) / (float)Condition;
+			Response[i] *= 0.54f - (0.46f * cos(M_TAU * (float)i / (float)FilterLength));
 			ResponseSum += Response[i];
 		}
 		for (int i = 0; i < FilterLength; ++i) Response[i] /= ResponseSum;
@@ -1389,3 +1374,4 @@ public:
 };
 #endif
 #undef Val
+#undef HAS_VIZ 

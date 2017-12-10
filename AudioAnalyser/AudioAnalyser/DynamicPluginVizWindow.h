@@ -235,16 +235,15 @@ namespace AudioAnalyser
 			PictureTarget->Refresh();
 			IsFirstFrameDrawn = false;
 		}
-
 		System::Void UpdateTitle()
 		{
 			System::String^ WindowName = gcnew System::String(AudioProcessor::GetInstance()->GetPluginName(PluginIndex).c_str());
 			WindowName += L" at Slot #";
 			WindowName += (PluginIndex + 1).ToString();
+			WindowName += (RefreshTimer->Enabled) ? L"" : L" (paused)";
 			this->Name = WindowName;
 			this->Text = WindowName;
 		}
-
 		System::Void ImageTick(System::Object^  sender, System::EventArgs^  e)
 		{
 			if (PluginIndex < 0) return;
@@ -258,9 +257,16 @@ namespace AudioAnalyser
 		}
 		System::Void PictureTarget_Click(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
 		{
-			if (e->Button != System::Windows::Forms::MouseButtons::Right) return;
-			SettingsContext->Show();
-			SettingsContext->Location = MousePosition;
+			switch (e->Button)
+			{
+			case System::Windows::Forms::MouseButtons::Left:
+				TogglePause();
+				break;
+			case System::Windows::Forms::MouseButtons::Right:
+				SettingsContext->Show();
+				SettingsContext->Location = MousePosition;
+				break;
+			}
 		}
 		System::Void RequestChangeRefreshRate_Click(System::Object^  sender, System::EventArgs^  e)
 		{
@@ -274,8 +280,13 @@ namespace AudioAnalyser
 		}
 		System::Void MenuItemToggleMuted_Click(System::Object^  sender, System::EventArgs^  e)
 		{
+			TogglePause();
+		}
+		System::Void TogglePause()
+		{
 			if (RefreshTimer->Enabled) RefreshTimer->Stop();
 			else RefreshTimer->Start();
+			UpdateTitle();
 		}
 		System::Void MenuItemSaveImage_Click(System::Object^  sender, System::EventArgs^  e)
 		{
