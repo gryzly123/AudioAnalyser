@@ -64,7 +64,7 @@ void Utilities::ShowMessageboxDebugonly(std::wstring Message, std::wstring Windo
 
 void Utilities::LinearInterpolateArrays(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength)
 {
-	Out->Array->Clear();
+	Out->Empty();
 	int InSize = In->Size();
 	int OutSize = OutLength;
 

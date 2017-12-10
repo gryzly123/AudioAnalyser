@@ -3,6 +3,7 @@
 //STD
 #include <string>
 #include <vector>
+#include <deque>
 #include <complex>
 
 //Windows

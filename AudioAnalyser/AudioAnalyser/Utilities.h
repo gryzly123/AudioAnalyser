@@ -9,17 +9,19 @@ template<class A>
 public ref class MonitoredArray
 {
 public:
-	List<A>^ Array;
-	MonitoredArray() { Array = gcnew List<A>(); }
+	std::deque<A>* Array;
+	MonitoredArray() { Array = new std::deque<A>(); }
+	~MonitoredArray() { delete Array; }
 	inline Void Lock() { Monitor::Enter(this); }
 	inline Void Unlock() { Monitor::Exit(this); }
-	inline Int32 Size() { return Array->Count; }
-	inline Void Empty() { return Array->Clear(); }
-	inline Void PushLast(const A& Element) { Array->Add(Element); }
-	inline Void PushFirst(const A& Element) { Array->Insert(0, Element); }
-	inline Void PopFirst() { Array->RemoveAt(0); }
-	inline A operator[](int Index) { return Array[Index]; }
-	inline A Get(int Index) { return Array[Index]; }
+	inline Int32 Size() { return Array->size(); }
+	inline Void Empty() { return Array->clear(); }
+	inline Void PushLast(const A& Element) { Array->push_back(Element); }
+	inline Void PushFirst(const A& Element) { Array->push_front(Element); }
+	inline Void PopFirst() { Array->pop_front(); }
+	inline A operator[](int Index) { return  Array->operator[](Index); }
+	inline A Get(int Index) { return Array->operator[](Index); }
+	inline std::deque<A>* GetRawArrayUnsafe() { return Array; }
 };
 
 namespace Utilities
@@ -49,8 +51,8 @@ namespace Utilities
 
 	void LinearInterpolateArrays(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength);
 	
-	//szybka transformata Fouriera - Cooley-Tukey
-	void Fft(ComplexF* In, int Length);
-	void FftRegroup(ComplexF* In, int Length);
-	void FftProcessResult(ComplexF* In, int Length);
+	
+	void Fft(ComplexF* In, int Length);                 //szybka transformata Fouriera - Cooley-Tukey
+	void FftRegroup(ComplexF* In, int Length);          //rearan¿acja elementów do FFT
+	void FftProcessResult(ComplexF* In, int Length);    //konwersja wyniku FFT na zrozumia³y dla cz³owieka
 }

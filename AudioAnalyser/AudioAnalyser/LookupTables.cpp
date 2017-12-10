@@ -18,7 +18,7 @@ float PrecomputedSin::Get(float x)
 {
 	x /= M_TAU;
 	x -= floorf(x);
-	int Index = x * Precision;
+	int Index = (int)(x * Precision);
 	Index %= Precision;
 	return SinArray[Index];
 }
@@ -26,7 +26,7 @@ float PrecomputedSin::Get(float x)
 float PrecomputedSin::GetWithTau(float x)
 {
 	x -= floorf(x);
-	int Index = x * Precision;
+	int Index = (int)(x * Precision);
 	Index %= Precision;
 	return SinArray[Index];
 }
