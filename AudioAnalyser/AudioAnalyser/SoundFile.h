@@ -5,8 +5,6 @@ enum SoundFileFormat
 {
 	SFF_None = 0,
 	SFF_WAV  = SF_FORMAT_WAV | SF_FORMAT_PCM_16,
-	SFF_OGG  = SF_FORMAT_OGG,
-	SFF_RAW  = SF_FORMAT_RAW | SF_FORMAT_FLOAT
 };
 
 struct AudioFileInfo
@@ -121,25 +119,5 @@ public:
 	virtual void ProcessData(float* NewData, int& Samplecount) override
 	{
 		Samplecount = (int)sf_write_float(Data, NewData, Samplecount);
-	}
-};
-
-class FileIoManager
-{
-private:
-	FileIoManager* Instance = nullptr;
-	FileIoManager() { }
-	~FileIoManager() { }
-
-public:
-	FileIoManager* GetInstance()
-	{
-		if (!Instance) Instance = new FileIoManager();
-		return Instance;
-	}
-
-	bool OpenFileForRead(std::wstring InPath)
-	{
-
 	}
 };

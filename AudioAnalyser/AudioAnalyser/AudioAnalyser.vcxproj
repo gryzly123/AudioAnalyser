@@ -152,7 +152,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioProcessor.cpp" />
-    <ClCompile Include="ComplexNumbers.cpp" />
     <ClCompile Include="ConfigWindow.cpp" />
     <ClCompile Include="DspPlugin.cpp" />
     <ClCompile Include="DynamicPluginConfigWindow.cpp" />
@@ -169,7 +168,6 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="AudioProcessor.h" />
-    <ClInclude Include="ComplexNumbers.h" />
     <ClInclude Include="ConfigWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
