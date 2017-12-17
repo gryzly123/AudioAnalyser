@@ -92,16 +92,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;SFML_STATIC;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\sfml\include\;$(ProjectDir)..\..\PortAudio\include;$(ProjectDir)..\..\Libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\PortAudio\include;$(SolutionDir)..\Libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>true</CompileAsManaged>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\sfml\lib\Debug\sfml-graphics-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-window-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-audio-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-system-d.lib;$(ProjectDir)..\..\sfml\lib\Debug\sfml-main-d.lib;$(ProjectDir)..\..\PortAudio\lib\Debug\portaudio_static_x86.lib;$(ProjectDir)..\..\Libsndfile\lib\libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_static_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\PortAudio\lib\Debug\;$(ProjectDir)..\..\sfml\lib\Debug\;$(ProjectDir)..\..\sfml\lib\Common\;$(ProjectDir)..\..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\PortAudio\lib\Debug\;$(SolutionDir)..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,10 +125,10 @@
       <CompileAsManaged>true</CompileAsManaged>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\sfml\lib\Release\sfml-graphics.lib;$(ProjectDir)..\..\sfml\lib\Release\sfml-window.lib;$(ProjectDir)..\..\sfml\lib\Release\sfml-audio.lib;$(ProjectDir)..\..\sfml\lib\Release\sfml-system.lib;$(ProjectDir)..\..\sfml\lib\Release\sfml-main.lib;$(ProjectDir)..\..\PortAudio\lib\Release\portaudio_static_x86.lib;$(ProjectDir)..\..\Libsndfile\lib\libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_static_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\sfml\lib\Release\;$(ProjectDir)..\..\PortAudio\lib\Release\;$(ProjectDir)..\..\sfml\lib\Common\;$(ProjectDir)..\..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\PortAudio\lib\Release\;$(ProjectDir)..\..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

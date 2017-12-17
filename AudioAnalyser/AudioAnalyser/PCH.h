@@ -25,9 +25,6 @@
 //Libsndfile
 #include "sndfile.h"
 
-//SFML
-#include "SFML\Graphics.hpp"
-
 #endif
 
 //ustawienia sta³e AudioAnalysera
