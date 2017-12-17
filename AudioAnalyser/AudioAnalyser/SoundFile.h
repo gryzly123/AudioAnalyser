@@ -101,13 +101,21 @@ public:
 
 	virtual void ProcessData(float* NewData, int& Samplecount) override
 	{
-		Samplecount = (int)sf_read_float(Data, NewData, Samplecount > 0 ? Samplecount : BufferLength);
+		bool UseDefaultCount = Samplecount <= 0;
+		bool Mono = !GetFileInfo().IsStereo;
+		if (Mono) Samplecount /= 2;
+
+		Samplecount = (int)sf_read_float(Data, NewData, (!UseDefaultCount ? Samplecount : BufferLength));
 		CurrentPosition += Samplecount;
 		for (int i = Samplecount; i < BufferLength; ++i) NewData[i] = 0;
-		Samplecount = BufferLength;
 
-		if (!GetFileInfo().IsStereo)
+		if (Mono)
+		{
+			Samplecount *= 2;
 			for (int i = Samplecount - 1; i >= 0; --i) NewData[i] = NewData[i / 2];
+		}
+
+		if (UseDefaultCount) Samplecount = BufferLength;
 	}
 };
 
