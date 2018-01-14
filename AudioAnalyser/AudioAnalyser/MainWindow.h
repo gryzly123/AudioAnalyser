@@ -43,13 +43,6 @@ namespace AudioAnalyser
 
 			SetProcessButtonsEnabled();
 			UpdateWorkingFolderPath(System::Environment::GetFolderPath(System::Environment::SpecialFolder::Desktop));
-
-			//XmlTextReader^ FileReader = gcnew XmlTextReader(L"C:\\Program Filesl\\bepis.aap");
-			//FileSerializer::DeserializeRack(FileReader);
-			//PerformFullRackRefresh(true);
-			//FileReader->Close();
-			//Version^ AppVersion = System::Reflection::Assembly::GetExecutingAssembly()->GetName()->Version;
-			//MessageBox::Show(AppVersion->ToString());
 		}
 
 	protected:
@@ -1032,7 +1025,7 @@ namespace AudioAnalyser
 			VizWindow->SetIndex(AtIndex);
 			VizWindow->Show();
 			VizWindow->BringToFront();
-			VizWindow->IsOpened = true;
+			VizWindow->OnShown();
 		}
 		Void RackItem_BypassRequested(Int32 AtIndex)
 		{

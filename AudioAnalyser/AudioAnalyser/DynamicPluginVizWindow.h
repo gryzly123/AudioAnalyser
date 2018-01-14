@@ -13,9 +13,6 @@ namespace AudioAnalyser
 	using namespace System::Threading;
 	using namespace System::Runtime::InteropServices;
 
-	public delegate void ConvertSoundDataToImageDelegate(float*, int);
-	public delegate void InterthreadDelegate();
-
 	/// <summary>
 	/// Dynamiczne okno wizualizacji dla pluginów z jej obs³ug¹
 	/// (flaga DspPlugin::HasVisualization ustawiona na HAS_VIZ).
@@ -102,7 +99,6 @@ namespace AudioAnalyser
 			// 
 			// RefreshTimer
 			// 
-			this->RefreshTimer->Enabled = true;
 			this->RefreshTimer->Interval = 16;
 			this->RefreshTimer->Tick += gcnew System::EventHandler(this, &DynamicPluginVizWindow::ImageTick);
 			// 
@@ -202,6 +198,7 @@ namespace AudioAnalyser
 			this->ClientSize = System::Drawing::Size(484, 461);
 			this->Controls->Add(this->PictureTarget);
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+			this->MaximizeBox = false;
 			this->MaximumSize = System::Drawing::Size(900, 900);
 			this->MinimumSize = System::Drawing::Size(220, 220);
 			this->Name = L"DynamicPluginVizWindow";
@@ -229,6 +226,13 @@ namespace AudioAnalyser
 			UpdateTitle();
 			Img->Clear(Color::White);
 			PictureTarget->Refresh();
+		}
+
+		Void OnShown()
+		{
+			RefreshTimer->Start();
+			IsOpened = true;
+			UpdateTitle();
 		}
 
 	private:

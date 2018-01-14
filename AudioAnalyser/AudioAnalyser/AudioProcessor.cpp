@@ -30,7 +30,6 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"Oscilloscope")) return new Oscilloscope();
 	if (NewPluginName == (L"Spectrum")) return new Spectrum();
 	if (NewPluginName == (L"Spectrogram")) return new Spectrogram();
-	if (NewPluginName == (L"Signal Parameters")) return new SignalParameters();
 	
 	if (NewPluginName == (L"Gain")) return new LinearAmplifier();
 	if (NewPluginName == (L"Clip")) return new Clip();

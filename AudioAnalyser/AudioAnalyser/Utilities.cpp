@@ -62,34 +62,41 @@ void Utilities::ShowMessageboxDebugonly(std::wstring Message, std::wstring Windo
 	ShowMessagebox(Message, WindowName);
 }
 
-void Utilities::LinearInterpolateArrays(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength)
+using System::Windows::Forms::MessageBox;
+
+void Utilities::LinearInterpolate(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength)
 {
 	Out->Empty();
 	int InSize = In->Size();
 	int OutSize = OutLength;
 
-	if (InSize > OutSize)
+	if (InSize == 0)
 	{
-		for (int i = 0; i < OutSize; ++i)
-		{
-			float Pt = (float)i / (float)OutSize;
-			Pt *= InSize;
-
-			int FirstIndex = (int)Pt;
-			float InterVal = Pt - (float)FirstIndex;
-			if (FirstIndex >= InSize) --FirstIndex;
-
-			float NewVal = (InterVal * In[FirstIndex]) + ((1.0f - InterVal) * In[FirstIndex + 1]);
-			Out->PushLast(NewVal);
-		}
+		for (int i = 0; i < OutSize; ++i) Out->PushLast(0);
+		return;
 	}
-	else
+
+	for (int i = 0; i < OutSize; ++i)
 	{
-		for (int i = 0; i < OutSize; ++i)
-		{
-			Out->PushLast(0);
-		}
+		float Pt = (float)i / (float)OutSize;
+		Pt *= (float)InSize;
+
+		int FirstIndex = (int)Pt;
+		int SecondIndex = FirstIndex + 1;
+		float InterVal = Pt - (float)FirstIndex;
+		if (FirstIndex + 2 >= InSize) { FirstIndex = InSize - 1; SecondIndex = FirstIndex; }
+		float NewVal = WeightedAvg(In[FirstIndex], In[SecondIndex], InterVal);
+		Out->PushLast(NewVal);
 	}
+}
+
+void Utilities::CutAndInterpolateSubrange(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, float From, float To, int OutLength)
+{
+	int CutFromStart = (int)(From * (float)In->Size());
+	int CutFromEnd = (int)((float)In->Size() - To * (float)In->Size());
+	while (--CutFromStart >= 0) In->PopFirst();
+	while (--CutFromEnd >= 0) In->PopLast();
+	LinearInterpolate(In, Out, OutLength);
 }
 
 #pragma managed pop
@@ -125,13 +132,15 @@ void Utilities::FftRegroup(ComplexF* In, int Length)
 	delete[] Helper;
 }
 
+#pragma managed pop
+#pragma managed(push, on)
 //Zmiana danych z FFT na wartoœæ sygna³u dla czêstotliwoœci (Re) i czêstotliwosæ (Im)
-void Utilities::FftProcessResult(ComplexF* In, int Length)
+MonitoredArray<float>^ Utilities::FftProcessResult(ComplexF* In, int Length)
 {
+	MonitoredArray<float>^ Result = gcnew MonitoredArray<float>();
+
 	int HalfLen = Length / 2;
-	for (int i = 0; i < HalfLen; ++i)
-		In[i] = ComplexF(
-			std::sqrt((In[i].real() * In[i].real()) + (In[i].imag() * In[i].imag())) / (float)HalfLen,
-			(float)i *  AUDIO_SAMPLERATE / (float)Length);
+	for (int i = 0; i < HalfLen; ++i) Result->PushLast(std::sqrt((In[i].real() * In[i].real()) + (In[i].imag() * In[i].imag())) / (float)HalfLen);
+	return Result;
 }
 #pragma managed pop

@@ -11,7 +11,7 @@ public ref class MonitoredArray
 public:
 	std::deque<A>* Array;
 	MonitoredArray() { Array = new std::deque<A>(); }
-	~MonitoredArray() { delete Array; }
+	~MonitoredArray() { Empty(); delete Array; }
 	inline Void Lock() { Monitor::Enter(this); }
 	inline Void Unlock() { Monitor::Exit(this); }
 	inline Int32 Size() { return Array->size(); }
@@ -19,6 +19,7 @@ public:
 	inline Void PushLast(const A& Element) { Array->push_back(Element); }
 	inline Void PushFirst(const A& Element) { Array->push_front(Element); }
 	inline Void PopFirst() { Array->pop_front(); }
+	inline Void PopLast() { Array->pop_back(); }
 	inline A operator[](int Index) { return  Array->operator[](Index); }
 	inline A Get(int Index) { return Array->operator[](Index); }
 	inline std::deque<A>* GetRawArrayUnsafe() { return Array; }
@@ -49,10 +50,11 @@ namespace Utilities
 	template<typename T>
 	inline const T WeightedAvg(const T& A, const T& B, float W) { return (A * (1.0f - W)) + (B * W); }
 
-	void LinearInterpolateArrays(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength);
+	void LinearInterpolate(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength);
+	void CutAndInterpolateSubrange(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, float From, float To, int OutLength);
 	
 	
 	void Fft(ComplexF* In, int Length);                 //szybka transformata Fouriera - Cooley-Tukey
 	void FftRegroup(ComplexF* In, int Length);          //rearan瘸cja element闚 do FFT
-	void FftProcessResult(ComplexF* In, int Length);    //konwersja wyniku FFT na zrozumia造 dla cz這wieka
+	MonitoredArray<float>^ FftProcessResult(ComplexF* In, int Length);    //konwersja wyniku FFT na zrozumia造 dla cz這wieka
 }

@@ -85,7 +85,7 @@ namespace RackControls
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugRetrigger;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugReverserSimple;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugReverser;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugParameters;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugClip;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugPhaseInverter;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugPanner;
@@ -138,7 +138,6 @@ namespace RackControls
 			this->PlugOscilloscope = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugSpectrum = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugSpectrogram = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->PlugParameters = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->Separator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->TextboxEffects1 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugGain = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -338,18 +337,17 @@ namespace RackControls
 			// 
 			this->PluginList->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->PluginList->ImageScalingSize = System::Drawing::Size(0, 16);
-			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(35) {
+			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(34) {
 				this->PlugNullPlugin, this->TextboxGenerators,
 					this->PlugSineOscillator, this->PlugSawOscillator, this->PlugSquareOscillator, this->PlugNoise, this->Separator1, this->TextboxAnalysers,
-					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->PlugParameters, this->Separator2, this->TextboxEffects1,
-					this->PlugGain, this->PlugClip, this->PlugPhaseInverter, this->TextboxEffects2, this->PlugBitcrush, this->PlugDecimation, this->TextboxEffects3,
-					this->PlugPanner, this->PlugStereoMerger, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc, this->PlugHpf,
-					this->PlugBpf, this->TextboxEffects5, this->PlugDelay, this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple,
-					this->PlugReverser
+					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->Separator2, this->TextboxEffects1, this->PlugGain, this->PlugClip,
+					this->PlugPhaseInverter, this->TextboxEffects2, this->PlugBitcrush, this->PlugDecimation, this->TextboxEffects3, this->PlugPanner,
+					this->PlugStereoMerger, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc, this->PlugHpf, this->PlugBpf,
+					this->TextboxEffects5, this->PlugDelay, this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple, this->PlugReverser
 			});
 			this->PluginList->LayoutStyle = System::Windows::Forms::ToolStripLayoutStyle::HorizontalStackWithOverflow;
 			this->PluginList->Name = L"PluginList";
-			this->PluginList->Size = System::Drawing::Size(189, 715);
+			this->PluginList->Size = System::Drawing::Size(189, 693);
 			// 
 			// PlugNullPlugin
 			// 
@@ -431,13 +429,6 @@ namespace RackControls
 			this->PlugSpectrogram->Size = System::Drawing::Size(188, 22);
 			this->PlugSpectrogram->Text = L"Spectrogram";
 			this->PlugSpectrogram->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
-			// 
-			// PlugParameters
-			// 
-			this->PlugParameters->Name = L"PlugParameters";
-			this->PlugParameters->Size = System::Drawing::Size(188, 22);
-			this->PlugParameters->Text = L"Signal Parameters";
-			this->PlugParameters->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// Separator2
 			// 

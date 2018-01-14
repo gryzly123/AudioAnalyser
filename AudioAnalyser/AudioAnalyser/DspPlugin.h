@@ -223,7 +223,7 @@ class Oscilloscope : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
 	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
-	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
+	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 3.0f);
 
 	gcroot<MonitoredArray<float>^> Data;
 	gcroot<MonitoredArray<float>^> Interp;
@@ -231,6 +231,11 @@ class Oscilloscope : public DspPlugin
 	gcroot<SolidBrush^>            DataBrush;
 	gcroot<Pen^>                   HelperPencil1;
 	gcroot<Pen^>                   HelperPencil2;
+	gcroot<Font^>                  TextL;
+	gcroot<Font^>                  TextS;
+	gcroot<StringFormat^>          FormatC;
+	gcroot<StringFormat^>          FormatR;
+	gcroot<Brush^>                 TextColor;
 
 public:
 	Oscilloscope() : DspPlugin(L"Oscilloscope", HAS_VIZ)
@@ -254,6 +259,14 @@ public:
 		HelperPencil1 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
 		HelperPencil2 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
 		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
+		TextL = gcroot<Font^>(gcnew Font("Microsoft Sans Serif", 8.0f, FontStyle::Regular));
+		TextS = gcroot<Font^>(gcnew Font("Microsoft Sans Serif", 5.0f, FontStyle::Regular));
+		FormatC = gcroot<StringFormat^>(gcnew StringFormat());
+		FormatR = gcroot<StringFormat^>(gcnew StringFormat());
+		TextColor = gcroot<Brush^>(gcnew SolidBrush(Color::Black));
+		
+		FormatC->Alignment = StringAlignment::Center;
+		FormatR->Alignment = StringAlignment::Far;
 	}
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
@@ -280,64 +293,108 @@ public:
 
 	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
-		const float Padding = ImgPadding.Val;
-		const float HelperLineCount = 10.0f;
+		//Inicjalizacja parametrów rysunku
+		const float Padding = 30.0f;
+		const float Shift = 13.0f;
 		const float WorkAreaHorizontal = Width - (2 * Padding);
 		const float WorkAreaVertical = Height - (2 * Padding);
 		const int MaxPoints = Width;
-		const int Range = Height;
+		const int RangeHalved = Height / 2;
+		const float HelperLineCount = 10.0f;
+		const float SingleHelperLengthMs = CurveDuration.Val / 10.0f;
+		Font^ UsedStyle = (Width > 370) ? TextL : TextS;
 
+		//Inicjalizacja rysuku
 		Image->Clear(Color::White);
-		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
-		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
 
-		for (int i = 0; i < HelperLineCount + 1; i++)
+		//Osie
+		Image->DrawLine(HelperPencil1, Padding + Shift, Padding - Shift, Padding + Shift, Height - Padding - Shift);
+		Image->DrawLine(HelperPencil1, Padding + Shift, Height - Padding - Shift, Width - Padding + Shift, Height - Padding - Shift);
+
+		//Linie pomocnicze i ich podpisy
+		for (int i = 0; i < (int)HelperLineCount + 1; i++)
 		{
-			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i;
-			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1);
+			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i + Shift;
+			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1) - Shift;
 
 			Image->DrawLine(HelperPencil2,
 				HorizontalX,
-				Padding,
+				Padding - Shift,
 				HorizontalX,
-				(float)((float)Height - Padding));
+				(float)Height - Padding - Shift);
 
 			Image->DrawLine(HelperPencil2,
-				Padding,
+				Padding + Shift,
 				VerticalY,
-				(float)((float)Width - Padding),
+				(float)Width - Padding + Shift,
 				VerticalY);
+			
+			Image->DrawString(
+				(SingleHelperLengthMs * (i - 5)).ToString("N1"),
+				UsedStyle,
+				TextColor,
+				HorizontalX,
+				Height - Padding + 5 - Shift,
+				FormatC);
+
+			Image->DrawString(
+				(-1.0f + (i * 0.2f)).ToString("N1"),
+				UsedStyle,
+				TextColor,
+				Padding - 3 + Shift,
+				VerticalY - 6,
+				FormatR);
 		}
 
+		//Podpisy osi poziomej i pionowej
+		Image->DrawString(L"Time [ms]", UsedStyle, TextColor, Width / 2, Height - 20, FormatC);
+		
+		Drawing::Drawing2D::GraphicsState^ State = Image->Save();
+		Image->RotateTransform(-90);
+		Image->TranslateTransform(5, Height / 2 - Shift, Drawing2D::MatrixOrder::Append);
+		Image->DrawString(L"Signal value", UsedStyle, TextColor, 0, 0, FormatC);
+		Image->Restore(State);
+
+		//Interpolacja danych, aby zmieœciæ x próbek w obrazie o szerokoœci y
 		Data->Lock();
-		Utilities::LinearInterpolateArrays((MonitoredArray<float>^)Data, Interp, (int)WorkAreaHorizontal);
+		Utilities::LinearInterpolate((MonitoredArray<float>^)Data, Interp, (int)WorkAreaHorizontal);
 		Data->Unlock();
 
-		int LastVal = (Range / 2) - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](0));
+		//Rysowanie danych
+		int PreviousPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](0)) - Shift;
 		for (int i = 1; i < WorkAreaHorizontal; ++i)
 		{
-			int HorizontalVal = (int)(i + Padding);
-			int NewPt = (Range / 2) - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](i));
-			if (LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1;
+			int HorizontalVal = (int)(i + Padding) + Shift;
+			int NewPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](i)) - Shift;
+			if (PreviousPt != NewPt) PreviousPt = (NewPt < PreviousPt) ? PreviousPt - 1 : PreviousPt + 1;
 
-			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
-			else                  Image->DrawLine(DataPencil, HorizontalVal, LastVal, HorizontalVal, NewPt);
+			if (PreviousPt == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, PreviousPt, 1, 1);
+			else                  Image->DrawLine(DataPencil, HorizontalVal, PreviousPt, HorizontalVal, NewPt);
 
-			LastVal = NewPt;
+			PreviousPt = NewPt;
 		}
 	}
 };
+
 class Spectrum : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Enum, L"Samples", 0.0f, 6.0f, 1.0f);
 	Param Channels = Param(PT_Enum, L"Channel", 2.0f, 3.0f, 1.0f);
-	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 10.0f);
+	Param ZoomL = Param(PT_Float, L"Cut below", 0.0f, (float)(AUDIO_SAMPLERATE / 2), 0.0f);
+	Param ZoomR = Param(PT_Float, L"Cut above", 0.0f, (float)(AUDIO_SAMPLERATE / 2), (float)(AUDIO_SAMPLERATE / 2));
+	Param ZoomV = Param(PT_Float, L"Vertical range", 0.1f, 1.0f, 1.0f);
+
 
 	gcroot<MonitoredArray<float>^> Data;
 	gcroot<Pen^>                   DataPencil;
 	gcroot<SolidBrush^>            DataBrush;
 	gcroot<Pen^>                   HelperPencil1;
 	gcroot<Pen^>                   HelperPencil2;
+	gcroot<Font^>                  TextL;
+	gcroot<Font^>                  TextS;
+	gcroot<StringFormat^>          FormatC;
+	gcroot<StringFormat^>          FormatR;
+	gcroot<Brush^>                 TextColor;
 
 public:
 	Spectrum() : DspPlugin(L"Spectrum", HAS_VIZ)
@@ -357,10 +414,15 @@ public:
 		ChannelNames[2] = L"Mixdown";
 		Channels.EnumNames = ChannelNames;
 
-		ImgPadding.FloatValueStep = 1.0f;
+		ZoomL.FloatValueStep = 10.f;
+		ZoomR.FloatValueStep = 10.f;
+		ZoomV.FloatValueStep = 0.01f;
+
 		ParameterRefsForUi.push_back(&Channels);
 		ParameterRefsForUi.push_back(&CurveDuration);
-		ParameterRefsForUi.push_back(&ImgPadding);
+		ParameterRefsForUi.push_back(&ZoomL);
+		ParameterRefsForUi.push_back(&ZoomR);
+		ParameterRefsForUi.push_back(&ZoomV);
 
 		Data = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
 		DataPencil = gcroot<Pen^>(gcnew Pen(Color::Black, 1));
@@ -368,6 +430,13 @@ public:
 		HelperPencil1 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
 		HelperPencil2 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
 		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
+		TextL = gcroot<Font^>(gcnew Font("Microsoft Sans Serif", 8.0f, FontStyle::Regular));
+		TextS = gcroot<Font^>(gcnew Font("Microsoft Sans Serif", 5.0f, FontStyle::Regular));
+		FormatC = gcroot<StringFormat^>(gcnew StringFormat());
+		FormatC->Alignment = StringAlignment::Center;
+		FormatR = gcroot<StringFormat^>(gcnew StringFormat());
+		FormatR->Alignment = StringAlignment::Far;
+		TextColor = gcroot<Brush^>(gcnew SolidBrush(Color::Black));
 	}
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
@@ -394,7 +463,8 @@ public:
 
 	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
-		const float Padding = ImgPadding.Val;
+		const float Padding = 30.f;
+		const float Shift = 13.0f;
 		const float HelperLineCount = 10.0f;
 		const float WorkAreaHorizontal = Width - (2 * Padding);
 		const float WorkAreaVertical = Height - (2 * Padding);
@@ -402,26 +472,45 @@ public:
 		const int Range = Height;
 
 		Image->Clear(Color::White);
-		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, Height - Padding);
-		Image->DrawLine(HelperPencil1, Padding, Height - Padding, Width - Padding, Height - Padding);
+
+		if (ZoomL.Val > ZoomR.Val) return;
+
+		Image->DrawLine(HelperPencil1, Padding + Shift, Padding - Shift, Padding + Shift, Height - Padding - Shift);
+		Image->DrawLine(HelperPencil1, Padding + Shift, Height - Padding - Shift, Width - Padding + Shift, Height - Padding - Shift);
+
+		float Base = ZoomL.Val;
+		float Top = ZoomR.Val;
+		float SingleSegmentLen = (Top - Base) / 10.0f;
+		Font^ UsedStyle = (Width > 370) ? TextL : TextS;
 
 		for (int i = 0; i < HelperLineCount + 1; i++)
 		{
-			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i;
-			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1);
+			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i + Shift;
+			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)i - Shift;
 
 			Image->DrawLine(HelperPencil2,
 				HorizontalX,
-				Padding,
+				Padding - Shift,
 				HorizontalX,
-				(float)((float)Height - Padding));
+				(float)Height - Padding - Shift);
 
 			Image->DrawLine(HelperPencil2,
-				Padding,
+				Padding + Shift,
 				VerticalY,
-				(float)((float)Width - Padding),
+				(float)Width - Padding + Shift,
 				VerticalY);
+
+			Image->DrawString(((int)(Base + i * SingleSegmentLen)).ToString(), UsedStyle, TextColor, HorizontalX, Height - Padding + 5 - Shift, FormatC);
+			Image->DrawString((ZoomV.Val - i * 0.1f * ZoomV.Val).ToString("N2"), UsedStyle, TextColor, Padding - 3 + Shift, VerticalY - 6, FormatR);
 		}
+
+		Image->DrawString(L"Frequency [Hz]", UsedStyle, TextColor, Width / 2, Height - 20, FormatC);
+
+		Drawing::Drawing2D::GraphicsState^ State = Image->Save();
+		Image->RotateTransform(-90);
+		Image->TranslateTransform(5, Height / 2 - Shift, Drawing2D::MatrixOrder::Append);
+		Image->DrawString(L"Signal value", UsedStyle, TextColor, 0, 0, FormatC);
+		Image->Restore(State);
 
 		Data->Lock();
 		int ArrSize = (int)std::pow(2, 7 + CurveDuration.Val);
@@ -432,25 +521,33 @@ public:
 		}
 
 		ComplexF* FftResult = new ComplexF[ArrSize];
-		for (int i = 0; i < ArrSize; ++i) FftResult[i] = ComplexF(Data->operator[](i), 0.0f);
+		for (int i = 0; i < ArrSize; ++i) FftResult[i] = ComplexF(Data->Get(i), 0.0f);
 		Data->Unlock();
-
+		
 		Utilities::Fft(FftResult, ArrSize);
-		Utilities::FftProcessResult(FftResult, ArrSize);
-
-		const int ZeroH = Height - (int)Padding;
-		int LastVal = ZeroH - (int)(WorkAreaVertical * FftResult[0].real());
-		for (int i = 1; i < ArrSize / 2; ++i)
+		MonitoredArray<float>^ ResultArr = Utilities::FftProcessResult(FftResult, ArrSize);
+		MonitoredArray<float>^ ResultArr2 = gcnew MonitoredArray<float>();
+		Utilities::CutAndInterpolateSubrange(ResultArr, ResultArr2, ZoomL.Val / (float)(AUDIO_SAMPLERATE / 2), ZoomR.Val / (float)(AUDIO_SAMPLERATE / 2), (int)WorkAreaHorizontal);
+		
+		const float ValueMultiplier = 1.0f / ZoomV.Val;
+		const int ZeroH = Height - (int)Padding - Shift;
+		int LastVal = ZeroH - (int)(WorkAreaVertical * ValueMultiplier * ResultArr2[0]);
+		int InterpolatedArrSize = ResultArr2->Size();
+		for (int i = 1; i < InterpolatedArrSize; ++i)
 		{
-			int HorizontalVal = (int)(i + Padding);
-			int NewPt = ZeroH - (int)(WorkAreaVertical * FftResult[i].real());
+			int HorizontalVal = (int)(i + Padding + Shift);
+			int NewPt = ZeroH - (int)(WorkAreaVertical * ValueMultiplier * ResultArr2[i]);
 			if (LastVal != NewPt) LastVal = (NewPt < LastVal) ? LastVal - 1 : LastVal + 1;
-
+		
 			if (LastVal == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, LastVal, 1, 1);
 			else                  Image->DrawLine(DataPencil, HorizontalVal, LastVal, HorizontalVal, NewPt);
-
+		
 			LastVal = NewPt;
 		}
+		
+		ResultArr->Empty();
+		ResultArr2->Empty();
+		delete[] FftResult;
 	}
 };
 class Spectrogram : public DspPlugin
@@ -545,152 +642,7 @@ public:
 		delete[] FftResult;
 	}
 };
-class SignalParameters : public DspPlugin
-{
-	Param CurveDuration = Param(PT_Float, L"Peak duration [ms]", 1.0f, 200.0f, 20.0f);
-	Param CurveFalloff = Param(PT_Float, L"Peak falloff [ms]", 1.0f, 200.0f, 20.0f);
 
-	float	PeakL = 0.0f,
-			PeakR = 0.0f,
-			AvgL = 0.0f,
-			AvgR = 0.0f,
-			DeviationL = 0.0f,
-			DeviationR = 0.0f,
-			VisiblePeakL = 0.0f,
-			VisiblePeakR = 0.0f,
-			VisibleAvgL = 0.0f,
-			VisibleAvgR = 0.0f,
-			VisibleDeviationL = 0.0f,
-			VisibleDeviationR = 0.0f;
-
-	gcroot<MonitoredArray<float>^> DataL;
-	gcroot<MonitoredArray<float>^> DataR;
-	gcroot<Pen^>                   DataPencil;
-	gcroot<Pen^>                   HelperPencil1;
-	gcroot<Pen^>                   HelperPencil2;
-	gcroot<Font^>                  Text;
-	gcroot<StringFormat^>          Format;
-	gcroot<Brush^>                 TextColor;
-	gcroot<Brush^>                 SignalValue;
-
-public:
-	SignalParameters() : DspPlugin(L"Signal Parameters", HAS_VIZ)
-	{
-		ParameterRefsForUi.push_back(&CurveDuration);
-		ParameterRefsForUi.push_back(&CurveFalloff);
-
-		DataL = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
-		DataR = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
-		DataPencil = gcroot<Pen^>(gcnew Pen(Color::Black, 1));
-		HelperPencil1 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
-		HelperPencil2 = gcroot<Pen^>(gcnew Pen(Color::Gray, 1));
-		HelperPencil2->DashStyle = Drawing2D::DashStyle::Dot;
-
-		Text = gcroot<Font^>(gcnew Font("Microsoft Sans Serif", 8.0f, FontStyle::Regular));
-		Format = gcroot<StringFormat^>(gcnew StringFormat());
-		TextColor = gcroot<Brush^>(gcnew SolidBrush(Color::Black));
-		SignalValue = gcroot<Brush^>(gcnew SolidBrush(Color::Black));
-		Format->Alignment = StringAlignment::Center;
-	}
-
-	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
-	{
-		int CurvePointsSize = (int)((float)AUDIO_SAMPLERATE * (float)CurveDuration.Val / 1000.0f);
-
-		for (int i = 0; i < Length; ++i)
-		{
-			DataL->PushLast(BufferL[i]);
-			DataR->PushLast(BufferR[i]);
-		}
-		
-		int ExcessData = DataL->Size() - CurvePointsSize;
-		while (--ExcessData > 0) 
-		{
-			DataL->PopFirst();
-			DataR->PopFirst();
-		}
-
-		PeakL = 0.0f;
-		PeakR = 0.0f;
-		AvgL = 0.0f;
-		AvgR = 0.0f;
-		DeviationL = 0.0f;
-		DeviationR = 0.0f;
-
-		int Size = DataL->Size();
-		for (int i = 0; i < Size; ++i)
-		{
-			float L = DataL->Get(i), R = DataR->Get(i);
-			if (L > PeakL) PeakL = L;
-			if (R > PeakR) PeakR = R;
-			AvgL += L;
-			AvgR += R;
-		}
-
-		AvgL /= (float)Size;
-		AvgR /= (float)Size;
-
-		for (int i = 0; i < Size; ++i)
-		{
-			float L = DataL->Get(i), R = DataR->Get(i);
-			DeviationL += L - AvgL;
-			DeviationR += R - AvgR;
-		}
-
-		DeviationL /= (float)Size;
-		DeviationR /= (float)Size;
-	}
-
-	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
-	{
-		const float Padding = 20.0f;
-		const float HelperLineCount = 11.0f;
-		const float WorkAreaHorizontal = Width - (2 * Padding);
-		const float WorkAreaVertical = Height - (2 * Padding);
-		const int MaxPoints = Width;
-		const int Range = Height;
-
-		Image->Clear(Color::White);
-
-		for (int i = 0; i < HelperLineCount + 1; i++)
-		{
-			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1);
-			Image->DrawLine(HelperPencil2,
-				Padding,
-				VerticalY,
-				(float)((float)Width - Padding),
-				VerticalY);
-		}
-
-		float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * 10.0f;
-		float VerticalYHalved = Padding + (WorkAreaVertical / HelperLineCount) * 5.0f;
-		
-		Image->DrawLine(HelperPencil1, Padding, Padding, Padding, VerticalY);
-		Image->DrawLine(HelperPencil1, Padding, VerticalYHalved, Width - Padding, VerticalYHalved);
-
-
-
-		float VertSeparator = (float)Width / 4.0f;
-		float FirstRowHeight = VerticalY + 10.0f;
-		float SecondRowHeight = FirstRowHeight + 16.0f;
-
-		Image->DrawString(L"Signal peak"     , Text, TextColor, VertSeparator * 1, FirstRowHeight, Format);
-		Image->DrawString(L"Signal average"  , Text, TextColor, VertSeparator * 2, FirstRowHeight, Format);
-		Image->DrawString(L"Signal deviation", Text, TextColor, VertSeparator * 3, FirstRowHeight, Format);
-
-		Image->DrawString(PeakL		.ToString("N3"), Text, TextColor, VertSeparator * 1 - 20, SecondRowHeight, Format);
-		Image->DrawString(AvgL		.ToString("N3"), Text, TextColor, VertSeparator * 2 - 20, SecondRowHeight, Format);
-		Image->DrawString(DeviationL.ToString("N3"), Text, TextColor, VertSeparator * 3 - 20, SecondRowHeight, Format);
-
-		Image->DrawString(PeakR		.ToString("N3"), Text, TextColor, VertSeparator * 1 + 20, SecondRowHeight, Format);
-		Image->DrawString(AvgR		.ToString("N3"), Text, TextColor, VertSeparator * 2 + 20, SecondRowHeight, Format);
-		Image->DrawString(DeviationR.ToString("N3"), Text, TextColor, VertSeparator * 3 + 20, SecondRowHeight, Format);
-
-		int TempH = (int)(PeakL * WorkAreaVertical);
-		Image->FillRectangle(SignalValue, (int)VertSeparator, (int)VerticalY - TempH, 10, TempH);
-
-	}
-};
 class LinearAmplifier : public DspPlugin
 {
 	Param UniformAmp = Param(PT_Float, L"Uniform amp", 0.0f, 2.0f, 1.0f);
@@ -1032,6 +984,9 @@ public:
 		}
 	}
 };
+
+#define SINC_LEN 101
+
 class BandpassFilterSinc : public DspPlugin
 {
 private:
@@ -1051,16 +1006,38 @@ public:
 		ParameterRefsForUi.push_back(&ResponseLength);
 		ParameterRefsForUi.push_back(&MuxPointCount);
 		ParameterRefsForUi.push_back(&PostAmp);
+
+		LastPointsL = new float[SINC_LEN];
+		LastPointsR = new float[SINC_LEN];
+		for (int i = 0; i < SINC_LEN; ++i)
+		{
+			LastPointsL[i] = 1.0f;
+			LastPointsR[i] = 1.0f;
+		}
 	}
 
+
+	void KeepLastPoints(float* BufferL, float* BufferR, int Length)
+	{
+		int i1 = 0;
+		for (int i2 = Length - SINC_LEN; i2 < Length; ++i2)
+		{
+			LastPointsL[i1] = BufferL[i2];
+			LastPointsR[i1++] = BufferR[i2];
+		}
+	}
+
+	inline float GetPoint(int Index, float* SubzeroBufferPtr, float* BufferPtr)
+	{
+		return (Index >= 0) ? BufferPtr[Index] : SubzeroBufferPtr[Index + SINC_LEN];
+	}
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
 		const float FrequencyCutoff = MuxPointCount.Val;
-		int FilterLength = 101;
-		const int FilterHalfLength = FilterLength / 2;
+		const int FilterHalfLength = SINC_LEN / 2;
 
-		float* Response = new float[FilterLength];
+		float* Response = new float[SINC_LEN];
 		float* OutL = new float[Length];
 		float* OutR = new float[Length];
 		for (int i = 0; i < Length; i++)
@@ -1069,34 +1046,43 @@ public:
 			OutR[i] = 0.0f;
 		}
 		
+		//Stworzenie funkcji sinc
 		float ResponseSum = 0.0f;
-
-		for (int i = 0; i < FilterLength; ++i)
+		for (int i = 0; i < SINC_LEN; ++i)
 		{
 			int Condition = i - FilterHalfLength;
 
 			if (Condition == 0) Response[i] = M_TAU * FrequencyCutoff;
 			else Response[i] = PcSin->GetWithTau(FrequencyCutoff * (float)Condition) / (float)Condition;
-			Response[i] *= 0.54f - (0.46f * cos(M_TAU * (float)i / (float)FilterLength));
+			Response[i] *= 0.54f - (0.46f * cos(M_TAU * (float)i / (float)SINC_LEN));
 			ResponseSum += Response[i];
 		}
-		for (int i = 0; i < FilterLength; ++i) Response[i] /= ResponseSum;
+		for (int i = 0; i < SINC_LEN; ++i) Response[i] /= ResponseSum;
 		
-		for (int i = FilterLength - 1; i < Length; ++i)
+		//Aplikacja splotu
+		for (int i = 0; i < Length; ++i)
 		{
-			for (int j = 0; j < FilterLength; ++j)
+			for (int j = 0; j < SINC_LEN; ++j)
 			{
-				OutL[i] += BufferL[i - j] * Response[j];
-				OutR[i] += BufferR[i - j] * Response[j];
+				//OutL[i] += BufferL[i - j] * Response[j];
+				//OutR[i] += BufferR[i - j] * Response[j];
+				
+				OutL[i] += GetPoint(i - j, LastPointsL, BufferL) * Response[j];
+				OutR[i] += GetPoint(i - j, LastPointsR, BufferR) * Response[j];
 			}
 		}
 
-		float PostAmpValue = powf(2.0f, PostAmp.Val - 4.0f);
+		KeepLastPoints(BufferL, BufferR, Length);
 
+		//Post-amp
+		//float PostAmpValue = powf(2.0f, PostAmp.Val - 4.0f);
 		for (int i = 0; i < Length; ++i)
 		{
-			BufferL[i] = (i >= FilterLength) ? Utilities::Clamp(OutL[i] * PostAmpValue, -1.0f, 1.0f) : 0.0f;
-			BufferR[i] = (i >= FilterLength) ? Utilities::Clamp(OutR[i] * PostAmpValue, -1.0f, 1.0f) : 0.0f;
+			//BufferL[i] = Utilities::Clamp(OutL[i] * PostAmpValue, -1.0f, 1.0f);
+			//BufferR[i] = Utilities::Clamp(OutR[i] * PostAmpValue, -1.0f, 1.0f);
+			BufferL[i] = OutL[i];
+			BufferR[i] = OutR[i];
+
 		}
 
 		delete[] OutL;

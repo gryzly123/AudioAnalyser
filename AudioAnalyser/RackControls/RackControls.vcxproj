@@ -137,7 +137,6 @@
     <ClInclude Include="DynamicControlObject.h">
       <FileType>CppControl</FileType>
     </ClInclude>
-    <ClInclude Include="RackControls.h" />
     <ClInclude Include="RackItem.h">
       <FileType>CppControl</FileType>
     </ClInclude>
@@ -148,7 +147,6 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="DynamicControlObject.cpp" />
-    <ClCompile Include="RackControls.cpp" />
     <ClCompile Include="RackItem.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
