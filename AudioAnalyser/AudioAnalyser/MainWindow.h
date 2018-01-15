@@ -905,7 +905,9 @@ namespace AudioAnalyser
 			{
 				UpdateRackItemContents(i);
 				PluginConfigWindows[i]->Close();
+				PluginVizWindows[i]->Close();
 				CreateNewPluginConfig(i);
+				CreateNewPluginViz(i);
 				if (IncludeDryWetMixes)
 					SelectRackItem(i)->UpdateVolumeMixStatus(
 						AudioProcessor::GetInstance()->GetPluginVolumeMix(i));

@@ -45,11 +45,12 @@ class SineWaveGenerator : public DspPlugin
 {
 private:
 	float SineStatus = 0;
-	float SineInc = 0;
+	float LastFreq = 0;
 
 	Param SineAmp = Param(PT_Float, L"Sine volume", 0.0f, 1.0f, 0.6f);
 	Param SineFrequency = Param(PT_Float, L"Sine frequency", 20.0f, 22500.0f, 100.0f);
-	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 0.0f);
+	Param Retrigger = Param(PT_Boolean, L"Reset on freq. change", 0.0f, 1.0f, 0.0f);
 
 public:
 	SineWaveGenerator() : DspPlugin(L"Sine Wave")
@@ -59,12 +60,19 @@ public:
 
 		ParameterRefsForUi.push_back(&SineAmp);
 		ParameterRefsForUi.push_back(&SineFrequency);
+		ParameterRefsForUi.push_back(&Retrigger);
 		ParameterRefsForUi.push_back(&InvertPhase);
 	}
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		SineInc = SineFrequency.Val / 44100.f;
+		if (LastFreq != SineFrequency.Val)
+		{
+			LastFreq = SineFrequency.Val;
+			if (Retrigger.Val == 1.0f) SineStatus = 0.0f;
+		}
+
+		const float SineInc = SineFrequency.Val / 44100.f;
 
 		for (int i = 0; i < Length; i++)
 		{
@@ -85,10 +93,10 @@ private:
 
 	Param Amp = Param(PT_Float, L"Saw volume", 0.0f, 1.0f, 0.6f);
 	Param Frequency = Param(PT_Float, L"Saw frequency", 20.0f, 22500.0f, 100.0f);
-	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 0.0f);
+	Param Retrigger = Param(PT_Boolean, L"Reset on freq. change", 0.0f, 1.0f, 0.0f);
 	Param UseEquation = Param(PT_Boolean, L"Use additive synthesis", 0.0f, 1.0f, 0.0f);
 	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 100.0f, 30.0f);
-
 public:
 	SawWaveGenerator() : DspPlugin(L"Saw Wave")
 	{
@@ -98,6 +106,7 @@ public:
 
 		ParameterRefsForUi.push_back(&Amp);
 		ParameterRefsForUi.push_back(&Frequency);
+		ParameterRefsForUi.push_back(&Retrigger);
 		ParameterRefsForUi.push_back(&InvertPhase);
 		ParameterRefsForUi.push_back(&UseEquation);
 		ParameterRefsForUi.push_back(&EquationN);
@@ -139,7 +148,8 @@ private:
 
 	Param Amp = Param(PT_Float, L"Saw volume", 0.0f, 1.0f, 0.6f);
 	Param Frequency = Param(PT_Float, L"Saw frequency", 20.0f, 22500.0f, 100.0f);
-	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 0.0f);
+	Param Retrigger = Param(PT_Boolean, L"Reset on freq. change", 0.0f, 1.0f, 0.0f);
 	Param UseEquation = Param(PT_Boolean, L"Use additive synthesis", 0.0f, 1.0f, 0.0f);
 	Param EquationN = Param(PT_Float, L"Additive sine count", 1.0f, 100.0f, 30.0f);
 
@@ -152,6 +162,7 @@ public:
 
 		ParameterRefsForUi.push_back(&Amp);
 		ParameterRefsForUi.push_back(&Frequency);
+		ParameterRefsForUi.push_back(&Retrigger);
 		ParameterRefsForUi.push_back(&InvertPhase);
 		ParameterRefsForUi.push_back(&UseEquation);
 		ParameterRefsForUi.push_back(&EquationN);
@@ -188,7 +199,7 @@ class WhiteNoiseGenerator : public DspPlugin
 {
 private:
 	Param Amp = Param(PT_Float, L"Noise volume", 0.0f, 1.0f, 0.2f);
-	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 1.0f);
+	Param InvertPhase = Param(PT_Boolean, L"Invert phase", 0.0f, 1.0f, 0.0f);
 	Param EquationN = Param(PT_Float, L"Random() count", 1.0f, 12.0f, 4.0f);
 	gcroot<Random^> RNG;
 	float TempValue = 0.0f;
@@ -223,7 +234,6 @@ class Oscilloscope : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Float, L"Curve duration [ms]", 1.0f, 200.0f, 20.0f);
 	Param Channels = Param(PT_Enum, L"Channels", 2.0f, 3.0f, 1.0f);
-	Param ImgPadding = Param(PT_Float, L"Margin [px]", 1.0f, 20.0f, 3.0f);
 
 	gcroot<MonitoredArray<float>^> Data;
 	gcroot<MonitoredArray<float>^> Interp;
@@ -247,10 +257,8 @@ public:
 
 		Channels.EnumNames = ChannelNames;
 
-		ImgPadding.FloatValueStep = 1.0f;
 		ParameterRefsForUi.push_back(&Channels);
 		ParameterRefsForUi.push_back(&CurveDuration);
-		ParameterRefsForUi.push_back(&ImgPadding);
 
 		Data = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
 		Interp = gcroot<MonitoredArray<float>^>(gcnew MonitoredArray<float>());
@@ -347,7 +355,7 @@ public:
 		}
 
 		//Podpisy osi poziomej i pionowej
-		Image->DrawString(L"Time [ms]", UsedStyle, TextColor, Width / 2, Height - 20, FormatC);
+		Image->DrawString(L"Time [ms]", UsedStyle, TextColor, (float)(Width / 2), (float)(Height - 20), FormatC);
 		
 		Drawing::Drawing2D::GraphicsState^ State = Image->Save();
 		Image->RotateTransform(-90);
@@ -361,11 +369,11 @@ public:
 		Data->Unlock();
 
 		//Rysowanie danych
-		int PreviousPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](0)) - Shift;
+		int PreviousPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->Get(0) - Shift);
 		for (int i = 1; i < WorkAreaHorizontal; ++i)
 		{
-			int HorizontalVal = (int)(i + Padding) + Shift;
-			int NewPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->operator[](i)) - Shift;
+			int HorizontalVal = (int)(i + Padding) + (int)Shift;
+			int NewPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->Get(i) - Shift);
 			if (PreviousPt != NewPt) PreviousPt = (NewPt < PreviousPt) ? PreviousPt - 1 : PreviousPt + 1;
 
 			if (PreviousPt == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, PreviousPt, 1, 1);
@@ -441,7 +449,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = (int)std::pow(2, 7 + CurveDuration.Val);
+		int CurvePointsSize = pow2(7 + (int)CurveDuration.Val);
 
 		Data->Lock();
 		switch ((int)Channels.Val)
@@ -504,7 +512,7 @@ public:
 			Image->DrawString((ZoomV.Val - i * 0.1f * ZoomV.Val).ToString("N2"), UsedStyle, TextColor, Padding - 3 + Shift, VerticalY - 6, FormatR);
 		}
 
-		Image->DrawString(L"Frequency [Hz]", UsedStyle, TextColor, Width / 2, Height - 20, FormatC);
+		Image->DrawString(L"Frequency [Hz]", UsedStyle, TextColor, (float)(Width / 2), (float)(Height - 20), FormatC);
 
 		Drawing::Drawing2D::GraphicsState^ State = Image->Save();
 		Image->RotateTransform(-90);
@@ -513,7 +521,7 @@ public:
 		Image->Restore(State);
 
 		Data->Lock();
-		int ArrSize = (int)std::pow(2, 7 + CurveDuration.Val);
+		int ArrSize = pow2(7 + (int)CurveDuration.Val);
 		if (Data->Size() < ArrSize)
 		{
 			Data->Unlock();
@@ -554,7 +562,7 @@ class Spectrogram : public DspPlugin
 {
 	Param CurveDuration = Param(PT_Enum, L"Samples", 0.0f, 6.0f, 1.0f);
 	Param Channels = Param(PT_Enum, L"Channel", 2.0f, 3.0f, 1.0f);
-	Param ContrastBump = Param(PT_Float, L"Contrast Amp", 0.0f, 1.99f, 0.0f);
+	Param ContrastBump = Param(PT_Float, L"Contrast Amp", 0.0f, 10.0f, 0.0f);
 
 	gcroot<MonitoredArray<float>^> Data;
 
@@ -576,7 +584,7 @@ public:
 		ChannelNames[2] = L"Mixdown";
 		Channels.EnumNames = ChannelNames;
 
-		ContrastBump.FloatValueStep = 0.01f;
+		ContrastBump.FloatValueStep = 0.1f;
 
 		ParameterRefsForUi.push_back(&Channels);
 		ParameterRefsForUi.push_back(&CurveDuration);
@@ -587,7 +595,7 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int CurvePointsSize = (int)std::pow(2, 7 + CurveDuration.Val);
+		int CurvePointsSize = pow2(7 + (int)CurveDuration.Val);
 
 		Data->Lock();
 		switch ((int)Channels.Val)
@@ -609,7 +617,7 @@ public:
 
 	virtual void UpdatePictureBox(System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImagePtr, int Width, int Height, bool FirstFrame) override
 	{
-		int ArrSize = (int)std::pow(2, 7 + CurveDuration.Val);
+		int ArrSize = pow2(7 + (int)CurveDuration.Val);
 		ComplexF* FftResult = new ComplexF[ArrSize];
 
 		Data->Lock();
@@ -624,7 +632,8 @@ public:
 		Data->Unlock();
 
 		Utilities::Fft(FftResult, ArrSize);
-		Utilities::FftProcessResult(FftResult, ArrSize);
+		MonitoredArray<float>^ ResultArr = Utilities::FftProcessResult(FftResult, ArrSize);
+		delete[] FftResult;
 
 		int HalfSize = ArrSize / 2;
 		Bitmap^ FftLineBitmap = gcnew System::Drawing::Bitmap(1, HalfSize);
@@ -632,14 +641,14 @@ public:
 		float Buff = ContrastBump.Val + 1.0f;
 		for (int i = 0; i < HalfSize; ++i)
 		{
-			int Val = (int)((FftResult[i].real() * 255.0f) * Buff);
+			int Val = (int)((ResultArr[i] * 255.0f) * Buff);
 			Val = Utilities::Clamp(Val, 0, 255);
 			FftLineBitmap->SetPixel(0, HalfSize - i - 1, Color::FromArgb(Val, Val, Val));
 		}
 
 		Image->DrawImage(ImagePtr, 1, 0, Width, Height);
 		Image->DrawImage(FftLineBitmap, 0, 0, 1, Height);
-		delete[] FftResult;
+		ResultArr->Empty();
 	}
 };
 
@@ -759,7 +768,7 @@ public:
 #define BIT_DEPTH 16
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int Mod = (int)std::pow(2, BIT_DEPTH - Resolution.Val);
+		int Mod = pow2(BIT_DEPTH - (int)Resolution.Val);
 		for (int i = 0; i < Length; i++)
 		{
 			ProcessSample(BufferL[i], Mod);
@@ -985,39 +994,38 @@ public:
 	}
 };
 
-#define SINC_LEN 101
+#define SINC_LEN 255
 
-class BandpassFilterSinc : public DspPlugin
+class SincFilter : public DspPlugin
 {
-private:
-	Param ResponseLength = Param(PT_Float, L"Impulse response length", 1, 128, 5);
-	Param MuxPointCount = Param(PT_Float, L"Points to average", 0.0f, 1.0f, 1.0f);
-	Param PostAmp = Param(PT_Float, L"Post amp log base", 1.0f, 10.0f, 5.0f);
+protected:
+	Param CutoffFrequency = Param(PT_Float, L"Cutoff frequency", 1.0f, AUDIO_SAMPLERATE / 2.0f, 200.0f);
 	float* LastPointsL;
 	float* LastPointsR;
+	float* Response;
 	int CurrentAllocatedPointsize = 0;
+	float LastKnownCutoffFrequency = -1.0f;
+
+	virtual void GenerateSincFunction() = 0;
 
 public:
-
-	BandpassFilterSinc() : DspPlugin(L"Band Pass Filter(sinc)")
+	SincFilter(std::wstring ChildFilterName) : DspPlugin(ChildFilterName)
 	{
-		MuxPointCount.FloatValueStep = 1.0f;
-		MuxPointCount.FloatValueStep = 0.01f;
-		ParameterRefsForUi.push_back(&ResponseLength);
-		ParameterRefsForUi.push_back(&MuxPointCount);
-		ParameterRefsForUi.push_back(&PostAmp);
+		CutoffFrequency.FloatValueStep = 1.0f;
+		ParameterRefsForUi.push_back(&CutoffFrequency);
 
 		LastPointsL = new float[SINC_LEN];
 		LastPointsR = new float[SINC_LEN];
+		Response = new float[SINC_LEN];
+
 		for (int i = 0; i < SINC_LEN; ++i)
 		{
-			LastPointsL[i] = 1.0f;
-			LastPointsR[i] = 1.0f;
+			LastPointsL[i] = 0.0f;
+			LastPointsR[i] = 0.0f;
 		}
 	}
 
-
-	void KeepLastPoints(float* BufferL, float* BufferR, int Length)
+	void SaveLastPoints(float* BufferL, float* BufferR, int Length)
 	{
 		int i1 = 0;
 		for (int i2 = Length - SINC_LEN; i2 < Length; ++i2)
@@ -1034,10 +1042,6 @@ public:
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		const float FrequencyCutoff = MuxPointCount.Val;
-		const int FilterHalfLength = SINC_LEN / 2;
-
-		float* Response = new float[SINC_LEN];
 		float* OutL = new float[Length];
 		float* OutR = new float[Length];
 		for (int i = 0; i < Length; i++)
@@ -1046,59 +1050,104 @@ public:
 			OutR[i] = 0.0f;
 		}
 		
-		//Stworzenie funkcji sinc
-		float ResponseSum = 0.0f;
-		for (int i = 0; i < SINC_LEN; ++i)
+		//Aktualizacja sinc
+		if (LastKnownCutoffFrequency != CutoffFrequency.Val)
 		{
-			int Condition = i - FilterHalfLength;
-
-			if (Condition == 0) Response[i] = M_TAU * FrequencyCutoff;
-			else Response[i] = PcSin->GetWithTau(FrequencyCutoff * (float)Condition) / (float)Condition;
-			Response[i] *= 0.54f - (0.46f * cos(M_TAU * (float)i / (float)SINC_LEN));
-			ResponseSum += Response[i];
+			LastKnownCutoffFrequency = CutoffFrequency.Val;
+			GenerateSincFunction();
 		}
-		for (int i = 0; i < SINC_LEN; ++i) Response[i] /= ResponseSum;
 		
 		//Aplikacja splotu
 		for (int i = 0; i < Length; ++i)
 		{
 			for (int j = 0; j < SINC_LEN; ++j)
 			{
-				//OutL[i] += BufferL[i - j] * Response[j];
-				//OutR[i] += BufferR[i - j] * Response[j];
-				
 				OutL[i] += GetPoint(i - j, LastPointsL, BufferL) * Response[j];
 				OutR[i] += GetPoint(i - j, LastPointsR, BufferR) * Response[j];
 			}
 		}
 
-		KeepLastPoints(BufferL, BufferR, Length);
+		SaveLastPoints(BufferL, BufferR, Length);
 
 		//Post-amp
-		//float PostAmpValue = powf(2.0f, PostAmp.Val - 4.0f);
 		for (int i = 0; i < Length; ++i)
 		{
-			//BufferL[i] = Utilities::Clamp(OutL[i] * PostAmpValue, -1.0f, 1.0f);
-			//BufferR[i] = Utilities::Clamp(OutR[i] * PostAmpValue, -1.0f, 1.0f);
 			BufferL[i] = OutL[i];
 			BufferR[i] = OutR[i];
-
 		}
 
 		delete[] OutL;
 		delete[] OutR;
-		delete[] Response;
 	}
 };
+
+class LowPassFilterSinc : public SincFilter
+{
+public:
+	LowPassFilterSinc() : SincFilter(L"Low Pass Filter (sinc)")
+	{
+		CutoffFrequency.Val = CutoffFrequency.MaximumValue;
+	}
+
+private:
+	virtual void GenerateSincFunction() override
+	{
+		const float CutoffFreq = (LastKnownCutoffFrequency / 22100.0f) / 2.0f;
+		const int FilterHalfLength = SINC_LEN / 2;
+		float ResponseSum = 0.0f;
+
+		for (int i = 0; i < SINC_LEN; ++i)
+		{
+			int Condition = i - FilterHalfLength;
+
+			if (Condition == 0) Response[i] = M_TAU * CutoffFreq;
+			else Response[i] = PcSin->GetWithTau(CutoffFreq * (float)Condition) / (float)Condition;
+			Response[i] *= 0.54f - (0.46f * cos(M_TAU * (float)i / (float)SINC_LEN));
+			ResponseSum += Response[i];
+		}
+
+		for (int i = 0; i < SINC_LEN; ++i) Response[i] /= ResponseSum;
+	}
+};
+
+class HighPassFilterSinc : public SincFilter
+{
+public:
+	HighPassFilterSinc() : SincFilter(L"High Pass Filter (sinc)")
+	{
+		CutoffFrequency.Val = CutoffFrequency.MinimumValue;
+	}
+
+private:
+	void GenerateSincFunction()
+	{
+		const float CutoffFreq = LastKnownCutoffFrequency;
+		const int FilterHalfLength = SINC_LEN / 2;
+		float ResponseSum = 0.0f;
+
+		for (int i = 0; i < SINC_LEN; ++i)
+		{
+			int Condition = i - FilterHalfLength;
+
+			if (Condition == 0) Response[i] = M_TAU * CutoffFreq;
+			else Response[i] = PcSin->GetWithTau(CutoffFreq * (float)Condition) / (float)Condition;
+			Response[i] *= 0.54f - (0.46f * cos(M_TAU * (float)i / (float)SINC_LEN));
+			ResponseSum += Response[i];
+		}
+
+		for (int i = 0; i < SINC_LEN; ++i) Response[i] /= ResponseSum;
+	}
+};
+
 class LowpassFilterAvg : public DspPlugin
 {
 private:
-	Param MuxPointCount = Param(PT_Float, L"Points to average", 1, 128, 5);
+	Param CutoffFrequency = Param(PT_Float, L"Points to average", 1, 128, 5);
 	float* LastPointsL;
 	float* LastPointsR;
 	int CurrentAllocatedPointsize = 0;
 
-	void ReallocateMemory(int MuxPointCount)
+	void ReallocateMemory(int CutoffFrequency)
 	{
 		if (CurrentAllocatedPointsize)
 		{
@@ -1106,10 +1155,10 @@ private:
 			delete[] LastPointsR;
 		}
 
-		CurrentAllocatedPointsize = MuxPointCount;
-		LastPointsL = new float[MuxPointCount];
-		LastPointsR = new float[MuxPointCount];
-		for (int i = 0; i < MuxPointCount; i++)
+		CurrentAllocatedPointsize = CutoffFrequency;
+		LastPointsL = new float[CutoffFrequency];
+		LastPointsR = new float[CutoffFrequency];
+		for (int i = 0; i < CutoffFrequency; i++)
 		{
 			LastPointsL[i] = 0;
 			LastPointsR[i] = 0;
@@ -1120,14 +1169,14 @@ public:
 
 	LowpassFilterAvg() : DspPlugin(L"Low Pass Filter (avg)")
 	{
-		MuxPointCount.FloatValueStep = 1.0f;
-		ParameterRefsForUi.push_back(&MuxPointCount);
+		CutoffFrequency.FloatValueStep = 1.0f;
+		ParameterRefsForUi.push_back(&CutoffFrequency);
 	}
 
 
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int TempMuxPointCount = (int)MuxPointCount.Val;
+		int TempMuxPointCount = (int)CutoffFrequency.Val;
 
 		if (CurrentAllocatedPointsize != TempMuxPointCount) ReallocateMemory(TempMuxPointCount);
 
@@ -1185,7 +1234,7 @@ public:
 	
 	virtual void ProcessData(float* BufferL, float* BufferR, int Length) override
 	{
-		int ModuloVal = (int)((float)Length / std::powf(2.0f, Modulo.Val));
+		int ModuloVal = (int)((float)Length / (float)pow2((int)Modulo.Val));
 
 		for (int i = 0; i < Length; i++)
 		{

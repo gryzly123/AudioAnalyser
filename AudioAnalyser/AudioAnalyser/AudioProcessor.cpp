@@ -42,9 +42,8 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"Stereo Merger")) return new StereoMerger();
 	if (NewPluginName == (L"Stereo to Mid-Side")) return new StereoToMidside();
 	if (NewPluginName == (L"Low Pass Filter (avg)")) return new LowpassFilterAvg();
-	//if (NewPluginName == (L"Low Pass Filter (sinc)")) return new ();
-	//if (NewPluginName == (L"High Pass Filter (sinc)")) return new ();
-	if (NewPluginName == (L"Band Pass Filter (sinc)")) return new BandpassFilterSinc();
+	if (NewPluginName == (L"Low Pass Filter (sinc)")) return new LowPassFilterSinc();
+	if (NewPluginName == (L"High Pass Filter (sinc)")) return new HighPassFilterSinc();
 
 	//if (NewPluginName == (L"Delay")) return new ();
 	if (NewPluginName == (L"Retrigger (Simple)")) return new RetriggerSimple();

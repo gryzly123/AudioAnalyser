@@ -15,6 +15,7 @@ void Main(array<System::String^>^ Argv)
 	App::Run(MainWindowInstance);
 
 	//cleanup po zamkniêciu okna
+	IoManager::GetInstance()->StopProcessing();
 	AudioProcessor::Shutdown();
 	IoManager::Shutdown();
 }
