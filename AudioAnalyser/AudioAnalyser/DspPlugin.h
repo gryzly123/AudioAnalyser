@@ -304,6 +304,7 @@ public:
 		//Inicjalizacja parametrów rysunku
 		const float Padding = 30.0f;
 		const float Shift = 13.0f;
+		const float LinePadding = 26.0f;
 		const float WorkAreaHorizontal = Width - (2 * Padding);
 		const float WorkAreaVertical = Height - (2 * Padding);
 		const int MaxPoints = Width;
@@ -323,7 +324,7 @@ public:
 		for (int i = 0; i < (int)HelperLineCount + 1; i++)
 		{
 			float HorizontalX = Padding + (WorkAreaHorizontal / HelperLineCount) * (float)i + Shift;
-			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)(i - 1) - Shift;
+			float VerticalY = Padding + (WorkAreaVertical / HelperLineCount) * (float)i - Shift;
 
 			Image->DrawLine(HelperPencil2,
 				HorizontalX,
@@ -346,7 +347,7 @@ public:
 				FormatC);
 
 			Image->DrawString(
-				(-1.0f + (i * 0.2f)).ToString("N1"),
+				(1.0f - (i * 0.2f)).ToString("N1"),
 				UsedStyle,
 				TextColor,
 				Padding - 3 + Shift,
@@ -369,11 +370,11 @@ public:
 		Data->Unlock();
 
 		//Rysowanie danych
-		int PreviousPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->Get(0) - Shift);
+		int PreviousPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->Get(0) - Shift) - LinePadding;
 		for (int i = 1; i < WorkAreaHorizontal; ++i)
 		{
 			int HorizontalVal = (int)(i + Padding) + (int)Shift;
-			int NewPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->Get(i) - Shift);
+			int NewPt = RangeHalved - (int)((Single)WorkAreaVertical / 2.0f * (Single)Interp->Get(i) - Shift) - LinePadding;
 			if (PreviousPt != NewPt) PreviousPt = (NewPt < PreviousPt) ? PreviousPt - 1 : PreviousPt + 1;
 
 			if (PreviousPt == NewPt) Image->FillRectangle(DataBrush, HorizontalVal, PreviousPt, 1, 1);
