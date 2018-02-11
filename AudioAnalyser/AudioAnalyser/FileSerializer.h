@@ -58,65 +58,40 @@ namespace AudioAnalyser
 		{
 			AudioProcessor* Ap = AudioProcessor::GetInstance();
 			DR->WhitespaceHandling = WhitespaceHandling::None;
-			//DR->MoveToContent();
+			bool Success = false;
 			
 			int CurrentRackItem = -1;
-
-			while (DR->Read())
+			try
 			{
-				if (DR->NodeType != XmlNodeType::Element) continue;
-
-				if (DR->LocalName->Equals(L"AudioAnalyser"))
+				while (DR->Read())
 				{
-					bool VersionCheckPass = DeserializeRackHelperAudioAnalyser(DR);
-				}
-				else if (DR->LocalName->Equals(L"RackItem"))
-				{
-					++CurrentRackItem;
-					if (CurrentRackItem > GUI_RACKITEMS_COUNT) continue;
-					DeserializeRackHelperRackItem(DR, CurrentRackItem);
-				}
-				else if (DR->LocalName->Equals(L"Parameter"))
-				{
-					Ap->UpdatePluginParameterByName(
-						CurrentRackItem,
-						Utilities::WideFromSystemString(DR->GetAttribute(L"name")),
-						Single::Parse(DR->GetAttribute(L"value")));
-				}
-			}
-			{/*
-				DW->WriteStartDocument();
-				DW->WriteStartElement(L"Audio Analyser");
-				DW->WriteAttributeString(L"version", L"0.0.1");
+					if (DR->NodeType != XmlNodeType::Element) continue;
 
-				DW->WriteStartElement(L"RackItems");
-				DW->WriteAttributeString(L"count", GUI_RACKITEMS_COUNT.ToString());
-
-				for (int i = 0; i < GUI_RACKITEMS_COUNT; i++)
-				{
-					DW->WriteStartElement(L"RackItem");
-					DW->WriteAttributeString(L"name", UtilitiesSystemStringFromWide(Ap->GetPluginName(i)));
-					DW->WriteAttributeString(L"bypassed", Ap->IsPluginBypassed(i).ToString());
-					DW->WriteAttributeString(L"drywetmix", Ap->GetPluginVolumeMix(i).ToString());
-
-					std::vector<DspPluginParameter*> Parameters = Ap->GetPluginParameters(i);
-					int ParametersCount = Parameters.size();
-					for (int j = 0; j < ParametersCount; j++)
+					if (DR->LocalName->Equals(L"AudioAnalyser"))
 					{
-						DW->WriteStartElement(L"Parameter");
-						DW->WriteAttributeString(L"name", UtilitiesSystemStringFromWide(Parameters[j]->Name));
-						DW->WriteAttributeString(L"value", Parameters[j]->CurrentValue.ToString());
-						DW->WriteEndElement();
+						bool VersionCheckPass = DeserializeRackHelperAudioAnalyser(DR);
+						if (!VersionCheckPass) return;
 					}
-
-					DW->WriteEndElement();
+					else if (DR->LocalName->Equals(L"RackItem"))
+					{
+						++CurrentRackItem;
+						if (CurrentRackItem > GUI_RACKITEMS_COUNT) continue;
+						DeserializeRackHelperRackItem(DR, CurrentRackItem);
+					}
+					else if (DR->LocalName->Equals(L"Parameter"))
+					{
+						Ap->UpdatePluginParameterByName(
+							CurrentRackItem,
+							Utilities::WideFromSystemString(DR->GetAttribute(L"name")),
+							Single::Parse(DR->GetAttribute(L"value")));
+					}
 				}
 
-				DW->WriteEndElement();
-				DW->WriteEndElement();
-				DW->WriteEndDocument();
-				DW->Close();
-			*/}
+				Success = false;
+			}
+			catch (System::Exception^ E) { }
+			
+			if(!Success) MessageBox::Show(L"File seems to be corrupted and could not be fully loaded.", L"Open failed");
 		}
 
 	private:
@@ -139,7 +114,7 @@ namespace AudioAnalyser
 						L"Version mismatch",
 						MessageBoxButtons::YesNo);
 
-					if (Result == DialogResult::No) return false;
+					return (Result == DialogResult::Yes);
 				}
 			}
 
