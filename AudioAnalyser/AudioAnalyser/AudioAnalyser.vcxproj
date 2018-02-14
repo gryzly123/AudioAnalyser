@@ -75,14 +75,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);G:\Dev\Temp\first_clr\sfml\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;G:\Dev\Temp\first_clr\sfml\lib</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)..\..\PortAudio\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)..\..\PortAudio\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -92,14 +92,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;SFML_STATIC;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\sfml\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\PortAudio\include;$(SolutionDir)..\Libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>true</CompileAsManaged>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-system-d.lib;sfml-main-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_static_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\sfml\lib\Debug\*;$(ProjectDir)..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\PortAudio\lib\Debug\;$(SolutionDir)..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,14 +121,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;SFML_STATIC;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\sfml\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\sfml\include\;$(ProjectDir)..\..\PortAudio\include;$(ProjectDir)..\..\Libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>true</CompileAsManaged>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)\..\..\sfml\lib\Release\sfml-graphics.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-window.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-audio.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-system.lib;$(ProjectDir)\..\..\sfml\lib\Release\sfml-main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_static_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\sfml\lib\Release\*;$(ProjectDir)\..\..\sfml\lib\Common\*;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\PortAudio\lib\Release\;$(ProjectDir)..\..\Libsndfile\lib\;%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,26 +151,66 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioGrabber.cpp" />
-    <ClCompile Include="Buffer.cpp" />
-    <ClCompile Include="ComplexNumbers.cpp" />
+    <ClCompile Include="AudioProcessor.cpp" />
+    <ClCompile Include="ConfigWindow.cpp" />
+    <ClCompile Include="DspPlugin.cpp" />
+    <ClCompile Include="DynamicPluginConfigWindow.cpp" />
+    <ClCompile Include="DynamicPluginVizWindow.cpp" />
+    <ClCompile Include="FileDetailsWindow.cpp" />
+    <ClCompile Include="IoManager.cpp" />
+    <ClCompile Include="LookupTables.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="PCH.cpp" />
+    <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioGrabber.h" />
-    <ClInclude Include="Buffer.h" />
-    <ClInclude Include="ComplexNumbers.h" />
+    <ClInclude Include="AboutWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="AudioProcessor.h" />
+    <ClInclude Include="ConfigWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="DspPlugin.h" />
+    <ClInclude Include="DspPluginParameter.h" />
+    <ClInclude Include="DynamicPluginConfigWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="DynamicPluginVizWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="FileDetailsWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="FileSerializer.h" />
+    <ClInclude Include="IoManager.h" />
+    <ClInclude Include="LookupTables.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="PCH.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SoundFile.h" />
+    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AboutWindow.resx">
+      <DependentUpon>AboutWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigWindow.resx">
+      <DependentUpon>ConfigWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicPluginConfigWindow.resx">
+      <DependentUpon>DynamicPluginConfigWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicPluginVizWindow.resx">
+      <DependentUpon>DynamicPluginVizWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileDetailsWindow.resx">
+      <DependentUpon>FileDetailsWindow.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)MainWindow.resx</LogicalName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
