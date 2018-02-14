@@ -20,6 +20,7 @@ struct AudioFileInfo
 	sf_count_t Length = 0;
 };
 
+//klasa pliku dŸwiêkowego (abstrakcja dla Libsndfile)
 class SoundFile
 {
 private:
@@ -79,6 +80,7 @@ public:
 	bool IsFileValid() { return OpenSuccess; }
 };
 
+//Wejœciowy plik audio
 class InSoundFile : public SoundFile
 {
 private:
@@ -119,6 +121,7 @@ public:
 	}
 };
 
+//Wyjœciowy plik audio
 class OutSoundFile : public SoundFile
 {
 public:

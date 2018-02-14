@@ -141,9 +141,9 @@ namespace AudioAnalyser
 			// 
 			this->ComboInputStreamBlocksize->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->ComboInputStreamBlocksize->FormattingEnabled = true;
-			this->ComboInputStreamBlocksize->Items->AddRange(gcnew cli::array< System::Object^  >(11) {
-				L"64", L"128", L"256", L"512",
-					L"1024", L"2048", L"4096", L"8192", L"16384", L"32768", L"65536"
+			this->ComboInputStreamBlocksize->Items->AddRange(gcnew cli::array< System::Object^  >(9) {
+				L"256", L"512", L"1024", L"2048",
+					L"4096", L"8192", L"16384", L"32768", L"65536"
 			});
 			this->ComboInputStreamBlocksize->Location = System::Drawing::Point(92, 19);
 			this->ComboInputStreamBlocksize->Name = L"ComboInputStreamBlocksize";
@@ -243,7 +243,7 @@ private:
 			}
 
 			int BlocksizeSelectedIndex = 0;
-			Blocksize /= 64;
+			Blocksize /= 256;
 			while (Blocksize > 1)
 			{
 				BlocksizeSelectedIndex++;

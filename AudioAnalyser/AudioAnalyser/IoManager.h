@@ -224,7 +224,7 @@ public:
 
 		if (NewInput >= 0) SelectedAudioInput = NewInput;
 		if (NewOutput >= 0) SelectedAudioOutput = NewOutput;
-		if (NewBlocksize >= 0) InSamplesInBlock = (int)pow(2, NewBlocksize + 6);
+		if (NewBlocksize >= 0) InSamplesInBlock = (int)pow(2, NewBlocksize + 8);
 		
 		if (StartNow || WasRunning) StartPortAudio();
 	}

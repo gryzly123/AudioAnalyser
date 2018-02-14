@@ -67,16 +67,16 @@ namespace RackControls
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoMerger;
 
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugDecimation;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugDelay;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugBitcrush;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugLpfAvg;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugHpf;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugNullPlugin;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugSawOscillator;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugSquareOscillator;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugRetriggerSimple;
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugLpfSinc;
-	private: System::Windows::Forms::ToolStripMenuItem^  PlugBpf;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  PlugStereoToMs;
 	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects2;
 	private: System::Windows::Forms::ToolStripTextBox^  TextboxEffects3;
@@ -153,10 +153,7 @@ namespace RackControls
 			this->TextboxEffects4 = (gcnew System::Windows::Forms::ToolStripTextBox());
 			this->PlugLpfAvg = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugLpfSinc = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->PlugHpf = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->PlugBpf = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->TextboxEffects5 = (gcnew System::Windows::Forms::ToolStripTextBox());
-			this->PlugDelay = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugRetriggerSimple = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugRetrigger = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->PlugReverserSimple = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -337,22 +334,22 @@ namespace RackControls
 			// 
 			this->PluginList->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->PluginList->ImageScalingSize = System::Drawing::Size(0, 16);
-			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(34) {
+			this->PluginList->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(31) {
 				this->PlugNullPlugin, this->TextboxGenerators,
 					this->PlugSineOscillator, this->PlugSawOscillator, this->PlugSquareOscillator, this->PlugNoise, this->Separator1, this->TextboxAnalysers,
 					this->PlugOscilloscope, this->PlugSpectrum, this->PlugSpectrogram, this->Separator2, this->TextboxEffects1, this->PlugGain, this->PlugClip,
 					this->PlugPhaseInverter, this->TextboxEffects2, this->PlugBitcrush, this->PlugDecimation, this->TextboxEffects3, this->PlugPanner,
-					this->PlugStereoMerger, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc, this->PlugHpf, this->PlugBpf,
-					this->TextboxEffects5, this->PlugDelay, this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple, this->PlugReverser
+					this->PlugStereoMerger, this->PlugStereoToMs, this->TextboxEffects4, this->PlugLpfAvg, this->PlugLpfSinc, this->TextboxEffects5,
+					this->PlugRetriggerSimple, this->PlugRetrigger, this->PlugReverserSimple, this->PlugReverser
 			});
 			this->PluginList->LayoutStyle = System::Windows::Forms::ToolStripLayoutStyle::HorizontalStackWithOverflow;
 			this->PluginList->Name = L"PluginList";
-			this->PluginList->Size = System::Drawing::Size(189, 693);
+			this->PluginList->Size = System::Drawing::Size(184, 605);
 			// 
 			// PlugNullPlugin
 			// 
 			this->PlugNullPlugin->Name = L"PlugNullPlugin";
-			this->PlugNullPlugin->Size = System::Drawing::Size(188, 22);
+			this->PlugNullPlugin->Size = System::Drawing::Size(183, 22);
 			this->PlugNullPlugin->Text = L"None";
 			this->PlugNullPlugin->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
@@ -369,35 +366,35 @@ namespace RackControls
 			// PlugSineOscillator
 			// 
 			this->PlugSineOscillator->Name = L"PlugSineOscillator";
-			this->PlugSineOscillator->Size = System::Drawing::Size(188, 22);
+			this->PlugSineOscillator->Size = System::Drawing::Size(183, 22);
 			this->PlugSineOscillator->Text = L"Sine Wave";
 			this->PlugSineOscillator->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSawOscillator
 			// 
 			this->PlugSawOscillator->Name = L"PlugSawOscillator";
-			this->PlugSawOscillator->Size = System::Drawing::Size(188, 22);
+			this->PlugSawOscillator->Size = System::Drawing::Size(183, 22);
 			this->PlugSawOscillator->Text = L"Saw Wave";
 			this->PlugSawOscillator->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSquareOscillator
 			// 
 			this->PlugSquareOscillator->Name = L"PlugSquareOscillator";
-			this->PlugSquareOscillator->Size = System::Drawing::Size(188, 22);
+			this->PlugSquareOscillator->Size = System::Drawing::Size(183, 22);
 			this->PlugSquareOscillator->Text = L"Square Wave";
 			this->PlugSquareOscillator->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugNoise
 			// 
 			this->PlugNoise->Name = L"PlugNoise";
-			this->PlugNoise->Size = System::Drawing::Size(188, 22);
+			this->PlugNoise->Size = System::Drawing::Size(183, 22);
 			this->PlugNoise->Text = L"White noise";
 			this->PlugNoise->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// Separator1
 			// 
 			this->Separator1->Name = L"Separator1";
-			this->Separator1->Size = System::Drawing::Size(185, 6);
+			this->Separator1->Size = System::Drawing::Size(180, 6);
 			// 
 			// TextboxAnalysers
 			// 
@@ -412,28 +409,28 @@ namespace RackControls
 			// PlugOscilloscope
 			// 
 			this->PlugOscilloscope->Name = L"PlugOscilloscope";
-			this->PlugOscilloscope->Size = System::Drawing::Size(188, 22);
+			this->PlugOscilloscope->Size = System::Drawing::Size(183, 22);
 			this->PlugOscilloscope->Text = L"Oscilloscope";
 			this->PlugOscilloscope->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSpectrum
 			// 
 			this->PlugSpectrum->Name = L"PlugSpectrum";
-			this->PlugSpectrum->Size = System::Drawing::Size(188, 22);
+			this->PlugSpectrum->Size = System::Drawing::Size(183, 22);
 			this->PlugSpectrum->Text = L"Spectrum";
 			this->PlugSpectrum->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugSpectrogram
 			// 
 			this->PlugSpectrogram->Name = L"PlugSpectrogram";
-			this->PlugSpectrogram->Size = System::Drawing::Size(188, 22);
+			this->PlugSpectrogram->Size = System::Drawing::Size(183, 22);
 			this->PlugSpectrogram->Text = L"Spectrogram";
 			this->PlugSpectrogram->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// Separator2
 			// 
 			this->Separator2->Name = L"Separator2";
-			this->Separator2->Size = System::Drawing::Size(185, 6);
+			this->Separator2->Size = System::Drawing::Size(180, 6);
 			// 
 			// TextboxEffects1
 			// 
@@ -448,21 +445,21 @@ namespace RackControls
 			// PlugGain
 			// 
 			this->PlugGain->Name = L"PlugGain";
-			this->PlugGain->Size = System::Drawing::Size(188, 22);
+			this->PlugGain->Size = System::Drawing::Size(183, 22);
 			this->PlugGain->Text = L"Gain";
 			this->PlugGain->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugClip
 			// 
 			this->PlugClip->Name = L"PlugClip";
-			this->PlugClip->Size = System::Drawing::Size(188, 22);
+			this->PlugClip->Size = System::Drawing::Size(183, 22);
 			this->PlugClip->Text = L"Clip";
 			this->PlugClip->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugPhaseInverter
 			// 
 			this->PlugPhaseInverter->Name = L"PlugPhaseInverter";
-			this->PlugPhaseInverter->Size = System::Drawing::Size(188, 22);
+			this->PlugPhaseInverter->Size = System::Drawing::Size(183, 22);
 			this->PlugPhaseInverter->Text = L"Phase Inverter";
 			this->PlugPhaseInverter->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
@@ -479,14 +476,14 @@ namespace RackControls
 			// PlugBitcrush
 			// 
 			this->PlugBitcrush->Name = L"PlugBitcrush";
-			this->PlugBitcrush->Size = System::Drawing::Size(188, 22);
+			this->PlugBitcrush->Size = System::Drawing::Size(183, 22);
 			this->PlugBitcrush->Text = L"Bitcrusher";
 			this->PlugBitcrush->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugDecimation
 			// 
 			this->PlugDecimation->Name = L"PlugDecimation";
-			this->PlugDecimation->Size = System::Drawing::Size(188, 22);
+			this->PlugDecimation->Size = System::Drawing::Size(183, 22);
 			this->PlugDecimation->Text = L"Decimator";
 			this->PlugDecimation->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
@@ -506,7 +503,7 @@ namespace RackControls
 			this->PlugPanner->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->PlugPanner->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
 			this->PlugPanner->Name = L"PlugPanner";
-			this->PlugPanner->Size = System::Drawing::Size(188, 22);
+			this->PlugPanner->Size = System::Drawing::Size(183, 22);
 			this->PlugPanner->Text = L"Panner";
 			this->PlugPanner->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
 			this->PlugPanner->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
@@ -517,7 +514,7 @@ namespace RackControls
 			this->PlugStereoMerger->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->PlugStereoMerger->ImageScaling = System::Windows::Forms::ToolStripItemImageScaling::None;
 			this->PlugStereoMerger->Name = L"PlugStereoMerger";
-			this->PlugStereoMerger->Size = System::Drawing::Size(188, 22);
+			this->PlugStereoMerger->Size = System::Drawing::Size(183, 22);
 			this->PlugStereoMerger->Text = L"Stereo Merger";
 			this->PlugStereoMerger->TextImageRelation = System::Windows::Forms::TextImageRelation::TextAboveImage;
 			this->PlugStereoMerger->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
@@ -525,7 +522,7 @@ namespace RackControls
 			// PlugStereoToMs
 			// 
 			this->PlugStereoToMs->Name = L"PlugStereoToMs";
-			this->PlugStereoToMs->Size = System::Drawing::Size(188, 22);
+			this->PlugStereoToMs->Size = System::Drawing::Size(183, 22);
 			this->PlugStereoToMs->Text = L"Stereo to Mid-Side";
 			this->PlugStereoToMs->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
@@ -542,30 +539,16 @@ namespace RackControls
 			// PlugLpfAvg
 			// 
 			this->PlugLpfAvg->Name = L"PlugLpfAvg";
-			this->PlugLpfAvg->Size = System::Drawing::Size(188, 22);
+			this->PlugLpfAvg->Size = System::Drawing::Size(183, 22);
 			this->PlugLpfAvg->Text = L"Low Pass Filter (avg)";
 			this->PlugLpfAvg->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugLpfSinc
 			// 
 			this->PlugLpfSinc->Name = L"PlugLpfSinc";
-			this->PlugLpfSinc->Size = System::Drawing::Size(188, 22);
+			this->PlugLpfSinc->Size = System::Drawing::Size(183, 22);
 			this->PlugLpfSinc->Text = L"Low Pass Filter (sinc)";
 			this->PlugLpfSinc->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
-			// 
-			// PlugHpf
-			// 
-			this->PlugHpf->Name = L"PlugHpf";
-			this->PlugHpf->Size = System::Drawing::Size(188, 22);
-			this->PlugHpf->Text = L"High Pass Filter (sinc)";
-			this->PlugHpf->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
-			// 
-			// PlugBpf
-			// 
-			this->PlugBpf->Name = L"PlugBpf";
-			this->PlugBpf->Size = System::Drawing::Size(188, 22);
-			this->PlugBpf->Text = L"Band Pass Filter (sinc)";
-			this->PlugBpf->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// TextboxEffects5
 			// 
@@ -577,38 +560,31 @@ namespace RackControls
 			this->TextboxEffects5->Size = System::Drawing::Size(100, 13);
 			this->TextboxEffects5->Text = L"Time manipulators";
 			// 
-			// PlugDelay
-			// 
-			this->PlugDelay->Name = L"PlugDelay";
-			this->PlugDelay->Size = System::Drawing::Size(188, 22);
-			this->PlugDelay->Text = L"Delay";
-			this->PlugDelay->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
-			// 
 			// PlugRetriggerSimple
 			// 
 			this->PlugRetriggerSimple->Name = L"PlugRetriggerSimple";
-			this->PlugRetriggerSimple->Size = System::Drawing::Size(188, 22);
+			this->PlugRetriggerSimple->Size = System::Drawing::Size(183, 22);
 			this->PlugRetriggerSimple->Text = L"Retrigger (Simple)";
 			this->PlugRetriggerSimple->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugRetrigger
 			// 
 			this->PlugRetrigger->Name = L"PlugRetrigger";
-			this->PlugRetrigger->Size = System::Drawing::Size(188, 22);
+			this->PlugRetrigger->Size = System::Drawing::Size(183, 22);
 			this->PlugRetrigger->Text = L"Retrigger";
 			this->PlugRetrigger->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugReverserSimple
 			// 
 			this->PlugReverserSimple->Name = L"PlugReverserSimple";
-			this->PlugReverserSimple->Size = System::Drawing::Size(188, 22);
+			this->PlugReverserSimple->Size = System::Drawing::Size(183, 22);
 			this->PlugReverserSimple->Text = L"Reverser (Simple)";
 			this->PlugReverserSimple->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 
 			// PlugReverser
 			// 
 			this->PlugReverser->Name = L"PlugReverser";
-			this->PlugReverser->Size = System::Drawing::Size(188, 22);
+			this->PlugReverser->Size = System::Drawing::Size(183, 22);
 			this->PlugReverser->Text = L"Reverser";
 			this->PlugReverser->Click += gcnew System::EventHandler(this, &RackItem::SetNewPlugin);
 			// 

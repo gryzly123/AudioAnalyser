@@ -43,9 +43,7 @@ DspPlugin* AudioProcessor::PluginFactory(std::wstring NewPluginName)
 	if (NewPluginName == (L"Stereo to Mid-Side")) return new StereoToMidside();
 	if (NewPluginName == (L"Low Pass Filter (avg)")) return new LowpassFilterAvg();
 	if (NewPluginName == (L"Low Pass Filter (sinc)")) return new LowPassFilterSinc();
-	if (NewPluginName == (L"High Pass Filter (sinc)")) return new HighPassFilterSinc();
 
-	//if (NewPluginName == (L"Delay")) return new ();
 	if (NewPluginName == (L"Retrigger (Simple)")) return new RetriggerSimple();
 	if (NewPluginName == (L"Retrigger")) return new Retrigger();
 	if (NewPluginName == (L"Reverser (Simple)")) return new ReverserSimple();
@@ -98,13 +96,11 @@ std::vector<DspPluginParameter*> AudioProcessor::GetPluginParameters(int AtIndex
 	return Plugins[AtIndex]->GetParameters();
 }
 
-#pragma managed pop
 #pragma managed(push, on)
 void AudioProcessor::AskPluginForRedraw(int AtIndex, System::Drawing::Graphics^ Image, System::Drawing::Bitmap^ ImgPtr, int Width, int Height, bool FirstFrame)
 {
 	Plugins[AtIndex]->UpdatePictureBox(Image, ImgPtr, Width, Height, FirstFrame);
 }
-#pragma managed pop
 #pragma managed(push, off)
 
 
@@ -267,4 +263,3 @@ int AudioProcessor::ProcessAudio(const void *inputBuffer, void *outputBuffer, un
 	IsBusy = false;
 	return paContinue;
 }
-#pragma managed pop

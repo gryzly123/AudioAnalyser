@@ -11,7 +11,7 @@ namespace AudioAnalyser
 	using namespace System::Drawing;
 
 	/// <summary>
-	/// Summary for DynamicPluginConfigWindow
+	/// Okno konfiguracji wtyczki budowane z DynamicControlObjectów na podstawie DspPluginParameters wtyczki
 	/// </summary>
 	public ref class DynamicPluginConfigWindow : public System::Windows::Forms::Form
 	{

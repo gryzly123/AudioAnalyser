@@ -33,7 +33,6 @@ std::string Utilities::MultibyteCharFromWide(std::wstring In)
 }
 
 #undef MAX_SIZE
-#pragma managed pop
 #pragma managed(push, on)
 std::wstring Utilities::WideFromSystemString(System::String^ In)
 {
@@ -56,13 +55,6 @@ void Utilities::ShowMessagebox(System::String^ Message, System::String^ WindowNa
 {
 	System::Windows::Forms::MessageBox::Show(Message, WindowName);
 }
-
-void Utilities::ShowMessageboxDebugonly(std::wstring Message, std::wstring WindowName)
-{
-	ShowMessagebox(Message, WindowName);
-}
-
-using System::Windows::Forms::MessageBox;
 
 void Utilities::LinearInterpolate(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength)
 {
@@ -99,7 +91,6 @@ void Utilities::CutAndInterpolateSubrange(MonitoredArray<float>^ In, MonitoredAr
 	LinearInterpolate(In, Out, OutLength);
 }
 
-#pragma managed pop
 #pragma managed(push, off)
 void Utilities::Fft(ComplexF* In, int Length)
 {
@@ -127,14 +118,12 @@ void Utilities::FftRegroup(ComplexF* In, int Length)
 	int Seek = HalfLen;
 	ComplexF* Helper = new ComplexF[Length / 2];
 	for (int i = 0; i < Length; i += 2) Helper[i / 2] = In[i]; //nieparzyste do pomocniczej
-	for (int i = 0; i < HalfLen; ++i) In[i] = In[i * 2 + 1]; //parzyste do pierwszej po³owy
-	for (int i = 0; i < HalfLen; ++i) In[Seek++] = Helper[i]; //nieparzyste do drugiej po³owy
+	for (int i = 0; i < HalfLen; ++i) In[i] = In[i * 2 + 1];   //parzyste do pierwszej po³owy
+	for (int i = 0; i < HalfLen; ++i) In[Seek++] = Helper[i];  //nieparzyste do drugiej po³owy
 	delete[] Helper;
 }
 
-#pragma managed pop
 #pragma managed(push, on)
-//Zmiana danych z FFT na wartoœæ sygna³u dla czêstotliwoœci (Re) i czêstotliwosæ (Im)
 MonitoredArray<float>^ Utilities::FftProcessResult(ComplexF* In, int Length)
 {
 	MonitoredArray<float>^ Result = gcnew MonitoredArray<float>();
@@ -143,4 +132,3 @@ MonitoredArray<float>^ Utilities::FftProcessResult(ComplexF* In, int Length)
 	for (int i = 0; i < HalfLen; ++i) Result->PushLast(std::sqrt((In[i].real() * In[i].real()) + (In[i].imag() * In[i].imag())) / (float)HalfLen);
 	return Result;
 }
-#pragma managed pop

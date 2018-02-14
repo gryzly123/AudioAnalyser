@@ -5,6 +5,8 @@
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Threading;
+
+//lista dwukierunkowa z obs³ug¹ CLRowych mutexów (Monitor)
 template<class A>
 public ref class MonitoredArray
 {
@@ -38,23 +40,29 @@ namespace Utilities
 	//messageboxy
 	void ShowMessagebox(std::wstring Message, std::wstring WindowName = L"Alert");
 	void ShowMessagebox(System::String^ Message, System::String^ WindowName = L"Alert");
-	void ShowMessageboxDebugonly(std::wstring Message, std::wstring WindowName = L"Debug window");
 
-	//funkcje matematyczne
+	//clamp
 	template<typename T>
 	inline const T Clamp(const T& Val, const T& Min, const T& Max) { return (Val < Min) ? Min : ((Val > Max) ? Max : Val); }
 
+	//zamiana zmiennych
 	template<typename T>
 	inline void Swap(T& A, T& B) { T Helper = A; A = B; B = Helper; }
 	
+	//œrednia wa¿ona
 	template<typename T>
 	inline const T WeightedAvg(const T& A, const T& B, float W) { return (A * (1.0f - W)) + (B * W); }
 
+	//interpolacja liniowa
 	void LinearInterpolate(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, int OutLength);
 	void CutAndInterpolateSubrange(MonitoredArray<float>^ In, MonitoredArray<float>^ Out, float From, float To, int OutLength);
 	
+	//szybka transformata Fouriera - Cooley-Tukey
+	void Fft(ComplexF* In, int Length);                 
 	
-	void Fft(ComplexF* In, int Length);                 //szybka transformata Fouriera - Cooley-Tukey
-	void FftRegroup(ComplexF* In, int Length);          //rearan¿acja elementów do FFT
-	MonitoredArray<float>^ FftProcessResult(ComplexF* In, int Length);    //konwersja wyniku FFT na zrozumia³y dla cz³owieka
+	//rearan¿acja elementów do FFT
+	void FftRegroup(ComplexF* In, int Length);
+	
+    //konwersja wyniku FFT na zrozumia³y dla cz³owieka
+	MonitoredArray<float>^ FftProcessResult(ComplexF* In, int Length);
 }

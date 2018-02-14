@@ -3,7 +3,7 @@
 #include "AudioProcessor.h"
 #include "DspPluginParameter.h"
 
-#define CURRENT_VER "0.0.2"
+#define CURRENT_VER "1.0.0"
 
 namespace AudioAnalyser
 {
@@ -11,10 +11,10 @@ namespace AudioAnalyser
 	using namespace System::Xml;
 	using namespace System::Windows::Forms;
 
+	//Odczyt i zapis plików XML z informacjami o projekcie (.aap)
 	public ref class FileSerializer
 	{
 	public:
-
 		static System::Void SerializeRack(XmlTextWriter^ DW)
 		{
 			AudioProcessor* Ap = AudioProcessor::GetInstance();
@@ -53,7 +53,6 @@ namespace AudioAnalyser
 			DW->WriteEndDocument();
 			DW->Close();
 		}
-
 		static System::Void DeserializeRack(XmlTextReader^ DR)
 		{
 			AudioProcessor* Ap = AudioProcessor::GetInstance();
@@ -87,15 +86,14 @@ namespace AudioAnalyser
 					}
 				}
 
-				Success = false;
+				Success = true;
 			}
-			catch (System::Exception^ E) { }
+			catch (System::Exception^) { }
 			
 			if(!Success) MessageBox::Show(L"File seems to be corrupted and could not be fully loaded.", L"Open failed");
 		}
 
 	private:
-
 		static System::Boolean DeserializeRackHelperAudioAnalyser(XmlTextReader^ DR)
 		{
 			bool HasVerifiedVersion = false;
@@ -130,7 +128,6 @@ namespace AudioAnalyser
 
 			return true;
 		}
-
 		static System::Void DeserializeRackHelperRackItem(XmlTextReader^ DR, int NewIndex)
 		{
 			AudioProcessor* Ap = AudioProcessor::GetInstance();

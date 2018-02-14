@@ -14,28 +14,36 @@ enum PluginSwapDirection
 class AudioProcessor
 {
 private:
+	//singleton
 	std::vector<DspPlugin*> Plugins;
 	static AudioProcessor* Instance;
-
 	AudioProcessor();
 	~AudioProcessor();
-	DspPlugin* PluginFactory(std::wstring NewPluginName);
+	
+	//pêtla przetwarzania
 	bool IsBusy = false;
 
+	//fabryka pluginów
+	DspPlugin* PluginFactory(std::wstring NewPluginName);
+
 public:
+	//singleton
 	static AudioProcessor* GetInstance();
 	static void Shutdown() { delete GetInstance(); }
 
+	//pêtla przetwarzania
 	int ProcessAudio(
 		const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags,
 		void *userData);
 	bool GetIsBusy() { return IsBusy; }
 	
+	//podmiana pluginów na stosie
 	void ChangePlugin(int AtIndex, const std::wstring NewPluginName);
 	void SwapPlugins(int AtIndex, PluginSwapDirection Direction);
 	void ResetPlugins();
 	
+	//zmiana konfiguracji plugina na stosie
 	std::wstring GetPluginName(int AtIndex);
 	void GetPluginWindowCapabilities(int AtIndex, bool& HasConfig, bool& HasVis);
 	void SetPluginVolumeMix(int AtIndex, float Value);
